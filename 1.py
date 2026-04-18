@@ -1,11 +1,10 @@
 import streamlit as st
 import pandas as pd
-import altair as alt
 
 # =========================
 # CONFIG
 # =========================
-st.set_page_config(page_title="Carreira SaaS RPG", layout="wide")
+st.set_page_config(page_title="Carreira RPG Pro", layout="wide")
 
 # =========================
 # STYLE
@@ -33,9 +32,7 @@ html, body {
     color: black;
     padding: 10px;
     border-radius: 10px;
-    text-align: center;
-    font-weight: bold;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -43,12 +40,6 @@ html, body {
 # =========================
 # SESSION STATE
 # =========================
-if "auth" not in st.session_state:
-    st.session_state.auth = False
-
-if "user" not in st.session_state:
-    st.session_state.user = None
-
 if "db" not in st.session_state:
     st.session_state.db = []
 
@@ -67,131 +58,121 @@ if "progress" not in st.session_state:
     }
 
 # =========================
-# LOGIN
-# =========================
-if not st.session_state.auth:
-    st.title("🔐 Carreira SaaS RPG")
-
-    user = st.text_input("Usuário")
-    pwd = st.text_input("Senha", type="password")
-
-    if st.button("Entrar"):
-        if user and pwd:
-            st.session_state.auth = True
-            st.session_state.user = user
-            st.rerun()
-
-    st.stop()
-
-# =========================
 # HEADER
 # =========================
-st.title("🚀 Carreira SaaS RPG Dashboard")
+st.title("🚀 Carreira RPG SaaS (Pessoal)")
 
-st.caption(f"👤 {st.session_state.user} | ⭐ XP: {st.session_state.xp} | Level: {st.session_state.xp // 100 + 1}")
-
-# =========================
-# INPUT
-# =========================
-st.subheader("📌 Registrar atividade")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    atividade = st.selectbox(
-        "Atividade",
-        ["Estudo", "Laboratório", "Projeto", "Inglês", "Networking"]
-    )
-
-with col2:
-    obs = st.text_area("Observação")
-
-if st.button("Salvar atividade"):
-    st.session_state.db.append({
-        "data": str(pd.Timestamp.today().date()),
-        "atividade": atividade,
-        "obs": obs
-    })
-    st.session_state.xp += 10
-    st.success("Atividade salva +10 XP!")
+st.caption(f"⭐ XP: {st.session_state.xp} | Level: {st.session_state.xp // 100 + 1}")
 
 # =========================
-# DATAFRAME
+# ABAS
 # =========================
-df = pd.DataFrame(st.session_state.db)
-
-# =========================
-# KPIs
-# =========================
-st.subheader("📊 KPIs")
-
-col1, col2, col3 = st.columns(3)
-
-col1.metric("Total atividades", len(df))
-col2.metric("XP total", st.session_state.xp)
-col3.metric("Level", st.session_state.xp // 100 + 1)
+tab1, tab2 = st.tabs(["🎮 Dashboard RPG", "🛣️ Planejamento de Carreira"])
 
 # =========================
-# GRÁFICO
+# TAB 1 - RPG
 # =========================
-st.subheader("📈 Evolução")
+with tab1:
 
-if not df.empty:
-    df["data"] = pd.to_datetime(df["data"])
+    st.subheader("📌 Registrar atividade")
 
-    chart = alt.Chart(df).mark_line(point=True).encode(
-        x="data:T",
-        y="count():Q",
-        color="atividade:N"
-    )
+    col1, col2 = st.columns(2)
 
-    st.altair_chart(chart, use_container_width=True)
-else:
-    st.info("Sem dados ainda.")
+    with col1:
+        atividade = st.selectbox(
+            "Atividade",
+            ["Estudo", "Laboratório", "Projeto", "Inglês", "Networking"]
+        )
+
+    with col2:
+        obs = st.text_area("Observação")
+
+    if st.button("Salvar atividade"):
+        st.session_state.db.append({
+            "atividade": atividade,
+            "obs": obs
+        })
+        st.session_state.xp += 10
+        st.success("+10 XP ganho!")
+
+    df = pd.DataFrame(st.session_state.db)
+
+    # KPIs
+    st.subheader("📊 KPIs")
+
+    col1, col2, col3 = st.columns(3)
+
+    col1.metric("Atividades", len(df))
+    col2.metric("XP", st.session_state.xp)
+    col3.metric("Level", st.session_state.xp // 100 + 1)
+
+    # PROGRESSO CERTIFICAÇÕES
+    st.subheader("🎮 Certificações (Progresso RPG)")
+
+    for cert, val in st.session_state.progress.items():
+        st.markdown(f"**{cert}**")
+        st.progress(val / 100)
+
+    # RANKING (SÓ VOCÊ)
+    st.subheader("🏆 Disciplina")
+
+    score = len(df) * 5 + st.session_state.xp
+
+    st.metric("Seu score de disciplina", score)
+
+    st.progress(min(score / 200, 1.0))
 
 # =========================
-# PROGRESSO CERTIFICAÇÕES
+# TAB 2 - ROADMAP
 # =========================
-st.subheader("🎮 Certificações (RPG)")
+with tab2:
 
-for cert, value in st.session_state.progress.items():
-    st.markdown(f"**{cert}**")
-    st.progress(value / 100)
+    st.subheader("📅 2026 — BASE + INÍCIO DA PÓS")
 
-# =========================
-# RANKING DE DISCIPLINA
-# =========================
-st.subheader("🏆 Ranking de Disciplina")
+    st.markdown("""
+    **🎯 Certificações**
+    - AZ-900 (Abril/2026)
+    - ISO 27001 Fundamentals (Maio/2026)
+    - CCNA (Julho/2026)
+    - SC-900 (Outubro/2026)
 
-score = len(df) * 5 + st.session_state.xp
+    🎓 Pós-graduação: Início Junho/2026  
+    🌍 Inglês: diário (30–40 min)
+    """)
 
-ranking = pd.DataFrame([
-    {"Usuário": st.session_state.user, "Score": score},
-    {"Usuário": "Aluno A", "Score": 120},
-    {"Usuário": "Aluno B", "Score": 90},
-    {"Usuário": "Aluno C", "Score": 60}
-]).sort_values("Score", ascending=False)
+    st.divider()
 
-st.dataframe(ranking, use_container_width=True)
-st.bar_chart(ranking.set_index("Usuário"))
+    st.subheader("📅 2027 — SEGURANÇA + OT")
 
-# =========================
-# IA SIMULADA (SEM OPENAI)
-# =========================
-st.subheader("🧠 IA Coach (Offline)")
+    st.markdown("""
+    - Security+ (Fevereiro/2027)
+    - ISO 27001 Lead Implementer (Maio/2027)
+    - ISA/IEC 62443 (Agosto/2027)
+    - MITRE ATT&CK ICS (contínuo)
+    - CySA+ (Dezembro/2027)
 
-def coach():
-    if df.empty:
-        return "Comece com estudo diário e consistência."
+    🌍 Inglês: técnico (documentação)
+    """)
 
-    last = df.iloc[-1]["atividade"]
+    st.divider()
 
-    if last == "Estudo":
-        return "👉 Próximo passo: laboratório prático"
-    if last == "Laboratório":
-        return "👉 Transforme isso em projeto GitHub"
-    if last == "Projeto":
-        return "👉 Documente e publique"
-    return "👉 Continue evoluindo com consistência"
+    st.subheader("📅 2028 — ESPECIALIZAÇÃO")
 
-st.info(coach())
+    st.markdown("""
+    - GICSP (Março/2028)
+    - ISO 27001 Lead Auditor (Agosto/2028)
+
+    🎓 Pós-graduação: conclusão Dez/2028  
+    🌍 Inglês: conversação + entrevistas
+    """)
+
+    st.divider()
+
+    st.subheader("📅 2029 — CONSOLIDAÇÃO")
+
+    st.markdown("""
+    - CISSP (Junho/2029)
+
+    🌍 Inglês: fluência funcional
+    💼 foco: entrevistas internacionais
+    """)
