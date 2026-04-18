@@ -1,18 +1,11 @@
 import streamlit as st
 import pandas as pd
 import altair as alt
-import os
-import openai
 
 # =========================
 # CONFIG
 # =========================
-st.set_page_config(page_title="Carreira SaaS Pro", layout="wide")
-
-# =========================
-# OPENAI CONFIG (GIT SAFE)
-# =========================
-openai.api_key = os.getenv("OPENAI_API_KEY")
+st.set_page_config(page_title="Carreira SaaS RPG", layout="wide")
 
 # =========================
 # STYLE
@@ -34,6 +27,16 @@ html, body {
     font-weight: bold;
     border-radius: 10px;
 }
+
+.card {
+    background: white;
+    color: black;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -54,10 +57,10 @@ if "xp" not in st.session_state:
 
 if "progress" not in st.session_state:
     st.session_state.progress = {
-        "AZ-900": 20,
-        "ISO 27001": 10,
-        "CCNA": 0,
-        "Security+": 0,
+        "AZ-900": 30,
+        "ISO 27001": 15,
+        "CCNA": 10,
+        "Security+": 5,
         "CySA+": 0,
         "GICSP": 0,
         "CISSP": 0
@@ -67,7 +70,7 @@ if "progress" not in st.session_state:
 # LOGIN
 # =========================
 if not st.session_state.auth:
-    st.title("🔐 Login SaaS Carreira Pro")
+    st.title("🔐 Carreira SaaS RPG")
 
     user = st.text_input("Usuário")
     pwd = st.text_input("Senha", type="password")
@@ -83,12 +86,12 @@ if not st.session_state.auth:
 # =========================
 # HEADER
 # =========================
-st.title("🚀 Carreira SaaS Pro")
+st.title("🚀 Carreira SaaS RPG Dashboard")
 
-st.caption(f"👤 Usuário: {st.session_state.get('user','guest')} | ⭐ XP: {st.session_state.xp}")
+st.caption(f"👤 {st.session_state.user} | ⭐ XP: {st.session_state.xp} | Level: {st.session_state.xp // 100 + 1}")
 
 # =========================
-# INPUT ATIVIDADES
+# INPUT
 # =========================
 st.subheader("📌 Registrar atividade")
 
@@ -103,15 +106,18 @@ with col1:
 with col2:
     obs = st.text_area("Observação")
 
-if st.button("Salvar"):
+if st.button("Salvar atividade"):
     st.session_state.db.append({
         "data": str(pd.Timestamp.today().date()),
         "atividade": atividade,
         "obs": obs
     })
     st.session_state.xp += 10
-    st.success("Salvo!")
+    st.success("Atividade salva +10 XP!")
 
+# =========================
+# DATAFRAME
+# =========================
 df = pd.DataFrame(st.session_state.db)
 
 # =========================
@@ -122,7 +128,7 @@ st.subheader("📊 KPIs")
 col1, col2, col3 = st.columns(3)
 
 col1.metric("Total atividades", len(df))
-col2.metric("XP", st.session_state.xp)
+col2.metric("XP total", st.session_state.xp)
 col3.metric("Level", st.session_state.xp // 100 + 1)
 
 # =========================
@@ -140,50 +146,17 @@ if not df.empty:
     )
 
     st.altair_chart(chart, use_container_width=True)
+else:
+    st.info("Sem dados ainda.")
 
 # =========================
-# PROGRESSO CERTIFICAÇÕES (RPG)
+# PROGRESSO CERTIFICAÇÕES
 # =========================
-st.subheader("🎮 Progresso de Certificações")
+st.subheader("🎮 Certificações (RPG)")
 
-for k, v in st.session_state.progress.items():
-    st.write(f"**{k}**")
-    st.progress(v / 100)
-
-# =========================
-# IA COACH SEMANAL
-# =========================
-st.subheader("🤖 IA Planejador Semanal")
-
-def gerar_plano():
-    if openai.api_key is None:
-        return "⚠️ Configure OPENAI_API_KEY no Git Secrets"
-
-    prompt = f"""
-Você é um coach de carreira em segurança da informação.
-
-Progresso do usuário:
-{st.session_state.progress}
-
-Atividades recentes:
-{df.tail(5).to_string() if not df.empty else "Nenhuma"}
-
-Crie um plano semanal detalhado (segunda a domingo)
-com foco em certificações e prática.
-"""
-
-    response = openai.ChatCompletion.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": "Você é um mentor de TI."},
-            {"role": "user", "content": prompt}
-        ]
-    )
-
-    return response["choices"][0]["message"]["content"]
-
-if st.button("Gerar plano semanal"):
-    st.info(gerar_plano())
+for cert, value in st.session_state.progress.items():
+    st.markdown(f"**{cert}**")
+    st.progress(value / 100)
 
 # =========================
 # RANKING DE DISCIPLINA
@@ -201,3 +174,24 @@ ranking = pd.DataFrame([
 
 st.dataframe(ranking, use_container_width=True)
 st.bar_chart(ranking.set_index("Usuário"))
+
+# =========================
+# IA SIMULADA (SEM OPENAI)
+# =========================
+st.subheader("🧠 IA Coach (Offline)")
+
+def coach():
+    if df.empty:
+        return "Comece com estudo diário e consistência."
+
+    last = df.iloc[-1]["atividade"]
+
+    if last == "Estudo":
+        return "👉 Próximo passo: laboratório prático"
+    if last == "Laboratório":
+        return "👉 Transforme isso em projeto GitHub"
+    if last == "Projeto":
+        return "👉 Documente e publique"
+    return "👉 Continue evoluindo com consistência"
+
+st.info(coach())
