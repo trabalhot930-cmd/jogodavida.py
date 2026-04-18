@@ -1,15 +1,12 @@
 import streamlit as st
 import sqlite3
 import pandas as pd
-from datetime import datetime, date, timedelta
-from reportlab.platypus import SimpleDocTemplate, Paragraph
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.pagesizes import letter
+from datetime import date
 
 # CONFIG
 st.set_page_config(page_title="Planejamento de Carreira", layout="wide")
 
-# BANCO SQLite
+# BANCO
 conn = sqlite3.connect("carreira.db", check_same_thread=False)
 c = conn.cursor()
 
@@ -26,26 +23,24 @@ CREATE TABLE IF NOT EXISTS progresso (
     id INTEGER PRIMARY KEY,
     casa INTEGER,
     xp INTEGER,
-    streak INTEGER,
-    ultimo TEXT
+    streak INTEGER
 )
 """)
-
 conn.commit()
 
-# INIT DADOS
+# INIT
 def get_progresso():
     c.execute("SELECT * FROM progresso WHERE id=1")
     r = c.fetchone()
     if not r:
-        c.execute("INSERT INTO progresso VALUES (1,1,0,0,NULL)")
+        c.execute("INSERT INTO progresso VALUES (1,1,0,0)")
         conn.commit()
-        return {"casa":1,"xp":0,"streak":0,"ultimo":None}
-    return {"casa":r[1],"xp":r[2],"streak":r[3],"ultimo":r[4]}
+        return {"casa":1,"xp":0,"streak":0}
+    return {"casa":r[1],"xp":r[2],"streak":r[3]}
 
-def salvar_progresso(d):
-    c.execute("UPDATE progresso SET casa=?, xp=?, streak=?, ultimo=? WHERE id=1",
-              (d["casa"], d["xp"], d["streak"], d["ultimo"]))
+def salvar(d):
+    c.execute("UPDATE progresso SET casa=?, xp=?, streak=? WHERE id=1",
+              (d["casa"], d["xp"], d["streak"]))
     conn.commit()
 
 dados = get_progresso()
@@ -80,15 +75,40 @@ c3.metric("Streak", dados["streak"])
 if st.button("Avançar Semana"):
     dados["casa"] += 1
     dados["xp"] += 100
-    salvar_progresso(dados)
+    salvar(dados)
     st.rerun()
 
+# CERTIFICAÇÕES (COM EMBLEMAS)
+st.subheader("🏅 Certificações")
+
+certs = [
+    "☁️ AZ-900",
+    "📜 ISO 27001",
+    "🌐 CCNA",
+    "⚙️ AZ-104",
+    "🛡️ SC-900",
+    "🔐 Security+",
+    "🧠 CySA+",
+    "🏢 ISO Lead",
+    "🏭 62443",
+    "⚡ GICSP",
+    "🎓 Pós-graduação"
+]
+
+for ctt in certs:
+    st.markdown(f"### {ctt}")
+
 # REGISTRAR ATIVIDADE
-st.subheader("Registrar Atividade")
+st.subheader("🚀 Registrar Atividade")
 
 atividade = st.selectbox("Tipo", [
-    "Estudo", "Laboratório", "Projeto", "Inglês", "Networking"
+    "📘 Estudo",
+    "🧪 Laboratório",
+    "💻 Projeto",
+    "🌐 Inglês",
+    "🤝 Networking"
 ])
+
 obs = st.text_area("Observação")
 
 if st.button("Salvar"):
@@ -96,68 +116,59 @@ if st.button("Salvar"):
               (str(date.today()), atividade, obs))
     conn.commit()
     dados["xp"] += 30
-    salvar_progresso(dados)
+    salvar(dados)
     st.success("Salvo!")
 
-# CARREGAR DADOS
+# DADOS
 df = pd.read_sql("SELECT * FROM atividades", conn)
 
-# 📊 POWER BI STYLE (Altair)
-st.subheader("📊 Análise de Atividades")
+# 📊 GRÁFICO
+st.subheader("📊 Evolução")
 
 if not df.empty:
-    chart = df.groupby(["data","atividade"]).size().reset_index(name="qtd")
+    df_group = df.groupby(["data","atividade"]).size().unstack(fill_value=0)
+    st.area_chart(df_group)
 
-    st.bar_chart(
-        chart.pivot(index="data", columns="atividade", values="qtd").fillna(0)
-    )
-
-# 🔥 HEATMAP (GitHub Style)
-st.subheader("🔥 Heatmap de Estudos")
+# 🔥 HEATMAP SIMPLES
+st.subheader("🔥 Frequência de Estudo")
 
 if not df.empty:
-    df["data"] = pd.to_datetime(df["data"])
-    heat = df.groupby(df["data"].dt.date).size()
+    heat = df.groupby("data").size()
+    st.bar_chart(heat)
 
-    heat_df = heat.reset_index()
-    heat_df.columns = ["data","qtd"]
-
-    st.dataframe(heat_df)
-
-# 🧠 IA SIMPLES
-st.subheader("🧠 Sugestão de Estudo (IA)")
+# 🧠 IA
+st.subheader("🧠 Sugestão")
 
 def sugerir(df):
     if df.empty:
-        return "Comece com Estudo básico hoje."
+        return "Comece com estudo hoje."
     ult = df.iloc[-1]["atividade"]
-
-    if ult == "Estudo":
-        return "Faça um laboratório amanhã."
-    elif ult == "Laboratório":
-        return "Trabalhe em um projeto."
-    elif ult == "Projeto":
-        return "Revise teoria."
+    if "Estudo" in ult:
+        return "Faça laboratório amanhã."
+    elif "Laboratório" in ult:
+        return "Desenvolva um projeto."
     else:
-        return "Foque em estudo técnico."
+        return "Volte para teoria."
 
 st.info(sugerir(df))
 
-# 🖨️ PDF
-st.subheader("🖨️ Gerar Relatório PDF")
+# 🖨️ RELATÓRIO HTML (IMPRIMIR)
+st.subheader("🖨️ Relatório")
 
-if st.button("Gerar PDF"):
-    doc = SimpleDocTemplate("relatorio.pdf", pagesize=letter)
-    styles = getSampleStyleSheet()
+html = f"""
+<h2>Planejamento de Carreira</h2>
+<p>XP: {dados['xp']}</p>
+<p>Semana: {dados['casa']}</p>
+"""
 
-    conteudo = []
-    conteudo.append(Paragraph(f"XP: {dados['xp']}", styles["Normal"]))
-    conteudo.append(Paragraph(f"Semana: {dados['casa']}", styles["Normal"]))
+for _, row in df.iterrows():
+    html += f"<p>{row['data']} - {row['atividade']} - {row['obs']}</p>"
 
-    for _, row in df.iterrows():
-        conteudo.append(Paragraph(f"{row['data']} - {row['atividade']}: {row['obs']}", styles["Normal"]))
+st.download_button(
+    "Baixar relatório (HTML)",
+    html,
+    "relatorio.html",
+    "text/html"
+)
 
-    doc.build(conteudo)
-
-    with open("relatorio.pdf", "rb") as f:
-        st.download_button("Baixar PDF", f, "relatorio.pdf")
+st.info("Abra o HTML e pressione CTRL + P para salvar em PDF")
