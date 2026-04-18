@@ -1,11 +1,20 @@
 import streamlit as st
 import pandas as pd
 import altair as alt
+from supabase import create_client
+import os
+
+# =========================
+# SUPABASE
+# =========================
+url = os.getenv("SUPABASE_URL")
+key = os.getenv("SUPABASE_KEY")
+supabase = create_client(url, key)
 
 # =========================
 # CONFIG
 # =========================
-st.set_page_config(page_title="Carreira RPG Pro", layout="wide")
+st.set_page_config(page_title="Ranking Global SaaS", layout="wide")
 
 # =========================
 # STYLE
@@ -27,202 +36,99 @@ html, body {
     font-weight: bold;
     border-radius: 10px;
 }
-
-.card {
-    background: white;
-    color: black;
-    padding: 10px;
-    border-radius: 10px;
-    margin-bottom: 8px;
-}
 </style>
 """, unsafe_allow_html=True)
 
 # =========================
-# SESSION STATE
+# LOGIN SIMPLES
 # =========================
-if "db" not in st.session_state:
-    st.session_state.db = []
+st.title("🌍 Ranking Global de Disciplina")
 
-if "xp" not in st.session_state:
-    st.session_state.xp = 0
+if "user" not in st.session_state:
+    st.session_state.user = st.text_input("Digite seu nome")
 
-if "progress" not in st.session_state:
-    st.session_state.progress = {
-        "AZ-900": 30,
-        "ISO 27001": 15,
-        "CCNA": 10,
-        "Security+": 5,
-        "CySA+": 0,
-        "GICSP": 0,
-        "CISSP": 0
-    }
+user = st.session_state.user
+
+if not user:
+    st.stop()
+
+st.success(f"Logado como: {user}")
 
 # =========================
-# HEADER
+# SIDEBAR MENU
 # =========================
-st.title("🚀 Carreira RPG SaaS - Tracker Pessoal")
-
-st.caption(f"⭐ XP: {st.session_state.xp} | Level: {st.session_state.xp // 100 + 1}")
+menu = st.sidebar.radio("Menu", ["Dashboard", "Ranking Global"])
 
 # =========================
-# ABAS
+# DASHBOARD
 # =========================
-tab1, tab2 = st.tabs(["🎮 Dashboard RPG", "🛣️ Roadmap Carreira"])
+if menu == "Dashboard":
 
-# =========================
-# TAB 1 - DASHBOARD RPG
-# =========================
-with tab1:
+    st.subheader("📌 Registrar atividade")
 
-    st.subheader("📌 Registrar estudo por certificação")
+    cert = st.selectbox(
+        "Certificação / Curso",
+        ["AZ-900", "CCNA", "Security+", "Python", "SQL", "Power BI", "ISO 27001"]
+    )
 
-    col1, col2 = st.columns(2)
+    activity = st.selectbox(
+        "Atividade",
+        ["Estudo", "Laboratório", "Projeto", "Revisão", "Simulado"]
+    )
 
-    with col1:
-        cert = st.selectbox(
-            "Certificação",
-            list(st.session_state.progress.keys())
-        )
+    xp_gain = 10
 
-        atividade = st.selectbox(
-            "Tipo de atividade",
-            ["Estudo", "Laboratório", "Revisão", "Projeto", "Simulado"]
-        )
+    if st.button("Salvar + XP"):
+        supabase.table("activities").insert({
+            "user_name": user,
+            "cert": cert,
+            "activity": activity,
+            "date": str(pd.Timestamp.today().date()),
+            "xp": xp_gain
+        }).execute()
 
-    with col2:
-        data = st.date_input("Data", value=pd.Timestamp.today())
-        obs = st.text_area("Observação do dia")
-
-    if st.button("Salvar registro"):
-        st.session_state.db.append({
-            "data": str(data),
-            "certificacao": cert,
-            "atividade": atividade,
-            "obs": obs
-        })
-
-        st.session_state.xp += 10
-        st.success("+10 XP ganho!")
-
-    df = pd.DataFrame(st.session_state.db)
+        st.success("+10 XP registrado!")
 
     # =========================
-    # KPIs
+    # HISTÓRICO DO USUÁRIO
     # =========================
-    st.subheader("📊 KPIs")
+    data = supabase.table("activities").select("*").eq("user_name", user).execute().data
 
-    col1, col2, col3 = st.columns(3)
+    df = pd.DataFrame(data)
 
-    col1.metric("Registros", len(df))
-    col2.metric("XP", st.session_state.xp)
-    col3.metric("Level", st.session_state.xp // 100 + 1)
+    st.subheader("📊 Seu histórico")
 
-    # =========================
-    # PROGRESSO CERTIFICAÇÕES
-    # =========================
-    st.subheader("🎮 Progresso das Certificações")
+    if not df.empty:
+        st.dataframe(df)
 
-    for c, v in st.session_state.progress.items():
-        st.write(f"**{c}**")
-        st.progress(v / 100)
+        st.bar_chart(df.groupby("cert")["xp"].sum())
+    else:
+        st.info("Sem registros ainda.")
 
-    # =========================
-    # FILTRO POR CERTIFICAÇÃO
-    # =========================
-    st.subheader("📚 Histórico por Certificação")
+# =========================
+# RANKING GLOBAL
+# =========================
+if menu == "Ranking Global":
+
+    st.subheader("🏆 Leaderboard Global")
+
+    data = supabase.table("activities").select("*").execute().data
+    df = pd.DataFrame(data)
 
     if not df.empty:
 
-        filtro = st.selectbox(
-            "Selecionar certificação",
-            df["certificacao"].unique()
-        )
+        ranking = df.groupby("user_name")["xp"].sum().reset_index()
+        ranking = ranking.sort_values("xp", ascending=False)
 
-        df_f = df[df["certificacao"] == filtro].copy()
-        df_f["data"] = pd.to_datetime(df_f["data"])
+        st.dataframe(ranking, use_container_width=True)
 
-        st.dataframe(df_f, use_container_width=True)
-
-        # =========================
-        # GRÁFICO
-        # =========================
-        chart = alt.Chart(df_f).mark_line(point=True).encode(
-            x="data:T",
-            y="count():Q",
-            color="atividade:N",
-            tooltip=["atividade", "obs"]
+        chart = alt.Chart(ranking).mark_bar().encode(
+            x="user_name:N",
+            y="xp:Q",
+            color="user_name:N"
         )
 
         st.altair_chart(chart, use_container_width=True)
 
     else:
-        st.info("Nenhum registro ainda.")
-
-    # =========================
-    # DISCIPLINA SCORE
-    # =========================
-    st.subheader("🏆 Score de Disciplina")
-
-    score = len(df) * 5 + st.session_state.xp
-
-    st.metric("Seu score", score)
-
-    st.progress(min(score / 300, 1.0))
-
-# =========================
-# TAB 2 - ROADMAP
-# =========================
-with tab2:
-
-    st.title("🛣️ Roadmap de Carreira 2026–2029")
-
-    st.subheader("📅 2026 — BASE + INÍCIO DA PÓS")
-
-    st.markdown("""
-- AZ-900 (Abril/2026)  
-- ISO 27001 Fundamentals (Maio/2026)  
-- CCNA (Julho/2026)  
-- SC-900 (Outubro/2026)  
-
-🎓 Pós-graduação: Início Junho/2026  
-🌍 Inglês: diário (30–40 min)
-""")
-
-    st.divider()
-
-    st.subheader("📅 2027 — SEGURANÇA + OT")
-
-    st.markdown("""
-- Security+ (Fevereiro/2027)  
-- ISO 27001 Lead Implementer (Maio/2027)  
-- ISA/IEC 62443 (Agosto/2027)  
-- MITRE ATT&CK ICS (contínuo)  
-- CySA+ (Dezembro/2027)  
-
-🌍 Inglês técnico
-""")
-
-    st.divider()
-
-    st.subheader("📅 2028 — ESPECIALIZAÇÃO")
-
-    st.markdown("""
-- GICSP (Março/2028)  
-- ISO 27001 Lead Auditor (Agosto/2028)  
-
-🎓 Pós-graduação: conclusão Dez/2028  
-🌍 Inglês: entrevistas e conversação
-""")
-
-    st.divider()
-
-    st.subheader("📅 2029 — CONSOLIDAÇÃO")
-
-    st.markdown("""
-- CISSP (Junho/2029)  
-
-🌍 Inglês fluente funcional  
-💼 entrevistas internacionais
-""")
-       
+        st.info("Ainda não há dados no ranking global.")
