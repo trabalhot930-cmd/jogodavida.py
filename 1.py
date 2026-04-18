@@ -815,7 +815,7 @@ with tab3:
     }
     
     for trilha, info in trilhas_info.items():
-        st.markdown(f"""
+        st.markdown(f""")
         <div class="trilha-card">
             <h3 style="color: #2c3e50;">{info['certs'][0][:1]} {trilha}</h3>
             <p style="color: #6c757d;">{info['desc']}</p>
