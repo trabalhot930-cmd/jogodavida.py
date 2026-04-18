@@ -1,15 +1,6 @@
 import streamlit as st
 import pandas as pd
 import altair as alt
-from supabase import create_client
-import os
-
-# =========================
-# SUPABASE
-# =========================
-url = os.getenv("SUPABASE_URL")
-key = os.getenv("SUPABASE_KEY")
-supabase = create_client(url, key)
 
 # =========================
 # CONFIG
@@ -40,24 +31,28 @@ html, body {
 """, unsafe_allow_html=True)
 
 # =========================
-# LOGIN SIMPLES
+# SESSION STATE
 # =========================
-st.title("🌍 Ranking Global de Disciplina")
-
 if "user" not in st.session_state:
     st.session_state.user = st.text_input("Digite seu nome")
 
-user = st.session_state.user
+if "db" not in st.session_state:
+    st.session_state.db = []
 
-if not user:
+if "xp" not in st.session_state:
+    st.session_state.xp = 0
+
+if not st.session_state.user:
     st.stop()
 
-st.success(f"Logado como: {user}")
+st.title("🌍 Ranking de Disciplina (Versão Local)")
+
+st.success(f"Logado como: {st.session_state.user}")
 
 # =========================
-# SIDEBAR MENU
+# MENU
 # =========================
-menu = st.sidebar.radio("Menu", ["Dashboard", "Ranking Global"])
+menu = st.sidebar.radio("Menu", ["Dashboard", "Ranking"])
 
 # =========================
 # DASHBOARD
@@ -76,59 +71,57 @@ if menu == "Dashboard":
         ["Estudo", "Laboratório", "Projeto", "Revisão", "Simulado"]
     )
 
-    xp_gain = 10
+    obs = st.text_area("Observação")
 
     if st.button("Salvar + XP"):
-        supabase.table("activities").insert({
-            "user_name": user,
+        st.session_state.db.append({
+            "user": st.session_state.user,
             "cert": cert,
             "activity": activity,
             "date": str(pd.Timestamp.today().date()),
-            "xp": xp_gain
-        }).execute()
+            "xp": 10,
+            "obs": obs
+        })
 
-        st.success("+10 XP registrado!")
+        st.session_state.xp += 10
+        st.success("+10 XP!")
 
-    # =========================
-    # HISTÓRICO DO USUÁRIO
-    # =========================
-    data = supabase.table("activities").select("*").eq("user_name", user).execute().data
-
-    df = pd.DataFrame(data)
+    df = pd.DataFrame(st.session_state.db)
 
     st.subheader("📊 Seu histórico")
 
-    if not df.empty:
-        st.dataframe(df)
+    user_df = df[df["user"] == st.session_state.user] if not df.empty else df
 
-        st.bar_chart(df.groupby("cert")["xp"].sum())
+    if not user_df.empty:
+        st.dataframe(user_df)
+
+        chart = alt.Chart(user_df).mark_bar().encode(
+            x="cert:N",
+            y="xp:Q",
+            color="cert:N"
+        )
+
+        st.altair_chart(chart, use_container_width=True)
     else:
         st.info("Sem registros ainda.")
 
 # =========================
-# RANKING GLOBAL
+# RANKING GLOBAL (LOCAL SIMULADO)
 # =========================
-if menu == "Ranking Global":
+if menu == "Ranking":
 
-    st.subheader("🏆 Leaderboard Global")
+    st.subheader("🏆 Ranking de Disciplina")
 
-    data = supabase.table("activities").select("*").execute().data
-    df = pd.DataFrame(data)
+    df = pd.DataFrame(st.session_state.db)
 
     if not df.empty:
 
-        ranking = df.groupby("user_name")["xp"].sum().reset_index()
+        ranking = df.groupby("user")["xp"].sum().reset_index()
         ranking = ranking.sort_values("xp", ascending=False)
 
         st.dataframe(ranking, use_container_width=True)
 
-        chart = alt.Chart(ranking).mark_bar().encode(
-            x="user_name:N",
-            y="xp:Q",
-            color="user_name:N"
-        )
-
-        st.altair_chart(chart, use_container_width=True)
+        st.bar_chart(ranking.set_index("user"))
 
     else:
-        st.info("Ainda não há dados no ranking global.")
+        st.info("Ainda não há dados para ranking.")
