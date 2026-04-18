@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 from datetime import datetime
+import io
 
 # =========================
 # CONFIG
@@ -75,6 +76,13 @@ h1, h2, h3 {
 .css-1d391kg, .css-12oz5g7 {
     background: linear-gradient(135deg, #0a0e27, #0d1133) !important;
 }
+.report-box {
+    background: linear-gradient(135deg, rgba(77,159,255,0.15), rgba(123,47,247,0.1));
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid rgba(77,159,255,0.4);
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -113,6 +121,99 @@ def delete_activity(index):
     st.session_state.xp -= atividade["xp"]
     st.session_state.cert_xp[atividade["area"]] -= atividade["xp"]
     st.session_state.db.pop(index)
+
+def gerar_relatorio_dia(data_selecionada):
+    """Gera um relatório HTML das atividades do dia"""
+    atividades_dia = [a for a in st.session_state.db if a['data'].date() == data_selecionada]
+    
+    if not atividades_dia:
+        return None
+    
+    html = f"""
+    <html>
+    <head>
+        <style>
+            body {{
+                font-family: 'Segoe UI', Arial, sans-serif;
+                margin: 40px;
+                background: linear-gradient(135deg, #0a0e27, #1a1f3a);
+                color: #4d9fff;
+            }}
+            .container {{
+                max-width: 800px;
+                margin: 0 auto;
+                background: linear-gradient(135deg, rgba(77,159,255,0.1), rgba(123,47,247,0.05));
+                border-radius: 20px;
+                padding: 30px;
+                border: 1px solid rgba(77,159,255,0.3);
+            }}
+            h1 {{
+                color: #4d9fff;
+                text-align: center;
+                border-bottom: 2px solid #4d9fff;
+                padding-bottom: 10px;
+            }}
+            h2 {{
+                color: #7b2ff7;
+            }}
+            .atividade {{
+                background: rgba(77,159,255,0.1);
+                margin: 10px 0;
+                padding: 15px;
+                border-radius: 10px;
+                border-left: 4px solid #4d9fff;
+            }}
+            .total {{
+                text-align: center;
+                font-size: 24px;
+                font-weight: bold;
+                margin-top: 30px;
+                padding: 20px;
+                background: rgba(77,159,255,0.15);
+                border-radius: 10px;
+            }}
+            .footer {{
+                text-align: center;
+                margin-top: 30px;
+                font-size: 12px;
+                opacity: 0.7;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🚀 Relatório de Missões</h1>
+            <h2>📅 Data: {data_selecionada.strftime('%d/%m/%Y')}</h2>
+            <h3>👨‍🚀 Comandante: Juan Felipe da Silva</h3>
+    """
+    
+    total_xp = 0
+    for atv in atividades_dia:
+        emblema = EMBLEMAS.get(atv['area'], {}).get('emblema', '📌')
+        total_xp += atv['xp']
+        html += f"""
+            <div class="atividade">
+                <strong>{emblema} {atv['area']}</strong><br>
+                ⚔️ {atv['atividade']}<br>
+                ⭐ +{atv['xp']} XP<br>
+                📝 {atv['obs'] if atv['obs'] else 'Sem observações'}
+            </div>
+        """
+    
+    html += f"""
+            <div class="total">
+                🌟 Total do Dia: +{total_xp} XP 🌟
+            </div>
+            <div class="footer">
+                Relatório gerado em {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}<br>
+                Missão Carreira - Juan Felipe da Silva
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    
+    return html
 
 # =========================
 # SIDEBAR
@@ -179,6 +280,46 @@ with tab1:
     c4.metric("Certificações", f"{concluidas}/{len(EMBLEMAS)}")
     
     st.markdown("---")
+    
+    # =========================
+    # RELATÓRIO DO DIA (IMPRESSÃO)
+    # =========================
+    st.markdown("## 📄 Relatório do Dia")
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        data_relatorio = st.date_input("Selecione a data para o relatório", value=pd.Timestamp.today())
+    with col2:
+        st.write("")
+        st.write("")
+        gerar_relatorio = st.button("📄 Gerar Relatório", use_container_width=True)
+    
+    if gerar_relatorio:
+        relatorio_html = gerar_relatorio_dia(data_relatorio)
+        if relatorio_html:
+            st.markdown('<div class="report-box">', unsafe_allow_html=True)
+            st.markdown(f"### 📅 Relatório de {data_relatorio.strftime('%d/%m/%Y')}")
+            
+            # Mostrar preview
+            atividades_dia = [a for a in st.session_state.db if a['data'].date() == data_relatorio]
+            for atv in atividades_dia:
+                emblema = EMBLEMAS.get(atv['area'], {}).get('emblema', '📌')
+                st.markdown(f"- {emblema} **{atv['area']}** - {atv['atividade']} - ⭐+{atv['xp']}")
+            
+            total_dia = sum(a['xp'] for a in atividades_dia)
+            st.markdown(f"**🌟 Total do dia: +{total_dia} XP**")
+            
+            # Botão para baixar HTML
+            st.download_button(
+                label="📥 Baixar Relatório (HTML)",
+                data=relatorio_html,
+                file_name=f"relatorio_missoes_{data_relatorio.strftime('%Y%m%d')}.html",
+                mime="text/html"
+            )
+            st.markdown('</div>', unsafe_allow_html=True)
+        else:
+            st.warning(f"⚠️ Nenhuma atividade registrada em {data_relatorio.strftime('%d/%m/%Y')}")
+    
+    st.markdown("---")
     st.markdown("## 🎖️ Progresso das Certificações")
     
     for cert, xp in st.session_state.cert_xp.items():
@@ -234,6 +375,35 @@ with tab1:
                         delete_activity(j)
                         st.rerun()
             st.markdown("---")
+        
+        # =========================
+        # GRÁFICO DE EVOLUÇÃO (CORRIGIDO)
+        # =========================
+        st.markdown("## 📈 Evolução Estelar")
+        
+        # Agrupar por data e somar XP
+        evolucao = df.groupby('data').agg({'xp': 'sum'}).reset_index()
+        evolucao = evolucao.sort_values('data')
+        evolucao['xp_acumulado'] = evolucao['xp'].cumsum()
+        
+        # Criar gráfico com Altair
+        if len(evolucao) > 0:
+            chart = alt.Chart(evolucao).mark_line(
+                point=alt.OverlayMarkDef(filled=True, fill='white'),
+                strokeWidth=3,
+                color='#4d9fff'
+            ).encode(
+                x=alt.X('data:T', title='Data', axis=alt.Axis(labelAngle=-45, format='%d/%m/%Y')),
+                y=alt.Y('xp_acumulado:Q', title='XP Acumulado'),
+                tooltip=['data:T', 'xp_acumulado:Q']
+            ).properties(
+                height=400,
+                title='Evolução do XP ao Longo do Tempo'
+            )
+            
+            st.altair_chart(chart, use_container_width=True)
+        else:
+            st.info("Nenhum dado suficiente para gerar o gráfico")
 
 # =========================
 # TAB 2 - ROADMAP
