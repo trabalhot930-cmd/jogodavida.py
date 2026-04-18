@@ -273,7 +273,6 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
 
-/* Fundo mais claro para melhor contraste */
 html, body {
     background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 50%, #dee2e6 100%);
     color: #1a1a2e;
@@ -281,10 +280,8 @@ html, body {
 
 .block-container {
     padding-top: 2rem;
-    background: radial-gradient(circle at 20% 50%, rgba(0,100,255,0.03) 0%, rgba(0,0,0,0) 50%);
 }
 
-/* Títulos com gradiente escuro */
 h1, h2, h3 {
     font-family: 'Orbitron', monospace !important;
     background: linear-gradient(135deg, #1a1a2e, #16213e);
@@ -294,12 +291,10 @@ h1, h2, h3 {
     font-weight: bold !important;
 }
 
-/* Texto escuro para melhor legibilidade */
 .stMarkdown, p, div, span, label {
     color: #2c3e50 !important;
 }
 
-/* Botões modernos */
 .stButton button {
     background: linear-gradient(135deg, #2c3e50, #34495e) !important;
     color: white !important;
@@ -314,7 +309,6 @@ h1, h2, h3 {
     box-shadow: 0 10px 20px rgba(0,0,0,0.2);
 }
 
-/* Cards de certificação - estilo moderno */
 .cert-card {
     background: linear-gradient(135deg, #ffffff, #f8f9fa);
     border-radius: 15px;
@@ -335,7 +329,6 @@ h1, h2, h3 {
     background: linear-gradient(135deg, #fff5f5, #ffffff);
 }
 
-/* Badges de nível */
 .level-badge {
     display: inline-block;
     padding: 5px 10px;
@@ -345,50 +338,11 @@ h1, h2, h3 {
     margin-left: 10px;
 }
 
-/* Texto vermelho para alertas */
 .red-text {
     color: #dc3545 !important;
     font-weight: bold;
 }
 
-.red-badge {
-    background: linear-gradient(135deg, #dc3545, #c82333);
-    padding: 5px 10px;
-    border-radius: 20px;
-    color: white;
-    font-weight: bold;
-    display: inline-block;
-}
-
-.warning-text {
-    color: #fd7e14 !important;
-    font-weight: bold;
-}
-
-/* Sidebar escura */
-.css-1d391kg, .css-12oz5g7 {
-    background: linear-gradient(135deg, #1a1a2e, #16213e) !important;
-}
-
-.css-1d391kg p, .css-12oz5g7 p, .css-1d391kg div, .css-12oz5g7 div {
-    color: #e6f0ff !important;
-}
-
-/* Métricas */
-.metric-card {
-    background: white;
-    border-radius: 10px;
-    padding: 15px;
-    text-align: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-/* Progress bar personalizada */
-.stProgress > div > div {
-    background: linear-gradient(90deg, #2c3e50, #34495e) !important;
-}
-
-/* Trilha card */
 .trilha-card {
     background: linear-gradient(135deg, #ffffff, #f8f9fa);
     border-left: 4px solid #2c3e50;
@@ -398,10 +352,12 @@ h1, h2, h3 {
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-/* Animação de pulso */
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
+.css-1d391kg, .css-12oz5g7 {
+    background: linear-gradient(135deg, #1a1a2e, #16213e) !important;
+}
+
+.css-1d391kg p, .css-12oz5g7 p, .css-1d391kg div, .css-12oz5g7 div {
+    color: #e6f0ff !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -479,7 +435,6 @@ def delete_activity(index):
     st.session_state.cert_status[area] = new_status
 
 def verificar_atraso(cert, ano_planejado):
-    """Verifica se a certificação está atrasada"""
     if ano_planejado == "Contínuo":
         return False
     ano_atual = datetime.now().year
@@ -508,7 +463,6 @@ with st.sidebar:
     
     st.markdown("---")
     
-    # Alertas em vermelho
     certificacoes_atrasadas = []
     for cert, data in EMBLEMAS.items():
         if verificar_atraso(cert, data.get("ano", 2030)):
@@ -815,10 +769,34 @@ with tab3:
     }
     
     for trilha, info in trilhas_info.items():
-        st.markdown(f""")
+        st.markdown(f"""
         <div class="trilha-card">
-            <h3 style="color: #2c3e50;">{info['certs'][0][:1]} {trilha}</h3>
+            <h3 style="color: #2c3e50;">{trilha}</h3>
             <p style="color: #6c757d;">{info['desc']}</p>
-            <p><strong>🎯 Objetivo:</strong> {info['objetivo']}</p>
+            <p><strong>Objetivo:</strong> {info['objetivo']}</p>
         </div>
-        """, unsafe_allow
+        """, unsafe_allow_html=True)
+        
+        cols = st.columns(3)
+        for i, cert in enumerate(info["certs"]):
+            emblema = EMBLEMAS[cert]
+            xp_atual = st.session_state.cert_xp.get(cert, 0)
+            xp_necessario = emblema["xp_necessario"]
+            percent = (xp_atual / xp_necessario) * 100
+            status = st.session_state.cert_status.get(cert, "Nao iniciada")
+            badge_icon = get_badge_icon(status)
+            
+            with cols[i]:
+                st.markdown(f"""
+                <div style="text-align: center; padding: 15px; background: white; border-radius: 10px; margin: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <div style="font-size: 40px;">{emblema['emblema']}</div>
+                    <div style="font-weight: bold; color: #2c3e50;">{cert}</div>
+                    <div style="font-size: 11px; color: #6c757d;">{emblema['titulo']}</div>
+                    <div style="font-size: 24px;">{badge_icon}</div>
+                    <div style="font-size: 12px; color: #2c3e50;">{percent:.0f}%</div>
+                    <div style="background: #e9ecef; border-radius: 5px; height: 5px; margin-top: 5px;">
+                        <div style="background: {emblema['cor']}; width: {percent}%; height: 5px; border-radius: 5px;"></div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+        
