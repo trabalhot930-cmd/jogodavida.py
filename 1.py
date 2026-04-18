@@ -75,19 +75,19 @@ def calc_xp(activity):
 
 def status_por_xp(xp):
     if xp >= 120:
-        return "Concluído"
+        return "Concluída"
     elif xp >= 40:
         return "Em andamento"
     else:
-        return "Não iniciado"
+        return "Não iniciada"
 
 def badge(status):
-    if status == "Concluído":
-        return "🥇"
+    if status == "Concluída":
+        return "🟢"
     elif status == "Em andamento":
-        return "🥈"
+        return "🟡"
     else:
-        return "🥉"
+        return "⬜"
 
 # =========================
 # HEADER
@@ -101,7 +101,7 @@ st.caption(f"⭐ XP Global: {st.session_state.xp} | Level: {st.session_state.xp 
 tab1, tab2, tab3 = st.tabs(["🎓 Dashboard", "🛣️ Roadmap", "📆 Calendário"])
 
 # =========================
-# TAB 1 - DASHBOARD
+# TAB 1
 # =========================
 with tab1:
 
@@ -111,21 +111,13 @@ with tab1:
 
     with col1:
         area = st.selectbox(
-            "Área de estudo",
+            "Área",
             list(st.session_state.cert_xp.keys())
         )
 
         activity = st.selectbox(
             "Atividade",
-            [
-                "Estudo",
-                "Laboratório",
-                "Projeto",
-                "Revisão",
-                "Simulado",
-                "Aula Pós-graduação",
-                "Inglês"
-            ]
+            ["Estudo", "Laboratório", "Projeto", "Revisão", "Simulado", "Aula Pós-graduação", "Inglês"]
         )
 
     with col2:
@@ -163,19 +155,42 @@ with tab1:
     col3.metric("Level", st.session_state.xp // 100 + 1)
 
     # =========================
-    # PROGRESSO (BADGES)
+    # PROGRESSO GERAL (COM DATA + STATUS)
     # =========================
-    st.subheader("🏆 Progresso Geral")
+    st.subheader("🏆 Progresso Geral com Planejamento")
 
-    for cert, xp in st.session_state.cert_xp.items():
+    planejamento = {
+        "AZ-900": "Abril/2026",
+        "ISO 27001": "Maio/2026",
+        "CCNA": "Julho/2026",
+        "SC-900": "Outubro/2026",
+        "Python": "2026 contínuo",
+        "SQL": "2026 contínuo",
+        "Power BI": "2026 contínuo",
+        "Security+": "Fevereiro/2027",
+        "CySA+": "Dezembro/2027",
+        "GICSP": "Março/2028",
+        "CISSP": "Junho/2029",
+        "Pós-graduação": "Junho/2026 → Dez/2028",
+        "Inglês": "Abril/2026 → contínuo"
+    }
+
+    for item, xp in st.session_state.cert_xp.items():
+
         status = status_por_xp(xp)
         icon = badge(status)
 
+        data_planejada = planejamento.get(item, "Não definido")
+
         st.markdown(f"""
-        ### {icon} {cert}  
-        **Status:** {status}  
-        **XP:** {xp}
-        """)
+### {icon} {item}
+
+📅 **Planejado:** {data_planejada}  
+📊 **Status:** {status}  
+⭐ XP: {xp}
+
+---
+""")
 
     # =========================
     # HISTÓRICO
@@ -200,66 +215,69 @@ with tab1:
             use_container_width=True
         )
 
-    else:
-        st.info("Sem registros ainda.")
+    # =========================
+    # EXPORTAÇÃO
+    # =========================
+    st.subheader("📤 Exportar Base de Dados")
+
+    if not df.empty:
+        csv = df.to_csv(index=False).encode("utf-8")
+
+        st.download_button(
+            "📥 Baixar CSV completo",
+            csv,
+            "carreira_juan_felipe.csv",
+            "text/csv"
+        )
+
+    # =========================
+    # GRÁFICO EM TORRE
+    # =========================
+    st.subheader("🏗️ Gráfico em Torre (Produtividade)")
+
+    if not df.empty:
+
+        torre = df.groupby("area").agg(
+            xp_total=("xp", "sum"),
+            atividades=("area", "count")
+        ).reset_index()
+
+        chart = alt.Chart(torre).mark_bar().encode(
+            x=alt.X("area:N", sort="-y"),
+            y="xp_total:Q",
+            color="area:N",
+            tooltip=["area", "xp_total", "atividades"]
+        ).properties(height=400)
+
+        st.altair_chart(chart, use_container_width=True)
 
 # =========================
-# TAB 2 - ROADMAP COMPLETO
+# TAB 2 - ROADMAP
 # =========================
 with tab2:
 
-    st.title("🛣️ Roadmap de Carreira Completo")
-
-    st.subheader("📅 2026 — BASE + INÍCIO DA PÓS")
+    st.title("🛣️ Roadmap Completo")
 
     st.markdown("""
-- AZ-900 — Abril/2026  
-- ISO 27001 Fundamentals — Maio/2026  
-- CCNA — Julho/2026  
-- SC-900 — Outubro/2026  
+## 📅 2026 — BASE + PÓS
+- AZ-900  
+- ISO 27001  
+- CCNA  
+- SC-900  
+- Python / SQL / Power BI  
+- Pós-graduação (Cibersegurança e Governança de Dados)  
+- Inglês diário  
 
-📘 Python  
-📊 SQL  
-📈 Power BI  
+## 📅 2027
+- Security+  
+- CySA+  
 
-🎓 Pós-graduação em Cibersegurança e Governança de Dados — início Junho/2026 (EAD)  
-🌍 Inglês — início Abril/2026 (diário 30–40 min)
-""")
+## 📅 2028
+- GICSP  
+- ISO 27001 Lead Auditor  
 
-    st.divider()
-
-    st.subheader("📅 2027 — SEGURANÇA + GOVERNANÇA + OT")
-
-    st.markdown("""
-- Security+ — Fevereiro/2027  
-- ISO 27001 Lead Implementer — Maio/2027  
-- ISA/IEC 62443 — Agosto/2027  
-- MITRE ATT&CK ICS — Outubro/2027  
-- CySA+ — Dezembro/2027  
-
-🎓 Pós-graduação (continuação)  
-🌍 Inglês técnico
-""")
-
-    st.divider()
-
-    st.subheader("📅 2028 — ESPECIALIZAÇÃO + FINAL DA PÓS")
-
-    st.markdown("""
-- GICSP — Março/2028  
-- ISO 27001 Lead Auditor — Agosto/2028  
-
-🎓 Pós-graduação (conclusão Dezembro/2028)  
-🌍 Inglês avançado
-""")
-
-    st.divider()
-
-    st.subheader("📅 2029 — CONSOLIDAÇÃO")
-
-    st.markdown("""
-- CISSP — Junho/2029  
-🌍 Inglês fluente profissional
+## 📅 2029
+- CISSP  
 """)
 
 # =========================
@@ -267,7 +285,7 @@ with tab2:
 # =========================
 with tab3:
 
-    st.title("📆 Calendário de Atividades")
+    st.title("📆 Calendário")
 
     df = pd.DataFrame(st.session_state.db)
 
@@ -287,4 +305,4 @@ with tab3:
         st.dataframe(df.sort_values("data", ascending=False), use_container_width=True)
 
     else:
-        st.info("Nenhuma atividade registrada ainda.")
+        st.info("Sem dados ainda.")
