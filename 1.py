@@ -5,7 +5,7 @@ import altair as alt
 # =========================
 # CONFIG
 # =========================
-st.set_page_config(page_title="Carreira Juan Felipe da Silva", layout="wide")
+st.set_page_config(page_title="Planejamento de carreira Juan Felipe da Silva", layout="wide")
 
 # =========================
 # STYLE
@@ -27,14 +27,6 @@ html, body {
     font-weight: bold;
     border-radius: 10px;
 }
-
-.card {
-    background: white;
-    color: black;
-    padding: 10px;
-    border-radius: 10px;
-    margin-bottom: 8px;
-}
 </style>
 """, unsafe_allow_html=True)
 
@@ -49,37 +41,37 @@ if "xp" not in st.session_state:
 
 if "progress" not in st.session_state:
     st.session_state.progress = {
-        "AZ-900": 30,
-        "ISO 27001": 15,
-        "CCNA": 10,
-        "SC-900": 0,
-        "Python": 0,
-        "SQL": 0,
-        "Power BI": 0,
-        "Security+": 0,
-        "CySA+": 0,
-        "GICSP": 0,
-        "CISSP": 0
+        "AZ-900": {"status": "Concluindo", "icon": "☁️"},
+        "ISO 27001": {"status": "Em andamento", "icon": "🔐"},
+        "CCNA": {"status": "Em andamento", "icon": "🌐"},
+        "SC-900": {"status": "Não iniciado", "icon": "🛡️"},
+        "Python": {"status": "Em andamento", "icon": "🐍"},
+        "SQL": {"status": "Em andamento", "icon": "🗄️"},
+        "Power BI": {"status": "Em andamento", "icon": "📊"},
+        "Security+": {"status": "Não iniciado", "icon": "🔒"},
+        "CySA+": {"status": "Não iniciado", "icon": "🧠"},
+        "GICSP": {"status": "Não iniciado", "icon": "🏭"},
+        "CISSP": {"status": "Não iniciado", "icon": "🎯"}
     }
 
 # =========================
 # HEADER
 # =========================
-st.title("🚀 Carreira RPG Pro - Sistema Completo")
+st.title("📘 Planejamento de carreira Juan Felipe da Silva")
 
 st.caption(f"⭐ XP: {st.session_state.xp} | Level: {st.session_state.xp // 100 + 1}")
 
 # =========================
 # ABAS
 # =========================
-tab1, tab2, tab3 = st.tabs(["🎮 Dashboard", "🛣️ Roadmap", "📆 Calendário"])
+tab1, tab2, tab3 = st.tabs(["🎓 Dashboard", "🛣️ Roadmap", "📆 Calendário"])
 
 # =========================
 # TAB 1 - DASHBOARD
 # =========================
 with tab1:
 
-    st.subheader("📌 Registrar estudo")
+    st.subheader("📌 Registro de estudos")
 
     col1, col2 = st.columns(2)
 
@@ -123,16 +115,18 @@ with tab1:
     col3.metric("Level", st.session_state.xp // 100 + 1)
 
     # =========================
-    # PROGRESSO
+    # PROGRESSO (NOVO FORMATO)
     # =========================
-    st.subheader("🎮 Progresso geral")
+    st.subheader("🎓 Progresso das Certificações")
 
-    for k, v in st.session_state.progress.items():
-        st.write(f"**{k}**")
-        st.progress(v / 100)
+    for cert, info in st.session_state.progress.items():
+        st.markdown(f"""
+        ### {info['icon']} {cert}  
+        **Status:** {info['status']}
+        """)
 
     # =========================
-    # HISTÓRICO POR CERTIFICAÇÃO
+    # HISTÓRICO
     # =========================
     st.subheader("📚 Histórico filtrado")
 
@@ -144,10 +138,9 @@ with tab1:
 
         st.dataframe(df_f, use_container_width=True)
 
-        # 🔥 GRÁFICO MELHORADO (corrigido)
-        grafico = df_f.groupby("data").size().reset_index(name="atividades")
+        timeline = df_f.groupby("data").size().reset_index(name="atividades")
 
-        chart = alt.Chart(grafico).mark_line(point=True).encode(
+        chart = alt.Chart(timeline).mark_line(point=True).encode(
             x="data:T",
             y="atividades:Q",
             tooltip=["data", "atividades"]
@@ -166,11 +159,9 @@ with tab1:
         st.download_button(
             "📥 Baixar CSV do progresso",
             csv,
-            "carreira_progresso.csv",
+            "planejamento_carreira_juan_felipe.csv",
             "text/csv"
         )
-    else:
-        st.info("Sem dados para exportar.")
 
 # =========================
 # TAB 2 - ROADMAP
@@ -182,14 +173,14 @@ with tab2:
     st.subheader("📅 2026 — BASE + FORMAÇÃO")
 
     st.markdown("""
-- AZ-900  
-- ISO 27001 Fundamentals  
-- CCNA  
-- SC-900  
+- ☁️ AZ-900  
+- 🔐 ISO 27001 Fundamentals  
+- 🌐 CCNA  
+- 🛡️ SC-900  
 
-📘 Python  
-📊 SQL  
-📈 Power BI  
+🐍 Python  
+🗄️ SQL  
+📊 Power BI  
 
 🎓 Pós-graduação: início Junho/2026  
 🌍 Inglês diário
@@ -200,7 +191,7 @@ with tab2:
     st.subheader("📅 2027 — SEGURANÇA + OT")
 
     st.markdown("""
-- Security+  
+- 🔒 Security+  
 - ISO 27001 Lead Implementer  
 - ISA/IEC 62443  
 - CySA+
@@ -211,7 +202,7 @@ with tab2:
     st.subheader("📅 2028 — ESPECIALIZAÇÃO")
 
     st.markdown("""
-- GICSP  
+- 🏭 GICSP  
 - ISO 27001 Lead Auditor
 """)
 
@@ -220,8 +211,8 @@ with tab2:
     st.subheader("📅 2029 — CONSOLIDAÇÃO")
 
     st.markdown("""
-- CISSP  
-- Inglês fluente
+- 🎯 CISSP  
+- Inglês fluente profissional
 """)
 
 # =========================
@@ -235,7 +226,7 @@ with tab3:
 
     if not df.empty:
 
-        st.subheader("📊 Timeline diária")
+        st.subheader("📊 Linha do tempo")
 
         timeline = df.groupby("data").size().reset_index(name="atividades")
 
