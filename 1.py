@@ -27,15 +27,20 @@ html, body {
     font-weight: bold;
     border-radius: 10px;
 }
+
+.card {
+    background: white;
+    color: black;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
 </style>
 """, unsafe_allow_html=True)
 
 # =========================
 # SESSION STATE
 # =========================
-if "user" not in st.session_state:
-    st.session_state.user = st.text_input("Digite seu nome")
-
 if "db" not in st.session_state:
     st.session_state.db = []
 
@@ -44,25 +49,30 @@ if "xp" not in st.session_state:
 
 if "progress" not in st.session_state:
     st.session_state.progress = {
+        # 2026 BASE
         "AZ-900": 30,
         "ISO 27001": 15,
         "CCNA": 10,
         "SC-900": 0,
+
+        # NOVOS CURSOS 2026
         "Python": 0,
         "SQL": 0,
         "Power BI": 0,
+
+        # FUTURO
         "Security+": 0,
         "CySA+": 0,
         "GICSP": 0,
         "CISSP": 0
     }
 
-if not st.session_state.user:
-    st.stop()
-
+# =========================
+# HEADER
+# =========================
 st.title("🚀 Carreira RPG Pro - Sistema Completo")
 
-st.caption(f"👤 {st.session_state.user} | ⭐ XP: {st.session_state.xp} | Level: {st.session_state.xp // 100 + 1}")
+st.caption(f"⭐ XP: {st.session_state.xp} | Level: {st.session_state.xp // 100 + 1}")
 
 # =========================
 # ABAS
@@ -74,33 +84,24 @@ tab1, tab2, tab3 = st.tabs(["🎮 Dashboard", "🛣️ Roadmap", "📆 Calendár
 # =========================
 with tab1:
 
-    st.subheader("📌 Registrar estudo")
+    st.subheader("📌 Registro de estudos")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        cert = st.selectbox(
-            "Certificação / Curso",
-            list(st.session_state.progress.keys())
-        )
-
-        activity = st.selectbox(
-            "Atividade",
-            ["Estudo", "Laboratório", "Projeto", "Revisão", "Simulado"]
-        )
+        cert = st.selectbox("Certificação / Curso", list(st.session_state.progress.keys()))
+        atividade = st.selectbox("Atividade", ["Estudo", "Laboratório", "Projeto", "Revisão", "Simulado"])
 
     with col2:
         data = st.date_input("Data", value=pd.Timestamp.today())
-        obs = st.text_area("Observação do dia")
+        obs = st.text_area("Observação")
 
-    if st.button("Salvar registro"):
+    if st.button("Salvar"):
         st.session_state.db.append({
-            "user": st.session_state.user,
-            "certificacao": cert,
-            "atividade": activity,
             "data": str(data),
-            "obs": obs,
-            "xp": 10
+            "certificacao": cert,
+            "atividade": atividade,
+            "obs": obs
         })
 
         st.session_state.xp += 10
@@ -122,20 +123,19 @@ with tab1:
     # =========================
     # PROGRESSO
     # =========================
-    st.subheader("🎮 Progresso de Certificações")
+    st.subheader("🎮 Progresso geral")
 
     for k, v in st.session_state.progress.items():
         st.write(f"**{k}**")
         st.progress(v / 100)
 
     # =========================
-    # HISTÓRICO FILTRADO
+    # HISTÓRICO POR CERTIFICAÇÃO
     # =========================
-    st.subheader("📚 Histórico por Certificação")
+    st.subheader("📚 Histórico filtrado")
 
     if not df.empty:
-
-        filtro = st.selectbox("Filtrar certificação", df["certificacao"].unique())
+        filtro = st.selectbox("Filtrar por certificação", df["certificacao"].unique())
 
         df_f = df[df["certificacao"] == filtro].copy()
         df_f["data"] = pd.to_datetime(df_f["data"])
@@ -144,34 +144,35 @@ with tab1:
 
         chart = alt.Chart(df_f).mark_line(point=True).encode(
             x="data:T",
-            y="xp:Q",
-            color="atividade:N",
-            tooltip=["atividade", "obs"]
+            y="count():Q",
+            color="atividade:N"
         )
 
         st.altair_chart(chart, use_container_width=True)
 
-        # =========================
-        # EXPORT CSV
-        # =========================
+    # =========================
+    # EXPORTAÇÃO
+    # =========================
+    st.subheader("📤 Exportar dados")
+
+    if not df.empty:
         csv = df.to_csv(index=False).encode("utf-8")
 
         st.download_button(
-            "📥 Baixar progresso CSV",
+            "📥 Baixar CSV do progresso",
             csv,
             "carreira_progresso.csv",
             "text/csv"
         )
-
     else:
-        st.info("Nenhum registro ainda.")
+        st.info("Sem dados para exportar.")
 
 # =========================
 # TAB 2 - ROADMAP
 # =========================
 with tab2:
 
-    st.title("🛣️ Roadmap de Carreira 2026–2029")
+    st.title("🛣️ Roadmap de Carreira")
 
     st.subheader("📅 2026 — BASE + FORMAÇÃO")
 
@@ -197,7 +198,8 @@ with tab2:
 - Security+  
 - ISO 27001 Lead Implementer  
 - ISA/IEC 62443  
-- CySA+  
+- MITRE ATT&CK ICS  
+- CySA+
 """)
 
     st.divider()
@@ -207,7 +209,8 @@ with tab2:
     st.markdown("""
 - GICSP  
 - ISO 27001 Lead Auditor  
-- conclusão pós-graduação
+
+🎓 Pós-graduação: conclusão
 """)
 
     st.divider()
@@ -232,11 +235,11 @@ with tab3:
 
         df["data"] = pd.to_datetime(df["data"])
 
-        timeline = df.groupby("data").size().reset_index(name="atividades")
+        calendario = df.groupby("data").size().reset_index(name="atividades")
 
         st.subheader("📊 Linha do tempo")
 
-        chart = alt.Chart(timeline).mark_bar().encode(
+        chart = alt.Chart(calendario).mark_bar().encode(
             x="data:T",
             y="atividades:Q",
             tooltip=["data", "atividades"]
