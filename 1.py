@@ -55,7 +55,7 @@ if "cert_xp" not in st.session_state:
     }
 
 # =========================
-# XP RULES
+# XP SYSTEM
 # =========================
 def calc_xp(activity):
     return {
@@ -86,7 +86,6 @@ def badge(status):
 # HEADER
 # =========================
 st.title("📘 Planejamento de carreira Juan Felipe da Silva")
-
 st.caption(f"⭐ XP Global: {st.session_state.xp} | Level: {st.session_state.xp // 100 + 1}")
 
 # =========================
@@ -95,7 +94,7 @@ st.caption(f"⭐ XP Global: {st.session_state.xp} | Level: {st.session_state.xp 
 tab1, tab2, tab3 = st.tabs(["🎓 Dashboard", "🛣️ Roadmap", "📆 Calendário"])
 
 # =========================
-# TAB 1
+# TAB 1 - DASHBOARD
 # =========================
 with tab1:
 
@@ -104,20 +103,27 @@ with tab1:
     col1, col2 = st.columns(2)
 
     with col1:
-        cert = st.selectbox("Certificação / Curso", list(st.session_state.cert_xp.keys()))
-        atividade = st.selectbox("Atividade", ["Estudo", "Laboratório", "Projeto", "Revisão", "Simulado"])
+        cert = st.selectbox(
+            "Certificação / Curso",
+            list(st.session_state.cert_xp.keys())
+        )
+
+        activity = st.selectbox(
+            "Atividade",
+            ["Estudo", "Laboratório", "Projeto", "Revisão", "Simulado"]
+        )
 
     with col2:
         data = st.date_input("Data", value=pd.Timestamp.today())
         obs = st.text_area("Observação")
 
     if st.button("Salvar atividade"):
-        xp_gain = calc_xp(atividade)
+        xp_gain = calc_xp(activity)
 
         st.session_state.db.append({
             "data": pd.to_datetime(data),
             "certificacao": cert,
-            "atividade": atividade,
+            "atividade": activity,
             "xp": xp_gain,
             "obs": obs
         })
@@ -141,17 +147,16 @@ with tab1:
     col3.metric("Level", st.session_state.xp // 100 + 1)
 
     # =========================
-    # BADGES + STATUS
+    # BADGES
     # =========================
     st.subheader("🏆 Certificações (Badges)")
 
-    for cert, xp in st.session_state.cert_xp.items():
-
+    for cert_name, xp in st.session_state.cert_xp.items():
         status = status_por_xp(xp)
         icon = badge(status)
 
         st.markdown(f"""
-        ### {icon} {cert}  
+        ### {icon} {cert_name}  
         **Status:** {status}  
         **XP:** {xp}
         """)
@@ -164,15 +169,14 @@ with tab1:
     if not df.empty:
 
         filtro = st.selectbox("Filtrar certificação", df["certificacao"].unique())
-
         df_f = df[df["certificacao"] == filtro]
 
         st.dataframe(df_f, use_container_width=True)
 
-        chart = df_f.groupby("data").size().reset_index(name="atividades")
+        timeline = df_f.groupby("data").size().reset_index(name="atividades")
 
         st.altair_chart(
-            alt.Chart(chart).mark_line(point=True).encode(
+            alt.Chart(timeline).mark_line(point=True).encode(
                 x="data:T",
                 y="atividades:Q",
                 tooltip=["data", "atividades"]
@@ -181,36 +185,64 @@ with tab1:
         )
 
 # =========================
-# TAB 2
+# TAB 2 - ROADMAP (CORRIGIDO + COMPLETO)
 # =========================
 with tab2:
 
-    st.title("🛣️ Roadmap")
+    st.title("🛣️ Roadmap de Carreira")
+
+    st.subheader("📅 2026 — BASE + FORMAÇÃO")
 
     st.markdown("""
-### 📅 2026
 - AZ-900  
-- ISO 27001  
+- ISO 27001 Fundamentals  
 - CCNA  
-- Python / SQL / Power BI  
+- SC-900  
 
-### 📅 2027
+📘 Python (Formação continuada)  
+📊 SQL (Formação continuada)  
+📈 Power BI (Formação continuada)  
+
+🎓 Pós-graduação: Especialização em Cibersegurança e Governança de Dados  
+🌍 Inglês diário
+""")
+
+    st.divider()
+
+    st.subheader("📅 2027 — SEGURANÇA + OT")
+
+    st.markdown("""
 - Security+  
+- ISO 27001 Lead Implementer  
+- ISA/IEC 62443  
 - CySA+  
+""")
 
-### 📅 2028
+    st.divider()
+
+    st.subheader("📅 2028 — ESPECIALIZAÇÃO")
+
+    st.markdown("""
 - GICSP  
+- ISO 27001 Lead Auditor  
+- Conclusão da pós-graduação
+""")
 
-### 📅 2029
+    st.divider()
+
+    st.subheader("📅 2029 — CONSOLIDAÇÃO")
+
+    st.markdown("""
 - CISSP  
+- Inglês fluente profissional
 """)
 
 # =========================
-# TAB 3
+# TAB 3 - CALENDÁRIO
 # =========================
 with tab3:
 
-    st.title("📆 Calendário")
+    st.title("📆 Calendário de Atividades")
 
     df = pd.DataFrame(st.session_state.db)
 
