@@ -39,27 +39,55 @@ if "db" not in st.session_state:
 if "xp" not in st.session_state:
     st.session_state.xp = 0
 
-if "progress" not in st.session_state:
-    st.session_state.progress = {
-        "AZ-900": {"status": "Concluindo", "icon": "☁️"},
-        "ISO 27001": {"status": "Em andamento", "icon": "🔐"},
-        "CCNA": {"status": "Em andamento", "icon": "🌐"},
-        "SC-900": {"status": "Não iniciado", "icon": "🛡️"},
-        "Python": {"status": "Em andamento", "icon": "🐍"},
-        "SQL": {"status": "Em andamento", "icon": "🗄️"},
-        "Power BI": {"status": "Em andamento", "icon": "📊"},
-        "Security+": {"status": "Não iniciado", "icon": "🔒"},
-        "CySA+": {"status": "Não iniciado", "icon": "🧠"},
-        "GICSP": {"status": "Não iniciado", "icon": "🏭"},
-        "CISSP": {"status": "Não iniciado", "icon": "🎯"}
+if "cert_xp" not in st.session_state:
+    st.session_state.cert_xp = {
+        "AZ-900": 0,
+        "ISO 27001": 0,
+        "CCNA": 0,
+        "SC-900": 0,
+        "Python": 0,
+        "SQL": 0,
+        "Power BI": 0,
+        "Security+": 0,
+        "CySA+": 0,
+        "GICSP": 0,
+        "CISSP": 0
     }
+
+# =========================
+# XP RULES
+# =========================
+def calc_xp(activity):
+    return {
+        "Estudo": 10,
+        "Laboratório": 20,
+        "Projeto": 30,
+        "Revisão": 15,
+        "Simulado": 15
+    }.get(activity, 10)
+
+def status_por_xp(xp):
+    if xp >= 120:
+        return "Concluído"
+    elif xp >= 40:
+        return "Em andamento"
+    else:
+        return "Não iniciado"
+
+def badge(status):
+    if status == "Concluído":
+        return "🥇"
+    elif status == "Em andamento":
+        return "🥈"
+    else:
+        return "🥉"
 
 # =========================
 # HEADER
 # =========================
 st.title("📘 Planejamento de carreira Juan Felipe da Silva")
 
-st.caption(f"⭐ XP: {st.session_state.xp} | Level: {st.session_state.xp // 100 + 1}")
+st.caption(f"⭐ XP Global: {st.session_state.xp} | Level: {st.session_state.xp // 100 + 1}")
 
 # =========================
 # ABAS
@@ -67,39 +95,37 @@ st.caption(f"⭐ XP: {st.session_state.xp} | Level: {st.session_state.xp // 100 
 tab1, tab2, tab3 = st.tabs(["🎓 Dashboard", "🛣️ Roadmap", "📆 Calendário"])
 
 # =========================
-# TAB 1 - DASHBOARD
+# TAB 1
 # =========================
 with tab1:
 
-    st.subheader("📌 Registro de estudos")
+    st.subheader("📌 Registrar atividade")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        cert = st.selectbox(
-            "Certificação / Curso",
-            list(st.session_state.progress.keys())
-        )
-
-        atividade = st.selectbox(
-            "Atividade",
-            ["Estudo", "Laboratório", "Projeto", "Revisão", "Simulado"]
-        )
+        cert = st.selectbox("Certificação / Curso", list(st.session_state.cert_xp.keys()))
+        atividade = st.selectbox("Atividade", ["Estudo", "Laboratório", "Projeto", "Revisão", "Simulado"])
 
     with col2:
         data = st.date_input("Data", value=pd.Timestamp.today())
         obs = st.text_area("Observação")
 
-    if st.button("Salvar"):
+    if st.button("Salvar atividade"):
+        xp_gain = calc_xp(atividade)
+
         st.session_state.db.append({
             "data": pd.to_datetime(data),
             "certificacao": cert,
             "atividade": atividade,
+            "xp": xp_gain,
             "obs": obs
         })
 
-        st.session_state.xp += 10
-        st.success("+10 XP!")
+        st.session_state.xp += xp_gain
+        st.session_state.cert_xp[cert] += xp_gain
+
+        st.success(f"+{xp_gain} XP!")
 
     df = pd.DataFrame(st.session_state.db)
 
@@ -111,132 +137,95 @@ with tab1:
     col1, col2, col3 = st.columns(3)
 
     col1.metric("Registros", len(df))
-    col2.metric("XP", st.session_state.xp)
+    col2.metric("XP Global", st.session_state.xp)
     col3.metric("Level", st.session_state.xp // 100 + 1)
 
     # =========================
-    # PROGRESSO (NOVO FORMATO)
+    # BADGES + STATUS
     # =========================
-    st.subheader("🎓 Progresso das Certificações")
+    st.subheader("🏆 Certificações (Badges)")
 
-    for cert, info in st.session_state.progress.items():
+    for cert, xp in st.session_state.cert_xp.items():
+
+        status = status_por_xp(xp)
+        icon = badge(status)
+
         st.markdown(f"""
-        ### {info['icon']} {cert}  
-        **Status:** {info['status']}
+        ### {icon} {cert}  
+        **Status:** {status}  
+        **XP:** {xp}
         """)
 
     # =========================
     # HISTÓRICO
     # =========================
-    st.subheader("📚 Histórico filtrado")
+    st.subheader("📚 Histórico")
 
     if not df.empty:
 
-        filtro = st.selectbox("Filtrar por certificação", df["certificacao"].unique())
+        filtro = st.selectbox("Filtrar certificação", df["certificacao"].unique())
 
         df_f = df[df["certificacao"] == filtro]
 
         st.dataframe(df_f, use_container_width=True)
 
-        timeline = df_f.groupby("data").size().reset_index(name="atividades")
+        chart = df_f.groupby("data").size().reset_index(name="atividades")
 
-        chart = alt.Chart(timeline).mark_line(point=True).encode(
-            x="data:T",
-            y="atividades:Q",
-            tooltip=["data", "atividades"]
-        )
-
-        st.altair_chart(chart, use_container_width=True)
-
-    # =========================
-    # EXPORTAÇÃO
-    # =========================
-    st.subheader("📤 Exportar dados")
-
-    if not df.empty:
-        csv = df.to_csv(index=False).encode("utf-8")
-
-        st.download_button(
-            "📥 Baixar CSV do progresso",
-            csv,
-            "planejamento_carreira_juan_felipe.csv",
-            "text/csv"
+        st.altair_chart(
+            alt.Chart(chart).mark_line(point=True).encode(
+                x="data:T",
+                y="atividades:Q",
+                tooltip=["data", "atividades"]
+            ),
+            use_container_width=True
         )
 
 # =========================
-# TAB 2 - ROADMAP
+# TAB 2
 # =========================
 with tab2:
 
-    st.title("🛣️ Roadmap de Carreira")
-
-    st.subheader("📅 2026 — BASE + FORMAÇÃO")
+    st.title("🛣️ Roadmap")
 
     st.markdown("""
-- ☁️ AZ-900  
-- 🔐 ISO 27001 Fundamentals  
-- 🌐 CCNA  
-- 🛡️ SC-900  
+### 📅 2026
+- AZ-900  
+- ISO 27001  
+- CCNA  
+- Python / SQL / Power BI  
 
-🐍 Python  
-🗄️ SQL  
-📊 Power BI  
+### 📅 2027
+- Security+  
+- CySA+  
 
-🎓 Pós-graduação: início Junho/2026  
-🌍 Inglês diário
-""")
+### 📅 2028
+- GICSP  
 
-    st.divider()
-
-    st.subheader("📅 2027 — SEGURANÇA + OT")
-
-    st.markdown("""
-- 🔒 Security+  
-- ISO 27001 Lead Implementer  
-- ISA/IEC 62443  
-- CySA+
-""")
-
-    st.divider()
-
-    st.subheader("📅 2028 — ESPECIALIZAÇÃO")
-
-    st.markdown("""
-- 🏭 GICSP  
-- ISO 27001 Lead Auditor
-""")
-
-    st.divider()
-
-    st.subheader("📅 2029 — CONSOLIDAÇÃO")
-
-    st.markdown("""
-- 🎯 CISSP  
-- Inglês fluente profissional
+### 📅 2029
+- CISSP  
 """)
 
 # =========================
-# TAB 3 - CALENDÁRIO
+# TAB 3
 # =========================
 with tab3:
 
-    st.title("📆 Calendário de Atividades")
+    st.title("📆 Calendário")
 
     df = pd.DataFrame(st.session_state.db)
 
     if not df.empty:
 
-        st.subheader("📊 Linha do tempo")
-
         timeline = df.groupby("data").size().reset_index(name="atividades")
 
-        chart = alt.Chart(timeline).mark_bar().encode(
-            x="data:T",
-            y="atividades:Q",
-            tooltip=["data", "atividades"]
+        st.altair_chart(
+            alt.Chart(timeline).mark_bar().encode(
+                x="data:T",
+                y="atividades:Q",
+                tooltip=["data", "atividades"]
+            ),
+            use_container_width=True
         )
-
-        st.altair_chart(chart, use_container_width=True)
 
         st.dataframe(df.sort_values("data", ascending=False), use_container_width=True)
 
