@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import altair as alt
 
 # =========================
 # CONFIG
@@ -60,119 +61,168 @@ if "progress" not in st.session_state:
 # =========================
 # HEADER
 # =========================
-st.title("🚀 Carreira RPG SaaS (Pessoal)")
+st.title("🚀 Carreira RPG SaaS - Tracker Pessoal")
 
 st.caption(f"⭐ XP: {st.session_state.xp} | Level: {st.session_state.xp // 100 + 1}")
 
 # =========================
 # ABAS
 # =========================
-tab1, tab2 = st.tabs(["🎮 Dashboard RPG", "🛣️ Planejamento de Carreira"])
+tab1, tab2 = st.tabs(["🎮 Dashboard RPG", "🛣️ Roadmap Carreira"])
 
 # =========================
-# TAB 1 - RPG
+# TAB 1 - DASHBOARD RPG
 # =========================
 with tab1:
 
-    st.subheader("📌 Registrar atividade")
+    st.subheader("📌 Registrar estudo por certificação")
 
     col1, col2 = st.columns(2)
 
     with col1:
+        cert = st.selectbox(
+            "Certificação",
+            list(st.session_state.progress.keys())
+        )
+
         atividade = st.selectbox(
-            "Atividade",
-            ["Estudo", "Laboratório", "Projeto", "Inglês", "Networking"]
+            "Tipo de atividade",
+            ["Estudo", "Laboratório", "Revisão", "Projeto", "Simulado"]
         )
 
     with col2:
-        obs = st.text_area("Observação")
+        data = st.date_input("Data", value=pd.Timestamp.today())
+        obs = st.text_area("Observação do dia")
 
-    if st.button("Salvar atividade"):
+    if st.button("Salvar registro"):
         st.session_state.db.append({
+            "data": str(data),
+            "certificacao": cert,
             "atividade": atividade,
             "obs": obs
         })
+
         st.session_state.xp += 10
         st.success("+10 XP ganho!")
 
     df = pd.DataFrame(st.session_state.db)
 
+    # =========================
     # KPIs
+    # =========================
     st.subheader("📊 KPIs")
 
     col1, col2, col3 = st.columns(3)
 
-    col1.metric("Atividades", len(df))
+    col1.metric("Registros", len(df))
     col2.metric("XP", st.session_state.xp)
     col3.metric("Level", st.session_state.xp // 100 + 1)
 
+    # =========================
     # PROGRESSO CERTIFICAÇÕES
-    st.subheader("🎮 Certificações (Progresso RPG)")
+    # =========================
+    st.subheader("🎮 Progresso das Certificações")
 
-    for cert, val in st.session_state.progress.items():
-        st.markdown(f"**{cert}**")
-        st.progress(val / 100)
+    for c, v in st.session_state.progress.items():
+        st.write(f"**{c}**")
+        st.progress(v / 100)
 
-    # RANKING (SÓ VOCÊ)
-    st.subheader("🏆 Disciplina")
+    # =========================
+    # FILTRO POR CERTIFICAÇÃO
+    # =========================
+    st.subheader("📚 Histórico por Certificação")
+
+    if not df.empty:
+
+        filtro = st.selectbox(
+            "Selecionar certificação",
+            df["certificacao"].unique()
+        )
+
+        df_f = df[df["certificacao"] == filtro].copy()
+        df_f["data"] = pd.to_datetime(df_f["data"])
+
+        st.dataframe(df_f, use_container_width=True)
+
+        # =========================
+        # GRÁFICO
+        # =========================
+        chart = alt.Chart(df_f).mark_line(point=True).encode(
+            x="data:T",
+            y="count():Q",
+            color="atividade:N",
+            tooltip=["atividade", "obs"]
+        )
+
+        st.altair_chart(chart, use_container_width=True)
+
+    else:
+        st.info("Nenhum registro ainda.")
+
+    # =========================
+    # DISCIPLINA SCORE
+    # =========================
+    st.subheader("🏆 Score de Disciplina")
 
     score = len(df) * 5 + st.session_state.xp
 
-    st.metric("Seu score de disciplina", score)
+    st.metric("Seu score", score)
 
-    st.progress(min(score / 200, 1.0))
+    st.progress(min(score / 300, 1.0))
 
 # =========================
 # TAB 2 - ROADMAP
 # =========================
 with tab2:
 
+    st.title("🛣️ Roadmap de Carreira 2026–2029")
+
     st.subheader("📅 2026 — BASE + INÍCIO DA PÓS")
 
     st.markdown("""
-    **🎯 Certificações**
-    - AZ-900 (Abril/2026)
-    - ISO 27001 Fundamentals (Maio/2026)
-    - CCNA (Julho/2026)
-    - SC-900 (Outubro/2026)
+- AZ-900 (Abril/2026)  
+- ISO 27001 Fundamentals (Maio/2026)  
+- CCNA (Julho/2026)  
+- SC-900 (Outubro/2026)  
 
-    🎓 Pós-graduação: Início Junho/2026  
-    🌍 Inglês: diário (30–40 min)
-    """)
+🎓 Pós-graduação: Início Junho/2026  
+🌍 Inglês: diário (30–40 min)
+""")
 
     st.divider()
 
     st.subheader("📅 2027 — SEGURANÇA + OT")
 
     st.markdown("""
-    - Security+ (Fevereiro/2027)
-    - ISO 27001 Lead Implementer (Maio/2027)
-    - ISA/IEC 62443 (Agosto/2027)
-    - MITRE ATT&CK ICS (contínuo)
-    - CySA+ (Dezembro/2027)
+- Security+ (Fevereiro/2027)  
+- ISO 27001 Lead Implementer (Maio/2027)  
+- ISA/IEC 62443 (Agosto/2027)  
+- MITRE ATT&CK ICS (contínuo)  
+- CySA+ (Dezembro/2027)  
 
-    🌍 Inglês: técnico (documentação)
-    """)
+🌍 Inglês técnico
+""")
 
     st.divider()
 
     st.subheader("📅 2028 — ESPECIALIZAÇÃO")
 
     st.markdown("""
-    - GICSP (Março/2028)
-    - ISO 27001 Lead Auditor (Agosto/2028)
+- GICSP (Março/2028)  
+- ISO 27001 Lead Auditor (Agosto/2028)  
 
-    🎓 Pós-graduação: conclusão Dez/2028  
-    🌍 Inglês: conversação + entrevistas
-    """)
+🎓 Pós-graduação: conclusão Dez/2028  
+🌍 Inglês: entrevistas e conversação
+""")
 
     st.divider()
 
     st.subheader("📅 2029 — CONSOLIDAÇÃO")
 
     st.markdown("""
-    - CISSP (Junho/2029)
+- CISSP (Junho/2029)  
 
-    🌍 Inglês: fluência funcional
-    💼 foco: entrevistas internacionais
-    """)
+🌍 Inglês fluente funcional  
+💼 entrevistas internacionais
+""")
+       
