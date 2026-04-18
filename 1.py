@@ -117,4 +117,53 @@ with st.sidebar:
 
             # Avança a casa
             if dados["casa_atual"] < 50:
-                dados["casa_atual
+                dados["casa_atual"] += 1
+                st.success(f"🏆 Boa, Juan! Avançou para a casa {dados['casa_atual']} e ganhou 100 XP!")
+                # Lógica para mostrar as coordenadas da casa
+                if dados["casa_atual"] in COORDS:
+                    st.info(f"Coordenadas da Casa: {COORDS[dados['casa_atual']]}")
+                else:
+                    st.warning("Coordenadas para esta casa ainda não foram definidas.")
+            else:
+                st.balloons()
+                st.success("PARABÉNS! VOCÊ CHEGOU AO TOPO DO TABULEIRO!")
+
+            salvar_dados(dados)
+            st.rerun() # Atualiza a página para mostrar o peão novo
+
+# --- LAYOUT PRINCIPAL: O TABULEIRO E AS MISSÕES ---
+col_tabuleiro, col_missoes = st.columns([2, 1])
+
+with col_tabuleiro:
+    st.subheader("🗺️ Mapa da Jornada")
+    # Desenha o peão na imagem
+    imagem_com_peao = desenhar_peao(image, dados["casa_atual"])
+    # Exibe a imagem interativa
+    st.image(imagem_com_peao, use_column_width=True, caption="Você é o peão vermelho!")
+    st.divider()
+    st.write(f"Você está na Casa {dados['casa_atual']}. Faltam {50 - dados['casa_atual']} passos para o CISSP!")
+
+with col_missoes:
+    st.subheader("📋 Log de Missões")
+    
+    # Define qual fase mostrar baseado na casa atual
+    if dados["casa_atual"] <= 12: fase_ativa = "FASE 1: DECCOLAGEM"
+    elif dados["casa_atual"] <= 25: fase_ativa = "FASE 2: CONSTRUÇÃO"
+    elif dados["casa_atual"] <= 38: fase_ativa = "FASE 3: ESTRATÉGIA"
+    else: fase_ativa = "FASE 4: CONSOLIDAÇÃO"
+    
+    st.markdown(f"**Atualmente em: {fase_ativa}**")
+    
+    # Converte a lista de dicionários em um DataFrame para mostrar bonito
+    df_metas = pd.DataFrame(metas_fases[fase_ativa])
+    # Tira a coluna de ordem para ficar mais limpo
+    df_metas = df_metas[["Meta", "Status"]]
+    st.table(df_metas)
+
+# --- RODAPÉ: RESUMO DE CONQUISTAS ANTERIORES ---
+st.divider()
+st.subheader("🏅 Mural de Conquistas Anteriores")
+if dados["metas_completas"]:
+    st.info("Aqui você listará as certificações e marcos que já completou.")
+else:
+    st.warning("Nenhuma meta estratégica registrada como concluída ainda. Vamos estudar!")
