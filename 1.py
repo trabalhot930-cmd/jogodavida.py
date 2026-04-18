@@ -1,17 +1,13 @@
 import streamlit as st
+import sqlite3
 import pandas as pd
 import altair as alt
 from datetime import date
-from supabase import create_client
 
-# ─────────────────────────────────────────────
 # CONFIG
-# ─────────────────────────────────────────────
 st.set_page_config(page_title="Planejamento de Carreira", layout="wide")
 
-# ─────────────────────────────────────────────
 # ESTILO (AZUL + BOTÃO VERMELHO)
-# ─────────────────────────────────────────────
 st.markdown("""
 <style>
 html, body, [data-testid="stAppViewContainer"] {
@@ -31,22 +27,24 @@ html, body, [data-testid="stAppViewContainer"] {
     color: black;
     padding: 5px;
     border-radius: 6px;
-    margin-bottom: 5px;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ─────────────────────────────────────────────
-# SUPABASE (COLOQUE SEUS DADOS)
-# ─────────────────────────────────────────────
-SUPABASE_URL = "https://SEU_PROJETO.supabase.co"
-SUPABASE_KEY = "SUA_KEY"
+# BANCO LOCAL (SEM ERRO)
+conn = sqlite3.connect("carreira.db", check_same_thread=False)
+c = conn.cursor()
 
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+c.execute("""
+CREATE TABLE IF NOT EXISTS atividades (
+    data TEXT,
+    atividade TEXT,
+    obs TEXT
+)
+""")
+conn.commit()
 
-# ─────────────────────────────────────────────
 # LOGIN
-# ─────────────────────────────────────────────
 if "auth" not in st.session_state:
     st.session_state.auth = False
 
@@ -63,14 +61,10 @@ if not st.session_state.auth:
             st.error("Erro")
     st.stop()
 
-# ─────────────────────────────────────────────
-# DASHBOARD
-# ─────────────────────────────────────────────
+# TÍTULO
 st.title("🛡️ Planejamento de Carreira")
 
-# ─────────────────────────────────────────────
-# CERTIFICAÇÕES (COM LOGOS)
-# ─────────────────────────────────────────────
+# CERTIFICAÇÕES (LOGOS REAIS)
 st.subheader("🏅 Certificações")
 
 certs = [
@@ -89,9 +83,7 @@ for i, (nome, img) in enumerate(certs):
         st.image(img, width=60)
         st.markdown(f"<div class='cert'>{nome}</div>", unsafe_allow_html=True)
 
-# ─────────────────────────────────────────────
-# REGISTRO
-# ─────────────────────────────────────────────
+# REGISTRAR
 st.subheader("🚀 Registrar Atividade")
 
 atividade = st.selectbox("Tipo", [
@@ -101,23 +93,15 @@ atividade = st.selectbox("Tipo", [
 obs = st.text_area("Observação")
 
 if st.button("Salvar"):
-    supabase.table("atividades").insert({
-        "data": str(date.today()),
-        "atividade": atividade,
-        "obs": obs
-    }).execute()
-
+    c.execute("INSERT INTO atividades VALUES (?,?,?)",
+              (str(date.today()), atividade, obs))
+    conn.commit()
     st.success("Salvo!")
 
-# ─────────────────────────────────────────────
-# CARREGAR DADOS
-# ─────────────────────────────────────────────
-res = supabase.table("atividades").select("*").execute()
-df = pd.DataFrame(res.data)
+# DADOS
+df = pd.read_sql("SELECT * FROM atividades", conn)
 
-# ─────────────────────────────────────────────
-# 📊 POWER BI STYLE (ALTAIR)
-# ─────────────────────────────────────────────
+# 📊 DASHBOARD POWER BI (ALTAIR)
 st.subheader("📊 Dashboard")
 
 if not df.empty:
@@ -130,10 +114,8 @@ if not df.empty:
 
     st.altair_chart(chart, use_container_width=True)
 
-# ─────────────────────────────────────────────
 # 🔥 HEATMAP
-# ─────────────────────────────────────────────
-st.subheader("🔥 Heatmap de Estudos")
+st.subheader("🔥 Heatmap")
 
 if not df.empty:
     df["data"] = pd.to_datetime(df["data"])
@@ -146,10 +128,8 @@ if not df.empty:
 
     st.altair_chart(heat, use_container_width=True)
 
-# ─────────────────────────────────────────────
 # 🧠 IA
-# ─────────────────────────────────────────────
-st.subheader("🧠 IA de Estudo")
+st.subheader("🧠 Sugestão")
 
 def sugerir(df):
     if df.empty:
@@ -161,6 +141,6 @@ def sugerir(df):
     elif ult == "Laboratório":
         return "Construa um projeto."
     else:
-        return "Volte para teoria."
+        return "Revise teoria."
 
 st.info(sugerir(df))
