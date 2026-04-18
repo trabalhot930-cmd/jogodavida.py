@@ -1,19 +1,20 @@
 import streamlit as st
 import json
 import os
+import pandas as pd
 from datetime import datetime, date, timedelta
 
 # ─────────────────────────────────────────────
-# CONFIG (SEMPRE PRIMEIRO)
+# CONFIG
 # ─────────────────────────────────────────────
 st.set_page_config(
-    page_title="Cyber Roadmap PRO",
+    page_title="Planejamento de Carreira",
     page_icon="🛡️",
     layout="wide"
 )
 
 # ─────────────────────────────────────────────
-# ESTILO (PRETO + BOTÃO VERMELHO)
+# ESTILO
 # ─────────────────────────────────────────────
 st.markdown("""
 <style>
@@ -21,42 +22,11 @@ html, body, [data-testid="stAppViewContainer"] {
     background: linear-gradient(135deg, #e3f2fd, #bbdefb);
     color: #000000 !important;
 }
-
-h1, h2, h3, h4, h5, h6, p, span, label, div {
-    color: #000000 !important;
-}
-
-.stTextInput input, .stTextArea textarea {
-    background-color: #ffffff;
-    color: #000000;
-    border: 1px solid #999;
-}
-
 .stButton button {
     background-color: #d32f2f !important;
     color: white !important;
     border-radius: 8px;
     height: 45px;
-    font-weight: bold;
-    border: none;
-}
-
-.stButton button:hover {
-    background-color: #b71c1c !important;
-}
-
-.stMetric {
-    background: #ffffff;
-    color: #000000 !important;
-    padding: 10px;
-    border-radius: 10px;
-}
-
-.cert-box {
-    background: #ffffff;
-    color: #000000 !important;
-    padding: 5px 10px;
-    border-radius: 6px;
     font-weight: bold;
 }
 </style>
@@ -67,7 +37,7 @@ h1, h2, h3, h4, h5, h6, p, span, label, div {
 # ─────────────────────────────────────────────
 USER_LOGIN = "Juan"
 USER_PASS = "Ju@n1990"
-ARQUIVO = "progresso_v2.json"
+ARQUIVO = "progresso.json"
 
 # ─────────────────────────────────────────────
 # MAPA
@@ -97,7 +67,7 @@ def get_info_casa(n):
 def carregar():
     if os.path.exists(ARQUIVO):
         try:
-            with open(ARQUIVO, "r") as f:
+            with open(ARQUIVO) as f:
                 d = json.load(f)
         except:
             d = {}
@@ -148,25 +118,22 @@ if "auth" not in st.session_state:
     st.session_state.auth = False
 
 if not st.session_state.auth:
-    st.markdown("<h1 style='text-align:center;'>🔐 ACESSO SEGURO</h1>", unsafe_allow_html=True)
+    st.title("🔐 Acesso Seguro")
+    user = st.text_input("Usuário")
+    senha = st.text_input("Senha", type="password")
 
-    col1, col2, col3 = st.columns([1,1,1])
-    with col2:
-        usuario = st.text_input("Usuário")
-        senha = st.text_input("Senha", type="password")
-
-        if st.button("Entrar", use_container_width=True):
-            if usuario == USER_LOGIN and senha == USER_PASS:
-                st.session_state.auth = True
-                st.rerun()
-            else:
-                st.error("Usuário ou senha inválidos")
+    if st.button("Entrar"):
+        if user == USER_LOGIN and senha == USER_PASS:
+            st.session_state.auth = True
+            st.rerun()
+        else:
+            st.error("Login inválido")
     st.stop()
 
 # ─────────────────────────────────────────────
 # DASHBOARD
 # ─────────────────────────────────────────────
-st.title("🛡️ Cyber Security Roadmap PRO")
+st.title("🛡️ Planejamento de Carreira")
 
 c1, c2, c3, c4 = st.columns(4)
 c1.metric("XP", dados["xp"])
@@ -180,20 +147,34 @@ sigla, nome = get_info_casa(dados["casa"])
 st.info(f"🎯 Foco atual: {nome} ({sigla})")
 
 # ─────────────────────────────────────────────
+# ALTERAR FOCO
+# ─────────────────────────────────────────────
+st.subheader("🎯 Ajustar Foco")
+
+opcoes = [f"{t[2]} - {t[3]}" for t in TEMAS_MAP]
+novo = st.selectbox("Escolher foco", opcoes)
+
+if st.button("Alterar foco"):
+    for i, f, sigla, nome in TEMAS_MAP:
+        if f"{sigla} - {nome}" == novo:
+            dados["casa"] = i
+            salvar(dados)
+            st.rerun()
+
+# ─────────────────────────────────────────────
 # AÇÕES
 # ─────────────────────────────────────────────
 col1, col2 = st.columns(2)
 
 with col1:
-    if st.button("✅ Concluir Semana"):
-        if dados["casa"] < 80:
-            dados["casa"] += 1
-            dados["xp"] += 100
-            salvar(dados)
-            st.rerun()
+    if st.button("Avançar Semana"):
+        dados["casa"] += 1
+        dados["xp"] += 100
+        salvar(dados)
+        st.rerun()
 
 with col2:
-    if st.button("⬅️ Voltar"):
+    if st.button("Voltar"):
         dados["casa"] = max(1, dados["casa"] - 1)
         dados["xp"] = max(0, dados["xp"] - 100)
         salvar(dados)
@@ -212,67 +193,33 @@ if st.button("Salvar Estudo"):
     atualizar_streak(dados)
     dados["xp"] += 50
     salvar(dados)
-    st.success("Salvo!")
     st.rerun()
-
-for d in sorted(dados["eventos"].keys(), reverse=True):
-    with st.expander(d):
-        st.write(dados["eventos"][d])
 
 # ─────────────────────────────────────────────
 # INGLÊS
 # ─────────────────────────────────────────────
-st.subheader("🌍 Inglês diário")
+st.subheader("🌍 Inglês")
 
-if st.button("Registrar inglês 🇺🇸"):
+if st.button("Registrar inglês"):
     atualizar_streak(dados)
     dados["xp"] += 20
     salvar(dados)
-    st.success("Registrado!")
-
-# ─────────────────────────────────────────────
-# CERTIFICAÇÕES
-# ─────────────────────────────────────────────
-st.subheader("🏅 Certificações")
-
-certs = [
-    ("☁️ AZ-900", "Azure"),
-    ("📜 ISO-F", "ISO"),
-    ("🌐 CCNA", "Cisco"),
-    ("⚙️ AZ-104", "Admin"),
-    ("🛡️ SC-900", "Security"),
-    ("🔐 Security+", "CompTIA"),
-    ("🧠 CySA+", "CySA"),
-    ("🏢 ISO-LI", "Implementer"),
-    ("🏭 62443", "Industrial"),
-    ("⚡ GICSP", "ICS"),
-    ("🎓 PÓS", "Pós-graduação"),
-]
-
-for sigla, nome in certs:
-    marcado = st.checkbox(f"{sigla} - {nome}", value=(sigla in dados["concluidas"]))
-
-    if marcado and sigla not in dados["concluidas"]:
-        dados["concluidas"].append(sigla)
-        dados["xp"] += 500
-
-    elif not marcado and sigla in dados["concluidas"]:
-        dados["concluidas"].remove(sigla)
-        dados["xp"] -= 500
-
-salvar(dados)
 
 # ─────────────────────────────────────────────
 # ATIVIDADES
 # ─────────────────────────────────────────────
-st.subheader("🚀 Atividades Estratégicas")
+st.subheader("🚀 Atividades")
 
 atividade = st.selectbox("Atividade", [
-    "LinkedIn", "Projetos", "Laboratório",
-    "Networking", "Portfólio", "Estudo"
+    "📘 Estudo",
+    "🧪 Laboratório",
+    "💻 Projeto",
+    "🌐 Inglês",
+    "📄 LinkedIn",
+    "🤝 Networking"
 ])
 
-obs = st.text_area("Observação da atividade")
+obs = st.text_area("Observação")
 
 if st.button("Salvar atividade"):
     dados["atividades"].append({
@@ -282,11 +229,21 @@ if st.button("Salvar atividade"):
     })
     dados["xp"] += 30
     salvar(dados)
-    st.success("Atividade registrada!")
 
+# Histórico
 for a in reversed(dados["atividades"]):
     with st.expander(f"{a['data']} - {a['atividade']}"):
         st.write(a["obs"])
+
+# ─────────────────────────────────────────────
+# GRÁFICO DE PILHA
+# ─────────────────────────────────────────────
+st.subheader("📊 Evolução por Atividade")
+
+if dados["atividades"]:
+    df = pd.DataFrame(dados["atividades"])
+    df_group = df.groupby(["data", "atividade"]).size().unstack(fill_value=0)
+    st.area_chart(df_group)
 
 # ─────────────────────────────────────────────
 # EXPORTAÇÃO
