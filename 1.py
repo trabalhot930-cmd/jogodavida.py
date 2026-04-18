@@ -16,18 +16,51 @@ USER_LOGIN = "Juan"
 USER_PASS = "Ju@n1990"
 ARQUIVO = "progresso_v2.json"
 
-DATA_INICIO = date(2026, 4, 18)
+# ─────────────────────────────────────────────
+# ESTILO GLOBAL (FUNDO AZUL)
+# ─────────────────────────────────────────────
+st.markdown("""
+<style>
+html, body, [data-testid="stAppViewContainer"] {
+    background: linear-gradient(135deg, #0a1f44, #0d2b6b);
+    color: #e6f0ff;
+}
 
+.stTextInput input {
+    background-color: #0f2a5a;
+    color: white;
+    border: 1px solid #1f4ea3;
+}
+
+.stButton button {
+    background-color: #1f4ea3;
+    color: white;
+    border-radius: 8px;
+    height: 45px;
+    font-weight: bold;
+}
+
+.stMetric {
+    background: #0f2a5a;
+    padding: 10px;
+    border-radius: 10px;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# ─────────────────────────────────────────────
+# MAPA
+# ─────────────────────────────────────────────
 TEMAS_MAP = [
     (1, 6, "AZ-900", "Azure Fundamentals"),
-    (7, 12, "ISO-F", "ISO 27001 Fundamentals"),
+    (7, 12, "ISO-F", "ISO 27001"),
     (13, 24, "CCNA", "Cisco CCNA"),
     (25, 32, "AZ-104", "Azure Admin"),
-    (33, 40, "SC-900", "Security Compliance"),
+    (33, 40, "SC-900", "Security"),
     (41, 50, "Security+", "CompTIA Security+"),
     (51, 60, "CySA+", "CompTIA CySA+"),
-    (61, 70, "ISO-LI", "ISO Lead Implementer"),
-    (71, 75, "62443", "ISA/IEC 62443"),
+    (61, 70, "ISO-LI", "Lead Implementer"),
+    (71, 75, "62443", "ISA 62443"),
     (76, 80, "GICSP", "Industrial Cyber"),
 ]
 
@@ -44,17 +77,21 @@ def carregar():
     if os.path.exists(ARQUIVO):
         try:
             with open(ARQUIVO, "r") as f:
-                return json.load(f)
+                dados = json.load(f)
         except:
-            pass
-    return {
-        "casa": 1,
-        "xp": 0,
-        "eventos": {},
-        "concluidas": [],
-        "streak": 0,
-        "ultimo_estudo": None
-    }
+            dados = {}
+    else:
+        dados = {}
+
+    # CORREÇÃO AUTOMÁTICA (ANTI-ERRO)
+    dados.setdefault("casa", 1)
+    dados.setdefault("xp", 0)
+    dados.setdefault("eventos", {})
+    dados.setdefault("concluidas", [])
+    dados.setdefault("streak", 0)
+    dados.setdefault("ultimo_estudo", None)
+
+    return dados
 
 def salvar(d):
     with open(ARQUIVO, "w") as f:
@@ -92,22 +129,27 @@ if "dados" not in st.session_state:
 dados = st.session_state.dados
 
 # ─────────────────────────────────────────────
-# LOGIN
+# LOGIN (TELA AZUL)
 # ─────────────────────────────────────────────
 if "auth" not in st.session_state:
     st.session_state.auth = False
 
 if not st.session_state.auth:
-    st.title("🔐 Login")
-    u = st.text_input("Usuário")
-    p = st.text_input("Senha", type="password")
+    st.markdown("<h1 style='text-align:center;'>🔐 ACESSO SEGURO</h1>", unsafe_allow_html=True)
 
-    if st.button("Entrar"):
-        if u == USER_LOGIN and p == USER_PASS:
-            st.session_state.auth = True
-            st.rerun()
-        else:
-            st.error("Acesso negado")
+    col1, col2, col3 = st.columns([1,1,1])
+    with col2:
+        st.markdown("### Faça login")
+        usuario = st.text_input("Usuário")
+        senha = st.text_input("Senha", type="password")
+
+        if st.button("Entrar", use_container_width=True):
+            if usuario == USER_LOGIN and senha == USER_PASS:
+                st.session_state.auth = True
+                st.rerun()
+            else:
+                st.error("Usuário ou senha inválidos")
+
     st.stop()
 
 # ─────────────────────────────────────────────
@@ -128,7 +170,7 @@ c4.metric("Progresso", f"{progresso}%")
 st.progress(progresso / 100)
 
 sigla, nome = get_info_casa(dados["casa"])
-st.info(f"🎯 Foco atual: **{nome} ({sigla})**")
+st.info(f"🎯 Foco atual: {nome} ({sigla})")
 
 # ─────────────────────────────────────────────
 # AÇÕES
@@ -152,7 +194,7 @@ with col2:
             st.rerun()
 
 # ─────────────────────────────────────────────
-# DIÁRIO + STREAK
+# DIÁRIO
 # ─────────────────────────────────────────────
 st.subheader("📝 Diário")
 
@@ -167,7 +209,6 @@ if st.button("Salvar Estudo"):
     st.success("Salvo!")
     st.rerun()
 
-# Histórico
 for d in sorted(dados["eventos"].keys(), reverse=True):
     with st.expander(d):
         st.write(dados["eventos"][d])
@@ -195,12 +236,12 @@ dados["concluidas"] = concluidas
 salvar(dados)
 
 # ─────────────────────────────────────────────
-# META SEMANAL INTELIGENTE
+# META
 # ─────────────────────────────────────────────
 st.subheader("🎯 Meta da Semana")
 
 meta = dados["casa"] + 1
-st.write(f"Objetivo: chegar na semana **{meta}**")
+st.write(f"Objetivo: chegar na semana {meta}")
 
 if dados["casa"] >= meta:
     st.success("Meta batida 🚀")
