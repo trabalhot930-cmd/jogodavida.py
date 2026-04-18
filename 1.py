@@ -5,7 +5,10 @@ import altair as alt
 # =========================
 # CONFIG
 # =========================
-st.set_page_config(page_title="Planejamento de carreira Juan Felipe da Silva", layout="wide")
+st.set_page_config(
+    page_title="Planejamento de carreira Juan Felipe da Silva",
+    layout="wide"
+)
 
 # =========================
 # STYLE
@@ -51,7 +54,9 @@ if "cert_xp" not in st.session_state:
         "Security+": 0,
         "CySA+": 0,
         "GICSP": 0,
-        "CISSP": 0
+        "CISSP": 0,
+        "Pós-graduação": 0,
+        "Inglês": 0
     }
 
 # =========================
@@ -63,7 +68,9 @@ def calc_xp(activity):
         "Laboratório": 20,
         "Projeto": 30,
         "Revisão": 15,
-        "Simulado": 15
+        "Simulado": 15,
+        "Aula Pós-graduação": 25,
+        "Inglês": 15
     }.get(activity, 10)
 
 def status_por_xp(xp):
@@ -103,14 +110,22 @@ with tab1:
     col1, col2 = st.columns(2)
 
     with col1:
-        cert = st.selectbox(
-            "Certificação / Curso",
+        area = st.selectbox(
+            "Área de estudo",
             list(st.session_state.cert_xp.keys())
         )
 
         activity = st.selectbox(
             "Atividade",
-            ["Estudo", "Laboratório", "Projeto", "Revisão", "Simulado"]
+            [
+                "Estudo",
+                "Laboratório",
+                "Projeto",
+                "Revisão",
+                "Simulado",
+                "Aula Pós-graduação",
+                "Inglês"
+            ]
         )
 
     with col2:
@@ -118,18 +133,19 @@ with tab1:
         obs = st.text_area("Observação")
 
     if st.button("Salvar atividade"):
+
         xp_gain = calc_xp(activity)
 
         st.session_state.db.append({
             "data": pd.to_datetime(data),
-            "certificacao": cert,
+            "area": area,
             "atividade": activity,
             "xp": xp_gain,
             "obs": obs
         })
 
         st.session_state.xp += xp_gain
-        st.session_state.cert_xp[cert] += xp_gain
+        st.session_state.cert_xp[area] += xp_gain
 
         st.success(f"+{xp_gain} XP!")
 
@@ -147,16 +163,16 @@ with tab1:
     col3.metric("Level", st.session_state.xp // 100 + 1)
 
     # =========================
-    # BADGES
+    # PROGRESSO (BADGES)
     # =========================
-    st.subheader("🏆 Certificações (Badges)")
+    st.subheader("🏆 Progresso Geral")
 
-    for cert_name, xp in st.session_state.cert_xp.items():
+    for cert, xp in st.session_state.cert_xp.items():
         status = status_por_xp(xp)
         icon = badge(status)
 
         st.markdown(f"""
-        ### {icon} {cert_name}  
+        ### {icon} {cert}  
         **Status:** {status}  
         **XP:** {xp}
         """)
@@ -168,8 +184,8 @@ with tab1:
 
     if not df.empty:
 
-        filtro = st.selectbox("Filtrar certificação", df["certificacao"].unique())
-        df_f = df[df["certificacao"] == filtro]
+        filtro = st.selectbox("Filtrar área", df["area"].unique())
+        df_f = df[df["area"] == filtro]
 
         st.dataframe(df_f, use_container_width=True)
 
@@ -184,48 +200,57 @@ with tab1:
             use_container_width=True
         )
 
+    else:
+        st.info("Sem registros ainda.")
+
 # =========================
-# TAB 2 - ROADMAP (CORRIGIDO + COMPLETO)
+# TAB 2 - ROADMAP COMPLETO
 # =========================
 with tab2:
 
-    st.title("🛣️ Roadmap de Carreira")
+    st.title("🛣️ Roadmap de Carreira Completo")
 
-    st.subheader("📅 2026 — BASE + FORMAÇÃO")
+    st.subheader("📅 2026 — BASE + INÍCIO DA PÓS")
 
     st.markdown("""
-- AZ-900  
-- ISO 27001 Fundamentals  
-- CCNA  
-- SC-900  
+- AZ-900 — Abril/2026  
+- ISO 27001 Fundamentals — Maio/2026  
+- CCNA — Julho/2026  
+- SC-900 — Outubro/2026  
 
-📘 Python (Formação continuada)  
-📊 SQL (Formação continuada)  
-📈 Power BI (Formação continuada)  
+📘 Python  
+📊 SQL  
+📈 Power BI  
 
-🎓 Pós-graduação: Especialização em Cibersegurança e Governança de Dados  
-🌍 Inglês diário
+🎓 Pós-graduação em Cibersegurança e Governança de Dados — início Junho/2026 (EAD)  
+🌍 Inglês — início Abril/2026 (diário 30–40 min)
 """)
 
     st.divider()
 
-    st.subheader("📅 2027 — SEGURANÇA + OT")
+    st.subheader("📅 2027 — SEGURANÇA + GOVERNANÇA + OT")
 
     st.markdown("""
-- Security+  
-- ISO 27001 Lead Implementer  
-- ISA/IEC 62443  
-- CySA+  
+- Security+ — Fevereiro/2027  
+- ISO 27001 Lead Implementer — Maio/2027  
+- ISA/IEC 62443 — Agosto/2027  
+- MITRE ATT&CK ICS — Outubro/2027  
+- CySA+ — Dezembro/2027  
+
+🎓 Pós-graduação (continuação)  
+🌍 Inglês técnico
 """)
 
     st.divider()
 
-    st.subheader("📅 2028 — ESPECIALIZAÇÃO")
+    st.subheader("📅 2028 — ESPECIALIZAÇÃO + FINAL DA PÓS")
 
     st.markdown("""
-- GICSP  
-- ISO 27001 Lead Auditor  
-- Conclusão da pós-graduação
+- GICSP — Março/2028  
+- ISO 27001 Lead Auditor — Agosto/2028  
+
+🎓 Pós-graduação (conclusão Dezembro/2028)  
+🌍 Inglês avançado
 """)
 
     st.divider()
@@ -233,8 +258,8 @@ with tab2:
     st.subheader("📅 2029 — CONSOLIDAÇÃO")
 
     st.markdown("""
-- CISSP  
-- Inglês fluente profissional
+- CISSP — Junho/2029  
+🌍 Inglês fluente profissional
 """)
 
 # =========================
