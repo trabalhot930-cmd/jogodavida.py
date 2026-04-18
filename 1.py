@@ -6,57 +6,42 @@ from datetime import datetime, date, timedelta
 # Configuração da página
 st.set_page_config(
     page_title="Plano de Carreira - Juan Felipe",
-    page_icon="🛡️",
+    page_icon="🏆",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
 # ─────────────────────────────────────────────
-# CONFIGURAÇÃO DO PLANEJAMENTO (ESTRUTURA SEMANAL)
+# DADOS E CRONOGRAMA (LIMITE 80 CASAS)
 # ─────────────────────────────────────────────
-DATA_INICIO_S1 = date(2026, 4, 18)  # Data de hoje
-
-# Definição dos blocos de estudo conforme seu planejamento
-ESTRUTURA_OBJETIVOS = [
-    {"tema": "Azure Fundamentals (AZ-900)", "semanas": 4, "cor": "#0078d4", "emoji": "☁️", "prazo": "Abr/2026"},
-    {"tema": "ISO/IEC 27001 Fundamentals", "semanas": 4, "cor": "#e53935", "emoji": "📄", "prazo": "Mai/2026"},
-    {"tema": "Pós-graduação (Início)", "semanas": 4, "cor": "#7b1fa2", "emoji": "🎓", "prazo": "Jun/2026"},
-    {"tema": "Cisco CCNA", "semanas": 12, "cor": "#00b4ad", "emoji": "🌐", "prazo": "Jul/2026"},
-    {"tema": "Microsoft Security (SC-900)", "semanas": 8, "cor": "#3267d3", "emoji": "🔐", "prazo": "Out/2026"},
-    {"tema": "CompTIA Security+", "semanas": 16, "cor": "#cc6600", "emoji": "🛡️", "prazo": "Fev/2027"},
-    {"tema": "ISO 27001 Lead Implementer", "semanas": 12, "cor": "#1565c0", "emoji": "🏗️", "prazo": "Mai/2027"},
-    {"tema": "ISA/IEC 62443 Fundamentals", "semanas": 12, "cor": "#f57c00", "emoji": "⚙️", "prazo": "Ago/2027"},
-    {"tema": "MITRE ATT&CK for ICS", "semanas": 8, "cor": "#4a148c", "emoji": "🎯", "prazo": "Out/2027"},
-    {"tema": "CompTIA CySA+", "semanas": 12, "cor": "#d32f2f", "emoji": "🔍", "prazo": "Dez/2027"},
-    {"tema": "Global Industrial Cyber Security (GICSP)", "semanas": 15, "cor": "#2e7d32", "emoji": "🌍", "prazo": "Mar/2028"},
-    {"tema": "ISO 27001 Lead Auditor", "semanas": 12, "cor": "#bf360c", "emoji": "⚖️", "prazo": "Ago/2028"},
-    {"tema": "Conclusão Pós-graduação", "semanas": 12, "cor": "#6a1c77", "emoji": "🎓", "prazo": "Dez/2028"},
-    {"tema": "META FINAL: CISSP", "semanas": 25, "cor": "#b71c1c", "emoji": "👑", "prazo": "Jun/2029"},
-]
-
-# Gerar o mapeamento semanal para o tabuleiro
-MAPA_SEMANAL = []
-contador = 1
-for obj in ESTRUTURA_OBJETIVOS:
-    for s in range(obj["semanas"]):
-        MAPA_SEMANAL.append({
-            "casa": contador,
-            "tema": obj["tema"],
-            "cor": obj["cor"],
-            "emoji": obj["emoji"],
-            "prazo": obj["prazo"]
-        })
-        contador += 1
-
-TOTAL_CASAS = len(MAPA_SEMANAL)
-
-# ─────────────────────────────────────────────
-# PERSISTÊNCIA E LOGIN
-# ─────────────────────────────────────────────
-ARQUIVO = "progresso_roadmap.json"
 USER_LOGIN = "Juan"
 USER_PASS = "Ju@n1990"
+DATA_INICIO = date(2026, 4, 18) # Hoje
 
+# Temas baseados no seu planejamento para as 80 semanas
+TEMAS_MAP = [
+    (1, 4, "AZ-900", "#0078d4", "Azure Fundamentals"),
+    (5, 8, "ISO-F", "#e53935", "ISO 27001 Fund."),
+    (9, 12, "PÓS", "#7b1fa2", "Início Pós-Graduação"),
+    (13, 24, "CCNA", "#00b4ad", "Cisco Networking"),
+    (25, 32, "SC-900", "#3267d3", "Security & Compliance"),
+    (33, 48, "S+", "#cc6600", "CompTIA Security+"),
+    (49, 60, "ISO-LI", "#1565c0", "ISO 27001 Lead Imp."),
+    (61, 72, "62443", "#f57c00", "ISA/IEC 62443"),
+    (73, 80, "MITRE", "#4a148c", "MITRE ATT&CK ICS"),
+]
+
+def get_info_casa(n):
+    for inicio, fim, sigla, cor, nome in TEMAS_MAP:
+        if inicio <= n <= fim:
+            return sigla, cor, nome
+    return str(n), "#3a6080", ""
+
+ARQUIVO = "progresso_juan_80.json"
+
+# ─────────────────────────────────────────────
+# PERSISTÊNCIA
+# ─────────────────────────────────────────────
 def carregar():
     if os.path.exists(ARQUIVO):
         try:
@@ -69,6 +54,13 @@ def salvar(d):
     with open(ARQUIVO, "w", encoding="utf-8") as f:
         json.dump(d, f, indent=2, ensure_ascii=False)
 
+if "dados" not in st.session_state:
+    st.session_state.dados = carregar()
+dados = st.session_state.dados
+
+# ─────────────────────────────────────────────
+# ESTILOS E LOGIN
+# ─────────────────────────────────────────────
 if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
 
@@ -86,71 +78,61 @@ if not st.session_state.autenticado:
                 else: st.error("Acesso negado")
     st.stop()
 
-# Estilo Global (CSS)
-st.markdown(f"""
+st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;700&display=swap');
-    html, body, [data-testid="stAppViewContainer"] {{ background: #050d1a !important; color: #c8dff0; font-family: 'Rajdhani'; }}
-    .casa {{ display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 80px; height: 80px; border-radius: 10px; font-size: 10px; margin: 4px; border: 2px solid; text-align: center; background: #0a1a2e; }}
-    .casa-atual {{ border-color: #00f2ff !important; box-shadow: 0 0 15px #00f2ff; background: #112a45; animation: pulse 1.5s infinite; }}
-    .casa-feita {{ border-color: #00ff41 !important; color: #00ff41; opacity: 0.6; }}
-    .casa-normal {{ border-color: #1a3a60; color: #3a6080; }}
-    @keyframes pulse {{ 0%, 100% {{ transform: scale(1); }} 50% {{ transform: scale(1.03); }} }}
+    html, body, [data-testid="stAppViewContainer"] { background: #050d1a !important; color: #c8dff0; font-family: 'Rajdhani'; }
+    .casa { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 70px; height: 70px; border-radius: 12px; font-size: 10px; margin: 4px; border: 2px solid; text-align: center; }
+    .casa-atual { border-color: #4a90d9; background: #1a4a8a; box-shadow: 0 0 15px #4a90d9; animation: pulse 1.5s infinite; }
+    .casa-feita { border-color: #1a5a30; background: #0a2a1a; color: #2a8a4a; }
+    .casa-normal { border-color: #1a3a60; background: #0a1a2e; color: #3a6080; }
+    .label-cert { font-size: 8px; font-weight: bold; margin-top: 2px; }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 </style>
 """, unsafe_allow_html=True)
 
-if "dados" not in st.session_state:
-    st.session_state.dados = carregar()
-dados = st.session_state.dados
-
 # ─────────────────────────────────────────────
-# INTERFACE
+# INTERFACE PRINCIPAL
 # ─────────────────────────────────────────────
-st.title("🏆 Cyber Roadmap Game - Juan Felipe")
+st.title("🏆 Plano de Carreira - Juan Felipe")
 
-tab1, tab2, tab3 = st.tabs(["🗺️ TABULEIRO SEMANAL", "📅 CALENDÁRIO & NOTAS", "🏅 CHECKLIST CONQUISTAS"])
+tab1, tab2, tab3 = st.tabs(["🗺️ TABULEIRO", "📅 CALENDÁRIO & NOTAS", "🏅 CONQUISTAS"])
 
-# ABA 1: TABULEIRO
+# ABA 1: TABULEIRO (PADRÃO ANTIGO - 80 CASAS)
 with tab1:
     col_t, col_s = st.columns([4, 1])
-    
     with col_t:
-        st.markdown('<div style="background:#061020; padding:20px; border-radius:15px; border:1px solid #1a3a6a">', unsafe_allow_html=True)
-        # Renderizar o tabuleiro em linhas de 10
-        for i in range(0, TOTAL_CASAS, 10):
+        st.markdown('<div style="background:#061020; padding:15px; border-radius:15px; border:1px solid #1a3a6a">', unsafe_allow_html=True)
+        
+        # Grid de 10 colunas por linha para as 80 casas
+        for i in range(8):
+            reverso = i % 2 != 0
+            intervalo = range(i*10 + 1, (i+1)*10 + 1)
             row_html = ""
-            for n in range(i + 1, min(i + 11, TOTAL_CASAS + 1)):
-                info = MAPA_SEMANAL[n-1]
-                c_cls = "casa casa-atual" if n == dados['casa'] else ("casa casa-feita" if n < dados['casa'] else "casa casa-normal")
-                borda = info['cor'] if n >= dados['casa'] else "#00ff41"
+            for n in (reversed(intervalo) if reverso else intervalo):
+                sigla, cor, nome_full = get_info_casa(n)
                 
-                row_html += f"""
-                <div class="{c_cls}" style="border-color: {borda}">
-                    <div style="font-size:12px">{info['emoji']}</div>
-                    <div style="font-weight:bold">S{n}</div>
-                    <div style="font-size:8px; line-height:1">{info['prazo']}</div>
-                </div>
-                """
+                c_cls = "casa casa-atual" if n == dados['casa'] else ("casa casa-feita" if n < dados['casa'] else "casa casa-normal")
+                borda_style = f"border-color: {cor if n >= dados['casa'] else '#1a5a30'}"
+                
+                row_html += f'<div class="{c_cls}" style="{borda_style}">{sigla}<div class="label-cert">S{n}</div></div>'
             st.markdown(f'<div style="display:flex; justify-content:center; flex-wrap:wrap">{row_html}</div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col_s:
-        info_atual = MAPA_SEMANAL[dados['casa']-1]
-        data_atual = DATA_INICIO_S1 + timedelta(weeks=dados['casa']-1)
+        sigla_atual, _, nome_atual = get_info_casa(dados['casa'])
+        data_casa = DATA_INICIO + timedelta(weeks=dados['casa']-1)
         
         st.metric("XP TOTAL", f"{dados['xp']} pts")
-        st.metric("SEMANA", f"{dados['casa']} / {TOTAL_CASAS}")
+        st.metric("SEMANA", f"{dados['casa']} / 80")
+        st.markdown(f"**Foco:** {nome_atual}")
+        st.caption(f"Início: {data_casa.strftime('%d/%m/%Y')}")
         
-        st.markdown("---")
-        st.markdown(f"**Meta Atual:**\n### {info_atual['tema']}")
-        st.caption(f"Inicia em: {data_atual.strftime('%d/%m/%Y')}")
-        
-        if st.button("Concluir Semana +100 XP ⚔️", use_container_width=True):
-            if dados['casa'] < TOTAL_CASAS:
+        if st.button("Avançar Semana ▶", use_container_width=True):
+            if dados['casa'] < 80:
                 dados['casa'] += 1
                 dados['xp'] += 100
                 salvar(dados); st.rerun()
-        
         if st.button("Voltar Semana ◀", use_container_width=True):
             if dados['casa'] > 1:
                 dados['casa'] -= 1
@@ -163,36 +145,31 @@ with tab2:
     c1, c2 = st.columns([1, 2])
     with c1:
         data_sel = st.date_input("Selecione o dia", date.today())
-        nota = st.text_area("O que foi estudado hoje?", placeholder="Ex: Lab de SQL, curso da Hashtag...")
-        if st.button("Salvar Log 💾", use_container_width=True):
+        nota = st.text_area("Notas de estudo:")
+        if st.button("Salvar Nota 💾", use_container_width=True):
             dados.setdefault("eventos", {})[str(data_sel)] = nota
             salvar(dados); st.success("Nota salva!")
     with c2:
-        st.markdown("#### Histórico")
         if "eventos" in dados and dados["eventos"]:
-            for d in sorted(dados["eventos"].keys(), reverse=True):
-                with st.expander(f"📌 {d}"):
-                    st.write(dados["eventos"][d])
-                    if st.button("Remover", key=f"del_{d}"):
-                        del dados["eventos"][d]
-                        salvar(dados); st.rerun()
+            for d_key in sorted(dados["eventos"].keys(), reverse=True):
+                with st.expander(f"📌 Dia {d_key}"):
+                    st.write(dados["eventos"][d_key])
 
 # ABA 3: CHECKLIST CONQUISTAS
 with tab3:
-    st.markdown("### 🏅 Certificações e Marcos")
+    st.markdown("### 🏅 Minhas Certificações")
+    certs_lista = [t[2] for t in TEMAS_MAP]
     concluidas = dados.get("concluidas", [])
     
-    # Criar checklist com base nos objetivos principais
-    for obj in ESTRUTURA_OBJETIVOS:
-        checked = obj["tema"] in concluidas
-        if st.checkbox(f"{obj['emoji']} {obj['tema']} ({obj['prazo']})", value=checked, key=f"chk_{obj['tema']}"):
-            if obj["tema"] not in concluidas:
-                concluidas.append(obj["tema"])
-                dados["xp"] += 500  # Bônus de conquista
+    for cert in certs_lista:
+        checked = cert in concluidas
+        if st.checkbox(cert, value=checked):
+            if cert not in concluidas:
+                concluidas.append(cert)
+                dados["xp"] += 500
                 salvar(dados); st.rerun()
         elif checked:
-            concluidas.remove(obj["tema"])
+            concluidas.remove(cert)
             dados["xp"] = max(0, dados["xp"] - 500)
             salvar(dados); st.rerun()
-    
     dados["concluidas"] = concluidas
