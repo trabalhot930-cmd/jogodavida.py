@@ -1,257 +1,163 @@
 import streamlit as st
-import json
-import os
+import sqlite3
 import pandas as pd
 from datetime import datetime, date, timedelta
+from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.pagesizes import letter
 
-# ─────────────────────────────────────────────
 # CONFIG
-# ─────────────────────────────────────────────
-st.set_page_config(
-    page_title="Planejamento de Carreira",
-    page_icon="🛡️",
-    layout="wide"
+st.set_page_config(page_title="Planejamento de Carreira", layout="wide")
+
+# BANCO SQLite
+conn = sqlite3.connect("carreira.db", check_same_thread=False)
+c = conn.cursor()
+
+c.execute("""
+CREATE TABLE IF NOT EXISTS atividades (
+    data TEXT,
+    atividade TEXT,
+    obs TEXT
 )
+""")
 
-# ─────────────────────────────────────────────
-# ESTILO
-# ─────────────────────────────────────────────
-st.markdown("""
-<style>
-html, body, [data-testid="stAppViewContainer"] {
-    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-    color: #000000 !important;
-}
-.stButton button {
-    background-color: #d32f2f !important;
-    color: white !important;
-    border-radius: 8px;
-    height: 45px;
-    font-weight: bold;
-}
-</style>
-""", unsafe_allow_html=True)
+c.execute("""
+CREATE TABLE IF NOT EXISTS progresso (
+    id INTEGER PRIMARY KEY,
+    casa INTEGER,
+    xp INTEGER,
+    streak INTEGER,
+    ultimo TEXT
+)
+""")
 
-# ─────────────────────────────────────────────
-# CONFIG USER
-# ─────────────────────────────────────────────
-USER_LOGIN = "Juan"
-USER_PASS = "Ju@n1990"
-ARQUIVO = "progresso.json"
+conn.commit()
 
-# ─────────────────────────────────────────────
-# MAPA
-# ─────────────────────────────────────────────
-TEMAS_MAP = [
-    (1, 6, "☁️ AZ-900", "Azure Fundamentals"),
-    (7, 12, "📜 ISO-F", "ISO 27001"),
-    (13, 24, "🌐 CCNA", "Cisco CCNA"),
-    (25, 32, "⚙️ AZ-104", "Azure Admin"),
-    (33, 40, "🛡️ SC-900", "Security"),
-    (41, 50, "🔐 Security+", "CompTIA"),
-    (51, 60, "🧠 CySA+", "CySA"),
-    (61, 70, "🏢 ISO-LI", "Implementer"),
-    (71, 75, "🏭 62443", "Industrial"),
-    (76, 80, "⚡ GICSP", "ICS"),
-]
+# INIT DADOS
+def get_progresso():
+    c.execute("SELECT * FROM progresso WHERE id=1")
+    r = c.fetchone()
+    if not r:
+        c.execute("INSERT INTO progresso VALUES (1,1,0,0,NULL)")
+        conn.commit()
+        return {"casa":1,"xp":0,"streak":0,"ultimo":None}
+    return {"casa":r[1],"xp":r[2],"streak":r[3],"ultimo":r[4]}
 
-# ─────────────────────────────────────────────
-# FUNÇÕES
-# ─────────────────────────────────────────────
-def get_info_casa(n):
-    for i, f, sigla, nome in TEMAS_MAP:
-        if i <= n <= f:
-            return sigla, nome
-    return "?", "?"
+def salvar_progresso(d):
+    c.execute("UPDATE progresso SET casa=?, xp=?, streak=?, ultimo=? WHERE id=1",
+              (d["casa"], d["xp"], d["streak"], d["ultimo"]))
+    conn.commit()
 
-def carregar():
-    if os.path.exists(ARQUIVO):
-        try:
-            with open(ARQUIVO) as f:
-                d = json.load(f)
-        except:
-            d = {}
-    else:
-        d = {}
+dados = get_progresso()
 
-    d.setdefault("casa", 1)
-    d.setdefault("xp", 0)
-    d.setdefault("eventos", {})
-    d.setdefault("concluidas", [])
-    d.setdefault("streak", 0)
-    d.setdefault("ultimo_estudo", None)
-    d.setdefault("atividades", [])
-
-    return d
-
-def salvar(d):
-    with open(ARQUIVO, "w") as f:
-        json.dump(d, f, indent=2)
-
-def atualizar_streak(d):
-    hoje = date.today()
-    ultimo = d.get("ultimo_estudo")
-
-    if ultimo:
-        ultimo = datetime.strptime(ultimo, "%Y-%m-%d").date()
-        if hoje == ultimo + timedelta(days=1):
-            d["streak"] += 1
-        elif hoje != ultimo:
-            d["streak"] = 1
-    else:
-        d["streak"] = 1
-
-    d["ultimo_estudo"] = str(hoje)
-
-# ─────────────────────────────────────────────
-# SESSION
-# ─────────────────────────────────────────────
-if "dados" not in st.session_state:
-    st.session_state.dados = carregar()
-
-dados = st.session_state.dados
-
-# ─────────────────────────────────────────────
 # LOGIN
-# ─────────────────────────────────────────────
 if "auth" not in st.session_state:
     st.session_state.auth = False
 
 if not st.session_state.auth:
-    st.title("🔐 Acesso Seguro")
-    user = st.text_input("Usuário")
-    senha = st.text_input("Senha", type="password")
+    st.title("🔐 Login")
+    u = st.text_input("Usuário")
+    p = st.text_input("Senha", type="password")
 
     if st.button("Entrar"):
-        if user == USER_LOGIN and senha == USER_PASS:
+        if u == "Juan" and p == "Ju@n1990":
             st.session_state.auth = True
             st.rerun()
         else:
-            st.error("Login inválido")
+            st.error("Erro")
+
     st.stop()
 
-# ─────────────────────────────────────────────
 # DASHBOARD
-# ─────────────────────────────────────────────
 st.title("🛡️ Planejamento de Carreira")
 
-c1, c2, c3, c4 = st.columns(4)
+c1,c2,c3 = st.columns(3)
 c1.metric("XP", dados["xp"])
-c2.metric("Nível", dados["xp"] // 1000)
-c3.metric("Streak 🔥", dados["streak"])
-c4.metric("Progresso", f"{int((dados['casa']/80)*100)}%")
+c2.metric("Semana", dados["casa"])
+c3.metric("Streak", dados["streak"])
 
-st.progress(dados["casa"]/80)
-
-sigla, nome = get_info_casa(dados["casa"])
-st.info(f"🎯 Foco atual: {nome} ({sigla})")
-
-# ─────────────────────────────────────────────
-# ALTERAR FOCO
-# ─────────────────────────────────────────────
-st.subheader("🎯 Ajustar Foco")
-
-opcoes = [f"{t[2]} - {t[3]}" for t in TEMAS_MAP]
-novo = st.selectbox("Escolher foco", opcoes)
-
-if st.button("Alterar foco"):
-    for i, f, sigla, nome in TEMAS_MAP:
-        if f"{sigla} - {nome}" == novo:
-            dados["casa"] = i
-            salvar(dados)
-            st.rerun()
-
-# ─────────────────────────────────────────────
 # AÇÕES
-# ─────────────────────────────────────────────
-col1, col2 = st.columns(2)
-
-with col1:
-    if st.button("Avançar Semana"):
-        dados["casa"] += 1
-        dados["xp"] += 100
-        salvar(dados)
-        st.rerun()
-
-with col2:
-    if st.button("Voltar"):
-        dados["casa"] = max(1, dados["casa"] - 1)
-        dados["xp"] = max(0, dados["xp"] - 100)
-        salvar(dados)
-        st.rerun()
-
-# ─────────────────────────────────────────────
-# DIÁRIO
-# ─────────────────────────────────────────────
-st.subheader("📝 Diário")
-
-data_log = st.date_input("Data", date.today())
-texto = st.text_area("Estudo do dia")
-
-if st.button("Salvar Estudo"):
-    dados["eventos"][str(data_log)] = texto
-    atualizar_streak(dados)
-    dados["xp"] += 50
-    salvar(dados)
+if st.button("Avançar Semana"):
+    dados["casa"] += 1
+    dados["xp"] += 100
+    salvar_progresso(dados)
     st.rerun()
 
-# ─────────────────────────────────────────────
-# INGLÊS
-# ─────────────────────────────────────────────
-st.subheader("🌍 Inglês")
+# REGISTRAR ATIVIDADE
+st.subheader("Registrar Atividade")
 
-if st.button("Registrar inglês"):
-    atualizar_streak(dados)
-    dados["xp"] += 20
-    salvar(dados)
-
-# ─────────────────────────────────────────────
-# ATIVIDADES
-# ─────────────────────────────────────────────
-st.subheader("🚀 Atividades")
-
-atividade = st.selectbox("Atividade", [
-    "📘 Estudo",
-    "🧪 Laboratório",
-    "💻 Projeto",
-    "🌐 Inglês",
-    "📄 LinkedIn",
-    "🤝 Networking"
+atividade = st.selectbox("Tipo", [
+    "Estudo", "Laboratório", "Projeto", "Inglês", "Networking"
 ])
-
 obs = st.text_area("Observação")
 
-if st.button("Salvar atividade"):
-    dados["atividades"].append({
-        "data": str(date.today()),
-        "atividade": atividade,
-        "obs": obs
-    })
+if st.button("Salvar"):
+    c.execute("INSERT INTO atividades VALUES (?,?,?)",
+              (str(date.today()), atividade, obs))
+    conn.commit()
     dados["xp"] += 30
-    salvar(dados)
+    salvar_progresso(dados)
+    st.success("Salvo!")
 
-# Histórico
-for a in reversed(dados["atividades"]):
-    with st.expander(f"{a['data']} - {a['atividade']}"):
-        st.write(a["obs"])
+# CARREGAR DADOS
+df = pd.read_sql("SELECT * FROM atividades", conn)
 
-# ─────────────────────────────────────────────
-# GRÁFICO DE PILHA
-# ─────────────────────────────────────────────
-st.subheader("📊 Evolução por Atividade")
+# 📊 POWER BI STYLE (Altair)
+st.subheader("📊 Análise de Atividades")
 
-if dados["atividades"]:
-    df = pd.DataFrame(dados["atividades"])
-    df_group = df.groupby(["data", "atividade"]).size().unstack(fill_value=0)
-    st.area_chart(df_group)
+if not df.empty:
+    chart = df.groupby(["data","atividade"]).size().reset_index(name="qtd")
 
-# ─────────────────────────────────────────────
-# EXPORTAÇÃO
-# ─────────────────────────────────────────────
-st.subheader("🖨️ Relatório")
+    st.bar_chart(
+        chart.pivot(index="data", columns="atividade", values="qtd").fillna(0)
+    )
 
-st.download_button(
-    "Baixar progresso",
-    json.dumps(dados, indent=2),
-    "progresso.json"
-)
+# 🔥 HEATMAP (GitHub Style)
+st.subheader("🔥 Heatmap de Estudos")
+
+if not df.empty:
+    df["data"] = pd.to_datetime(df["data"])
+    heat = df.groupby(df["data"].dt.date).size()
+
+    heat_df = heat.reset_index()
+    heat_df.columns = ["data","qtd"]
+
+    st.dataframe(heat_df)
+
+# 🧠 IA SIMPLES
+st.subheader("🧠 Sugestão de Estudo (IA)")
+
+def sugerir(df):
+    if df.empty:
+        return "Comece com Estudo básico hoje."
+    ult = df.iloc[-1]["atividade"]
+
+    if ult == "Estudo":
+        return "Faça um laboratório amanhã."
+    elif ult == "Laboratório":
+        return "Trabalhe em um projeto."
+    elif ult == "Projeto":
+        return "Revise teoria."
+    else:
+        return "Foque em estudo técnico."
+
+st.info(sugerir(df))
+
+# 🖨️ PDF
+st.subheader("🖨️ Gerar Relatório PDF")
+
+if st.button("Gerar PDF"):
+    doc = SimpleDocTemplate("relatorio.pdf", pagesize=letter)
+    styles = getSampleStyleSheet()
+
+    conteudo = []
+    conteudo.append(Paragraph(f"XP: {dados['xp']}", styles["Normal"]))
+    conteudo.append(Paragraph(f"Semana: {dados['casa']}", styles["Normal"]))
+
+    for _, row in df.iterrows():
+        conteudo.append(Paragraph(f"{row['data']} - {row['atividade']}: {row['obs']}", styles["Normal"]))
+
+    doc.build(conteudo)
+
+    with open("relatorio.pdf", "rb") as f:
+        st.download_button("Baixar PDF", f, "relatorio.pdf")
