@@ -193,7 +193,7 @@ EMBLEMAS = {
         "trimestre": "Q4"
     },
     
-    # NOVAS CERTIFICAÇÕES ESTRATÉGICAS
+    # REDES
     "CCNA": {
         "icone": "🌐",
         "cor": "#1BA0D7",
@@ -269,7 +269,7 @@ EMBLEMAS = {
 }
 
 # =========================
-# STYLE ÉPICO
+# STYLE ÉPICO COM VERMELHO
 # =========================
 st.markdown("""
 <style>
@@ -292,6 +292,27 @@ h1, h2, h3 {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     font-weight: bold !important;
+}
+
+/* Texto em vermelho para alertas */
+.red-text {
+    color: #ff4444 !important;
+    font-weight: bold;
+    animation: pulse 1s infinite;
+}
+
+.red-badge {
+    background: linear-gradient(135deg, #ff4444, #cc0000);
+    padding: 5px 10px;
+    border-radius: 20px;
+    color: white;
+    font-weight: bold;
+    display: inline-block;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
 }
 
 .stButton button {
@@ -323,6 +344,11 @@ h1, h2, h3 {
     box-shadow: 0 5px 25px rgba(0,212,255,0.2);
 }
 
+.cert-card.atrasado {
+    border-left: 4px solid #ff4444;
+    background: linear-gradient(135deg, rgba(255,68,68,0.1), rgba(255,255,255,0.05));
+}
+
 .level-badge {
     display: inline-block;
     padding: 5px 10px;
@@ -330,6 +356,11 @@ h1, h2, h3 {
     font-size: 12px;
     font-weight: bold;
     margin-left: 10px;
+}
+
+.warning-text {
+    color: #ff8800;
+    font-weight: bold;
 }
 
 @keyframes glow {
@@ -343,6 +374,13 @@ h1, h2, h3 {
     border-radius: 10px;
     padding: 15px;
     margin: 10px 0;
+}
+
+.metric-vermelha {
+    background: linear-gradient(135deg, #ff4444, #cc0000);
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -419,6 +457,18 @@ def delete_activity(index):
     new_status = status_por_xp(st.session_state.cert_xp[area], area)
     st.session_state.cert_status[area] = new_status
 
+def verificar_atraso(cert, ano_planejado):
+    """Verifica se a certificação está atrasada"""
+    if ano_planejado == "Contínuo":
+        return False
+    ano_atual = datetime.now().year
+    if isinstance(ano_planejado, int) and ano_atual > ano_planejado:
+        xp_atual = st.session_state.cert_xp.get(cert, 0)
+        xp_necessario = EMBLEMAS[cert]["xp_necessario"]
+        if xp_atual < xp_necessario:
+            return True
+    return False
+
 # =========================
 # SIDEBAR ÉPICA
 # =========================
@@ -434,6 +484,19 @@ with st.sidebar:
     xp_no_nivel = st.session_state.xp % 100
     st.progress(xp_no_nivel / 100 if xp_no_nivel > 0 else 0)
     st.caption(f"Próximo nível: {100 - xp_no_nivel} XP")
+    
+    st.markdown("---")
+    
+    # Alertas em vermelho
+    certificacoes_atrasadas = []
+    for cert, data in EMBLEMAS.items():
+        if verificar_atraso(cert, data.get("ano", 2030)):
+            certificacoes_atrasadas.append(cert)
+    
+    if certificacoes_atrasadas:
+        st.markdown('<p class="red-text">⚠️ **ATENÇÃO - CERTIFICAÇÕES ATRASADAS:**</p>', unsafe_allow_html=True)
+        for cert in certificacoes_atrasadas[:3]:
+            st.markdown(f'<p class="red-text">• {EMBLEMAS[cert]["emblema"]} {cert}</p>', unsafe_allow_html=True)
     
     st.markdown("---")
     st.markdown("### 🎯 **Top 5 Especializações**")
@@ -461,7 +524,11 @@ with st.sidebar:
         xp_total = sum(st.session_state.cert_xp.get(cert, 0) for cert in certs)
         xp_max = sum(EMBLEMAS[cert]["xp_necessario"] for cert in certs)
         percent = (xp_total / xp_max) * 100 if xp_max > 0 else 0
-        st.markdown(f"**{trilha}**: {percent:.0f}%")
+        
+        if percent < 30:
+            st.markdown(f'<span class="red-text">⚠️ {trilha}: {percent:.0f}%</span>', unsafe_allow_html=True)
+        else:
+            st.markdown(f"**{trilha}**: {percent:.0f}%")
         st.progress(percent / 100)
 
 # =========================
@@ -471,6 +538,7 @@ col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     st.markdown("# 🚀 **MISSÃO CARREIRA**")
     st.markdown("### *Juan Felipe da Silva - Especialista em Cibersegurança e Cloud*")
+    st.markdown('<p class="red-text">🎯 Meta: Completar todas as certificações até 2029!</p>', unsafe_allow_html=True)
     st.markdown("---")
 
 # =========================
@@ -525,7 +593,11 @@ with tab1:
         col1.metric("🎮 **Missões**", len(st.session_state.db))
         col2.metric("⭐ **XP Global**", st.session_state.xp)
         col3.metric("🏆 **Nível**", st.session_state.xp // 100 + 1)
-        col4.metric("✅ **Certificações**", f"{certificacoes_concluidas}/{len(EMBLEMAS)}")
+        
+        if certificacoes_concluidas < 5:
+            col4.metric("✅ **Certificações**", f"{certificacoes_concluidas}/{len(EMBLEMAS)}", delta="⚠️ Foco!")
+        else:
+            col4.metric("✅ **Certificações**", f"{certificacoes_concluidas}/{len(EMBLEMAS)}")
     else:
         col1.metric("🎮 **Missões**", 0)
         col2.metric("⭐ **XP Global**", 0)
@@ -560,8 +632,12 @@ with tab1:
         badge_icon = get_badge_icon(status)
         nivel_icon = get_nivel_icon(emblema_data["nivel"])
         
+        # Verificar atraso
+        esta_atrasado = verificar_atraso(cert, emblema_data.get("ano", 2030))
+        classe_atraso = "cert-card atrasado" if esta_atrasado else "cert-card"
+        
         st.markdown(f"""
-        <div class="cert-card">
+        <div class="{classe_atraso}">
             <div style="display: flex; align-items: center; justify-content: space-between;">
                 <div>
                     <h3 style="margin: 0;">
@@ -585,7 +661,10 @@ with tab1:
         with col1:
             progress = min(xp / xp_necessario, 1.0)
             st.progress(progress)
-            st.caption(f"📊 Progresso: {xp}/{xp_necessario} XP ({int(progress*100)}%)")
+            if esta_atrasado:
+                st.markdown(f'<p class="red-text">📊 Progresso: {xp}/{xp_necessario} XP ({int(progress*100)}%) - ATRASADO!</p>', unsafe_allow_html=True)
+            else:
+                st.caption(f"📊 Progresso: {xp}/{xp_necessario} XP ({int(progress*100)}%)")
         
         with col2:
             st.markdown(f"**Status:** {badge_icon} {status}")
@@ -688,10 +767,13 @@ with tab2:
                         xp_atual = st.session_state.cert_xp.get(cert, 0)
                         xp_necessario = emblema["xp_necessario"]
                         percent = (xp_atual / xp_necessario) * 100
+                        esta_atrasado = verificar_atraso(cert, ano)
+                        
+                        cor_borda = "#ff4444" if esta_atrasado else emblema['cor']
                         
                         with cols[i % 4]:
                             st.markdown(f"""
-                            <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, {emblema['cor']}20, {emblema['cor']}05); border-radius: 10px; margin: 5px;">
+                            <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, {emblema['cor']}20, {emblema['cor']}05); border-radius: 10px; margin: 5px; border: 1px solid {cor_borda};">
                                 <div style="font-size: 48px;">{emblema['emblema']}</div>
                                 <div style="font-size: 16px; font-weight: bold;">{cert}</div>
                                 <div style="font-size: 11px;">{emblema['titulo']}</div>
@@ -722,74 +804,4 @@ with tab3:
             "objetivo": "Lead Auditor e Implementer",
             "cor": "#FFD700"
         },
-        "🛡️ **TRILHA SEGURANÇA**": {
-            "certs": ["Security+", "CySA+", "CISSP"],
-            "desc": "Do fundamentals à arquitetura de segurança",
-            "objetivo": "Arquiteto de Cibersegurança",
-            "cor": "#FF0000"
-        },
-        "🏭 **TRILHA OT/INDUSTRIAL**": {
-            "certs": ["IEC 62443", "MITRE ATT&CK ICS", "GICSP"],
-            "desc": "Especialização em segurança industrial",
-            "objetivo": "Especialista em ICS Security",
-            "cor": "#808080"
-        },
-        "📊 **TRILHA DADOS**": {
-            "certs": ["Python", "SQL", "Power BI"],
-            "desc": "Análise e visualização de dados",
-            "objetivo": "Data Analyst Expert",
-            "cor": "#F2C811"
-        }
-    }
-    
-    for trilha, info in trilhas_detalhadas.items():
-        st.markdown(f"""
-        <div class="trilha-card">
-            <h3>{trilha}</h3>
-            <p>{info['desc']}</p>
-            <p><strong>🎯 Objetivo:</strong> {info['objetivo']}</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        cols = st.columns(len(info["certs"]))
-        for i, cert in enumerate(info["certs"]):
-            emblema = EMBLEMAS[cert]
-            xp_atual = st.session_state.cert_xp.get(cert, 0)
-            xp_necessario = emblema["xp_necessario"]
-            percent = (xp_atual / xp_necessario) * 100
-            status = st.session_state.cert_status.get(cert, "Não iniciada")
-            
-            with cols[i]:
-                st.markdown(f"""
-                <div style="text-align: center; padding: 10px;">
-                    <div style="font-size: 40px;">{emblema['emblema']}</div>
-                    <div><strong>{cert}</strong></div>
-                    <div style="font-size: 12px;">{emblema['titulo']}</div>
-                    <div style="font-size: 20px;">{get_badge_icon(status)}</div>
-                    <div style="font-size: 12px;">{percent:.0f}%</div>
-                </div>
-                """, unsafe_allow_html=True)
-        
-        # Calcular progresso da trilha
-        xp_total = sum(st.session_state.cert_xp.get(cert, 0) for cert in info["certs"])
-        xp_max = sum(EMBLEMAS[cert]["xp_necessario"] for cert in info["certs"])
-        progresso_trilha = (xp_total / xp_max) * 100 if xp_max > 0 else 0
-        
-        st.progress(progresso_trilha / 100)
-        st.caption(f"Progresso da Trilha: {progresso_trilha:.0f}%")
-        st.markdown("---")
-
-# =========================
-# TAB 4 - CONQUISTAS
-# =========================
-with tab4:
-    st.markdown("## 🏅 **HALL DA FAMA**")
-    
-    # Conquistas calculadas
-    conquistas = []
-    
-    # Maratonista
-    if len(st.session_state.db) >= 20:
-        conquistas.append({"nome": "🏃 **Maratonista Épico**", "desc": "Completou 20+ missões", "icone": "🎯", "desbloqueado": True})
-    elif len(st.session_state.db) >= 10:
-        conquistas.append({"nome": "🏃 **Maratonista**", "desc": "Completou 10 missões
+        "🛡️ **TRILHA SEGURAN
