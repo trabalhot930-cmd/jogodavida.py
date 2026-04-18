@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 from datetime import date
-import os
 
 # =========================
 # CONFIG
@@ -23,10 +22,6 @@ html, body, [data-testid="stAppViewContainer"] {
     color: #e6f0ff;
 }
 
-.block-container {
-    padding-top: 2rem;
-}
-
 .stButton button {
     background-color: #e53935 !important;
     color: white !important;
@@ -34,39 +29,37 @@ html, body, [data-testid="stAppViewContainer"] {
     border-radius: 10px;
 }
 
-.card {
-    background: white;
-    color: black;
-    padding: 10px;
-    border-radius: 10px;
-    text-align: center;
-    font-weight: bold;
+.block-container {
+    padding-top: 2rem;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # =========================
-# BANCO SIMPLES (MODO MVP)
-# =========================
-if "db" not in st.session_state:
-    st.session_state.db = []
-
-# =========================
-# LOGIN SIMPLES (SAAS DEMO)
+# SESSION STATE (FIX CRÍTICO)
 # =========================
 if "auth" not in st.session_state:
     st.session_state.auth = False
 
-if not st.session_state.auth:
-    st.title("🔐 Login SaaS Carreira Pro")
+if "user" not in st.session_state:
+    st.session_state.user = None
 
-    email = st.text_input("Email")
-    senha = st.text_input("Senha", type="password")
+if "db" not in st.session_state:
+    st.session_state.db = []
+
+# =========================
+# LOGIN
+# =========================
+if not st.session_state.auth:
+    st.title("🔐 Login - Carreira SaaS Pro")
+
+    user = st.text_input("Usuário")
+    pwd = st.text_input("Senha", type="password")
 
     if st.button("Entrar"):
-        if email and senha:
+        if user and pwd:
             st.session_state.auth = True
-            st.session_state.user = email
+            st.session_state.user = user
             st.rerun()
         else:
             st.error("Preencha os campos")
@@ -77,7 +70,8 @@ if not st.session_state.auth:
 # HEADER
 # =========================
 st.title("🚀 Carreira SaaS Pro Dashboard")
-st.caption(f"Usuário logado: {st.session_state.user}")
+
+st.caption(f"👤 Usuário logado: {st.session_state.get('user', 'guest')}")
 
 # =========================
 # INPUT
@@ -101,7 +95,7 @@ if st.button("Salvar atividade"):
         "atividade": atividade,
         "obs": obs
     })
-    st.success("Atividade salva!")
+    st.success("Salvo com sucesso!")
 
 # =========================
 # DATAFRAME
@@ -125,7 +119,7 @@ else:
     col3.metric("Labs", 0)
 
 # =========================
-# DASHBOARD
+# GRÁFICO EVOLUÇÃO
 # =========================
 st.subheader("📈 Evolução")
 
@@ -140,6 +134,8 @@ if not df.empty:
     ).properties(height=350)
 
     st.altair_chart(chart, use_container_width=True)
+else:
+    st.info("Sem dados ainda para gráfico.")
 
 # =========================
 # DISTRIBUIÇÃO
@@ -155,13 +151,13 @@ if not df.empty:
     st.altair_chart(pie, use_container_width=True)
 
 # =========================
-# IA COACH (SIMPLIFICADA)
+# IA COACH (SEM ERRO OPENAI)
 # =========================
 st.subheader("🧠 IA Coach")
 
 def coach(df):
     if df.empty:
-        return "Comece com estudo básico e consistência diária."
+        return "Comece com estudo diário e consistência."
 
     last = df.iloc[-1]["atividade"]
 
@@ -172,14 +168,14 @@ def coach(df):
     elif last == "Projeto":
         return "Documente e publique seu projeto."
     else:
-        return "Mantenha consistência diária e evolução contínua."
+        return "Mantenha consistência e evolução contínua."
 
 st.info(coach(df))
 
 # =========================
-# CERTIFICAÇÕES ROADMAP
+# ROADMAP
 # =========================
-st.subheader("🏅 Roadmap de Certificações")
+st.subheader("🏅 Roadmap Certificações")
 
 certs = [
     "AZ-900",
@@ -194,4 +190,7 @@ cols = st.columns(3)
 
 for i, c in enumerate(certs):
     with cols[i % 3]:
-        st.markdown(f"<div class='card'>{c}</div>", unsafe_allow_html=True)
+        st.markdown(
+            f"<div style='background:white;color:black;padding:10px;border-radius:10px;text-align:center;font-weight:bold'>{c}</div>",
+            unsafe_allow_html=True
+        )
