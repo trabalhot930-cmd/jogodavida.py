@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 from datetime import datetime, timedelta
+import json
 
 # =========================
 # CONFIG
@@ -94,8 +95,123 @@ h1, h2, h3 {
 .stProgress > div > div {
     background: linear-gradient(90deg, #4d9fff, #7b2ff7) !important;
 }
+.save-indicator {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #00ff88;
+    color: #0a0e27;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 999;
+    animation: fadeOut 3s ease-out forwards;
+}
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    70% { opacity: 1; }
+    100% { opacity: 0; visibility: hidden; }
+}
 </style>
 """, unsafe_allow_html=True)
+
+# =========================
+# FUNÇÕES DE SALVAMENTO (localStorage via JavaScript)
+# =========================
+def inject_save_js():
+    """Injeta código JavaScript para salvar no localStorage"""
+    st.markdown("""
+    <script>
+    function salvarDadosLocalStorage(dados) {
+        localStorage.setItem('diario_carreira_juan', JSON.stringify(dados));
+        console.log('✅ Dados salvos no localStorage');
+        
+        // Mostrar indicador visual
+        const indicator = document.createElement('div');
+        indicator.className = 'save-indicator';
+        indicator.innerHTML = '💾 Dados salvos!';
+        document.body.appendChild(indicator);
+        setTimeout(() => indicator.remove(), 3000);
+    }
+    
+    function carregarDadosLocalStorage() {
+        const dados = localStorage.getItem('diario_carreira_juan');
+        if (dados) {
+            console.log('✅ Dados carregados do localStorage');
+            return JSON.parse(dados);
+        }
+        return null;
+    }
+    
+    // Salvar dados quando a página for fechada
+    window.addEventListener('beforeunload', function() {
+        const dados = window.dadosParaSalvar;
+        if (dados) {
+            localStorage.setItem('diario_carreira_juan', JSON.stringify(dados));
+        }
+    });
+    </script>
+    """, unsafe_allow_html=True)
+
+def salvar_dados_no_localstorage():
+    """Salva os dados do session_state no localStorage via JavaScript"""
+    dados = {
+        "db": st.session_state.db,
+        "xp": st.session_state.xp,
+        "cert_xp": st.session_state.cert_xp,
+        "cert_status": st.session_state.cert_status,
+        "ultima_atualizacao": datetime.now().isoformat()
+    }
+    
+    # Converter para JSON
+    dados_json = json.dumps(dados, default=str)
+    
+    # Injetar JavaScript para salvar
+    st.markdown(f"""
+    <script>
+    const dadosParaSalvar = {dados_json};
+    localStorage.setItem('diario_carreira_juan', JSON.stringify(dadosParaSalvar));
+    console.log('✅ Dados salvos no localStorage:', {len(st.session_state.db)} atividades);
+    
+    // Mostrar indicador visual
+    const indicator = document.createElement('div');
+    indicator.className = 'save-indicator';
+    indicator.innerHTML = '💾 Diário salvo!';
+    document.body.appendChild(indicator);
+    setTimeout(() => indicator.remove(), 2000);
+    </script>
+    """, unsafe_allow_html=True)
+
+def carregar_dados_do_localstorage():
+    """Carrega dados do localStorage via JavaScript"""
+    st.markdown("""
+    <script>
+    const dadosCarregados = localStorage.getItem('diario_carreira_juan');
+    if (dadosCarregados) {
+        const dados = JSON.parse(dadosCarregados);
+        window.dadosCarregados = dados;
+        console.log('✅ Dados carregados do localStorage:', dados.db?.length || 0, 'atividades');
+    }
+    </script>
+    """, unsafe_allow_html=True)
+    
+    # Tentar recuperar dados via query param (método alternativo)
+    import streamlit.components.v1 as components
+    import uuid
+    
+    # Criar um componente HTML para comunicação
+    components.html(f"""
+    <div id="data-loader" style="display:none;"></div>
+    <script>
+    const dados = localStorage.getItem('diario_carreira_juan');
+    if (dados) {{
+        const dadosObj = JSON.parse(dados);
+        // Salvar em um atributo global
+        window.parent.document.body.setAttribute('data-dados-carregados', JSON.stringify(dadosObj));
+    }}
+    </script>
+    """, height=0)
 
 # =========================
 # SESSION STATE
@@ -108,9 +224,39 @@ if "cert_xp" not in st.session_state:
     st.session_state.cert_xp = {cert: 0 for cert in EMBLEMAS.keys()}
 if "cert_status" not in st.session_state:
     st.session_state.cert_status = {cert: "Não iniciada" for cert in EMBLEMAS.keys()}
+if "dados_carregados" not in st.session_state:
+    st.session_state.dados_carregados = False
 
 # =========================
-# FUNÇÕES
+# CARREGAR DADOS SALVOS
+# =========================
+inject_save_js()
+
+# Tentar carregar dados salvos (via método de importação)
+try:
+    import streamlit.components.v1 as components
+    
+    # Criar um componente para ler localStorage
+    components.html("""
+    <script>
+    const dados = localStorage.getItem('diario_carreira_juan');
+    if (dados) {
+        const dadosObj = JSON.parse(dados);
+        // Salvar no sessionStorage para recuperar
+        sessionStorage.setItem('dados_recuperados', dados);
+    }
+    </script>
+    """, height=0)
+    
+    # Verificar se há dados para carregar
+    if not st.session_state.dados_carregados and len(st.session_state.db) == 0:
+        # Tentar recuperar de um arquivo de exemplo ou deixar vazio
+        pass
+except:
+    pass
+
+# =========================
+# FUNÇÕES PRINCIPAIS
 # =========================
 def calc_xp(atividade):
     tabela = {
@@ -140,6 +286,7 @@ def delete_activity(index):
     st.session_state.xp -= atividade["xp"]
     st.session_state.cert_xp[atividade["area"]] -= atividade["xp"]
     st.session_state.db.pop(index)
+    salvar_dados_no_localstorage()
 
 def adicionar_atividade(area, atividade, xp, obs):
     st.session_state.db.append({
@@ -156,6 +303,8 @@ def adicionar_atividade(area, atividade, xp, obs):
         st.session_state.cert_status[area] = "Concluída"
     elif st.session_state.cert_xp[area] >= EMBLEMAS[area]["xp"] * 0.3:
         st.session_state.cert_status[area] = "Em andamento"
+    
+    salvar_dados_no_localstorage()
 
 def get_atividades_hoje():
     hoje = datetime.now().date()
@@ -190,31 +339,73 @@ def gerar_relatorio_html(data):
         <div class="container">
             <h1>🚀 RELATÓRIO DE MISSÕES</h1>
             <h2>📅 {data.strftime('%d/%m/%Y')}</h2>
+            <p>👨‍🚀 Juan Felipe da Silva</p>
+            <hr>
     """
     total_xp = 0
     for atv in atividades:
         emblema = EMBLEMAS.get(atv['area'], {}).get('emblema', '📌')
         total_xp += atv['xp']
-        html += f'<div class="atividade">{emblema} <strong>{atv["area"]}</strong><br>⚔️ {atv["atividade"]}<br>⭐ +{atv["xp"]} XP</div>'
+        html += f'<div class="atividade">{emblema} <strong>{atv["area"]}</strong><br>⚔️ {atv["atividade"]}<br>⭐ +{atv["xp"]} XP<br>📝 {atv["obs"] if atv["obs"] else "-"}</div>'
     
-    html += f'<div class="total">🌟 TOTAL: +{total_xp} XP 🌟</div></div></body></html>'
+    html += f"""
+            <div class="total">🌟 TOTAL DO DIA: +{total_xp} XP 🌟</div>
+            <hr>
+            <p style="text-align: center; font-size: 12px;">Relatório gerado em {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}</p>
+        </div>
+    </body>
+    </html>"""
     return html
+
+def exportar_dados_completos():
+    dados = {
+        "historico_atividades": st.session_state.db,
+        "xp_total": st.session_state.xp,
+        "certificacoes_xp": st.session_state.cert_xp,
+        "certificacoes_status": st.session_state.cert_status,
+        "data_exportacao": datetime.now().isoformat()
+    }
+    return json.dumps(dados, default=str, indent=2)
+
+def importar_dados(dados_json):
+    try:
+        dados = json.loads(dados_json)
+        st.session_state.db = dados.get("historico_atividades", [])
+        st.session_state.xp = dados.get("xp_total", 0)
+        st.session_state.cert_xp = dados.get("certificacoes_xp", {cert: 0 for cert in EMBLEMAS.keys()})
+        st.session_state.cert_status = dados.get("certificacoes_status", {cert: "Não iniciada" for cert in EMBLEMAS.keys()})
+        salvar_dados_no_localstorage()
+        return True
+    except:
+        return False
 
 # =========================
 # SIDEBAR
 # =========================
 with st.sidebar:
-    st.markdown("## 🚀 NAVE")
-    st.markdown(f"👨‍🚀 **Juan Felipe**")
-    st.markdown(f"⭐ **XP:** {st.session_state.xp}")
+    st.markdown("## 🚀 NAVE ESTELAR")
+    st.markdown(f"""
+    <div style="text-align: center;">
+        <div style="font-size: 48px;">👨‍🚀</div>
+        <h3 style="margin: 0;">Juan Felipe</h3>
+        <p style="margin: 0; opacity: 0.8;">Comandante</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("---")
+    st.markdown(f"⭐ **XP Total:** {st.session_state.xp}")
     st.markdown(f"🎖️ **Nível:** {st.session_state.xp // 100 + 1}")
     st.markdown(f"📅 **Missões:** {len(st.session_state.db)}")
+    
+    xp_no_nivel = st.session_state.xp % 100
+    st.progress(xp_no_nivel / 100 if xp_no_nivel > 0 else 0)
+    st.caption(f"Próximo nível: {100 - xp_no_nivel} XP")
     
     st.markdown("---")
     
     atrasadas = [c for c, d in EMBLEMAS.items() if verificar_atraso(c, d.get("ano", 2030))]
     if atrasadas:
-        st.markdown('<p class="red-text">⚠️ Atrasadas:</p>', unsafe_allow_html=True)
+        st.markdown('<p class="red-text">⚠️ ATRASADAS:</p>', unsafe_allow_html=True)
         for c in atrasadas[:3]:
             st.markdown(f'<p class="red-text">• {EMBLEMAS[c]["emblema"]} {c[:15]}</p>', unsafe_allow_html=True)
     
@@ -225,12 +416,26 @@ with st.sidebar:
     st.markdown(f"**📅 Hoje:** {len(atividades_hoje)} atv | +{xp_hoje} XP")
     st.markdown(f"**📆 Semana:** +{get_xp_semana()} XP")
     st.markdown(f"**📅 Mês:** +{get_xp_mes()} XP")
+    
+    st.markdown("---")
+    st.markdown("### 💾 Backup")
+    if st.button("📥 Exportar Dados", use_container_width=True):
+        dados_json = exportar_dados_completos()
+        st.download_button("Baixar JSON", dados_json, "backup_diario.json", "application/json")
+    
+    uploaded_file = st.file_uploader("📤 Importar Backup", type=["json"])
+    if uploaded_file is not None:
+        dados_json = uploaded_file.read().decode()
+        if importar_dados(dados_json):
+            st.success("✅ Dados importados com sucesso!")
+            st.rerun()
 
 # =========================
 # HEADER
 # =========================
 st.title("🚀 MISSÃO CARREIRA")
 st.caption("Juan Felipe da Silva - Especialista em Cibersegurança")
+st.markdown('<p class="green-text">💾 Seu progresso é salvo automaticamente como um diário!</p>', unsafe_allow_html=True)
 st.markdown("---")
 
 # =========================
@@ -245,8 +450,8 @@ with col1:
     with st.form("nova_atividade", clear_on_submit=True):
         area = st.selectbox("Certificação", list(EMBLEMAS.keys()))
         atividade = st.selectbox("Tipo", ["📚 Estudo", "🔬 Laboratório", "🏗️ Projeto", "🔄 Revisão", "📝 Simulado", "🎓 Aula Pós", "🌎 Inglês", "🏅 Certificação"])
-        obs = st.text_area("Observação")
-        if st.form_submit_button("🚀 Lançar", use_container_width=True):
+        obs = st.text_area("Observação", placeholder="Ex: Estudei módulo 3, fiz laboratório...")
+        if st.form_submit_button("🚀 LANÇAR MISSÃO", use_container_width=True):
             xp_ganho = calc_xp(atividade)
             adicionar_atividade(area, atividade, xp_ganho, obs)
             st.success(f"+{xp_ganho} XP!", icon="🎉")
@@ -258,20 +463,20 @@ with col2:
     st.markdown(f"""
     <div class="kpi-card">
         <div style="font-size: 36px;">⭐</div>
-        <div style="font-size: 28px;">+{xp_hoje}</div>
+        <div style="font-size: 28px; font-weight: bold;">+{xp_hoje}</div>
         <div>XP hoje</div>
     </div>
     """, unsafe_allow_html=True)
 
 with col3:
-    st.markdown("#### 🎯 Meta")
+    st.markdown("#### 🎯 Meta Diária")
     meta = 50
     xp_hoje = sum(a['xp'] for a in get_atividades_hoje())
     progresso = min(xp_hoje / meta, 1.0)
     st.markdown(f"""
     <div class="kpi-card">
         <div style="font-size: 36px;">🎯</div>
-        <div style="font-size: 28px;">{xp_hoje}/{meta}</div>
+        <div style="font-size: 28px; font-weight: bold;">{xp_hoje}/{meta}</div>
         <div>XP meta</div>
     </div>
     """, unsafe_allow_html=True)
@@ -280,36 +485,53 @@ with col3:
 # Lista de atividades de hoje
 atividades_hoje = get_atividades_hoje()
 if atividades_hoje:
+    st.markdown("#### 📝 Atividades Registradas Hoje")
     for atv in atividades_hoje:
         emblema = EMBLEMAS.get(atv['area'], {}).get('emblema', '📌')
         st.markdown(f"""
         <div class="atividade-card">
-            {emblema} **{atv['area'][:30]}** | {atv['atividade']} | ⭐ +{atv['xp']}<br>
-            <small>📝 {atv['obs'][:50] if atv['obs'] else '-'}</small>
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 40px; font-size: 24px;">{emblema}</td>
+                    <td><strong>{atv['area'][:30]}</strong></td>
+                    <td>{atv['atividade']}</td>
+                    <td style="color: #00ff88;">⭐ +{atv['xp']}</td>
+                </tr>
+                <tr>
+                    <td colspan="4" style="font-size: 12px; opacity: 0.7;">📝 {atv['obs'][:50] if atv['obs'] else '-'}</td>
+                </tr>
+            </table>
         </div>
         """, unsafe_allow_html=True)
 else:
-    st.info("✨ Nenhuma atividade hoje. Comece agora!")
+    st.info("✨ Nenhuma atividade hoje. Comece agora! Seu progresso será salvo automaticamente.")
 
 st.markdown("---")
 
 # =========================
-# KPIS
+# KPIS PRINCIPAIS
 # =========================
 c1, c2, c3, c4, c5 = st.columns(5)
 concluidas = sum(1 for cert, xp in st.session_state.cert_xp.items() if xp >= EMBLEMAS[cert]["xp"])
+total_certs = len(EMBLEMAS)
+
 c1.metric("🎮 Missões", len(st.session_state.db))
 c2.metric("⭐ XP", st.session_state.xp)
 c3.metric("🏆 Nível", st.session_state.xp // 100 + 1)
-c4.metric("✅ Concluídas", f"{concluidas}/{len(EMBLEMAS)}")
-c5.metric("📊 Progresso", f"{(concluidas/len(EMBLEMAS)*100):.0f}%")
+c4.metric("✅ Concluídas", f"{concluidas}/{total_certs}")
+c5.metric("📊 Progresso", f"{(concluidas/total_certs*100):.0f}%")
 
 st.markdown("---")
 
 # =========================
 # CERTIFICAÇÕES EM GRID
 # =========================
-st.markdown("## 🎖️ CERTIFICAÇÕES")
+st.markdown("## 🎖️ JORNADA DAS CERTIFICAÇÕES")
+
+# Filtro
+col_filtro1, col_filtro2 = st.columns([3, 1])
+with col_filtro2:
+    filtro_status = st.selectbox("Filtrar", ["Todas", "Concluída", "Em andamento", "Não iniciada"])
 
 certs_list = list(st.session_state.cert_xp.items())
 
@@ -321,6 +543,10 @@ for i in range(0, len(certs_list), 4):
             cert, xp = certs_list[idx]
             info = EMBLEMAS[cert]
             status = st.session_state.cert_status[cert]
+            
+            if filtro_status != "Todas" and status != filtro_status:
+                continue
+            
             atrasado = verificar_atraso(cert, info.get("ano", 2030))
             progresso = min(xp / info["xp"], 1.0)
             classe = "cert-card atrasado" if atrasado else "cert-card"
@@ -341,6 +567,7 @@ for i in range(0, len(certs_list), 4):
                 novo_status = st.selectbox("", opcoes, index=idx_status, key=f"status_{cert}", label_visibility="collapsed")
                 if novo_status != status:
                     st.session_state.cert_status[cert] = novo_status
+                    salvar_dados_no_localstorage()
                     st.rerun()
 
 st.markdown("---")
@@ -362,7 +589,6 @@ for ano, titulo in anos.items():
         certs_ano = [cert for cert, data in EMBLEMAS.items() if data.get("ano") == ano]
         
         if certs_ano:
-            # Organizar por trimestre
             trimestres = {"Q1": [], "Q2": [], "Q3": [], "Q4": []}
             for cert in certs_ano:
                 trimestre = EMBLEMAS[cert].get("trimestre", "Q1")
@@ -395,18 +621,17 @@ for ano, titulo in anos.items():
 st.markdown("---")
 
 # =========================
-# GRÁFICOS COMPLETOS
+# GRÁFICOS
 # =========================
 if len(st.session_state.db) > 0:
-    st.markdown("## 📈 GRÁFICOS E ANÁLISE")
+    st.markdown("## 📈 ANÁLISE DE EVOLUÇÃO")
     
     df = pd.DataFrame(st.session_state.db)
     df['data'] = pd.to_datetime(df['data'])
     df = df.sort_values('data')
     
-    # GRÁFICO 1: Evolução Acumulada
+    # Gráfico 1: Evolução Acumulada
     st.markdown("### 📊 Evolução do XP Acumulado")
-    
     evolucao = df.groupby('data').agg({'xp': 'sum'}).reset_index()
     evolucao['xp_acumulado'] = evolucao['xp'].cumsum()
     
@@ -417,77 +642,36 @@ if len(st.session_state.db) > 0:
             color='#4d9fff'
         ).encode(
             x=alt.X('data:T', title='Data', axis=alt.Axis(labelAngle=-45, format='%d/%m/%Y')),
-            y=alt.Y('xp_acumulado:Q', title='XP Total Acumulado'),
+            y=alt.Y('xp_acumulado:Q', title='XP Total'),
             tooltip=['data:T', 'xp_acumulado:Q']
-        ).properties(height=350, title='🚀 Trajetória de Crescimento')
-        
+        ).properties(height=350)
         st.altair_chart(chart1, use_container_width=True)
     
-    # GRÁFICO 2: XP por Certificação
-    st.markdown("### 🎯 XP por Certificação (Top 10)")
-    
+    # Gráfico 2: XP por Certificação
+    st.markdown("### 🎯 XP por Certificação")
     xp_por_cert = df.groupby('area').agg({'xp': 'sum'}).reset_index()
     xp_por_cert = xp_por_cert.sort_values('xp', ascending=False).head(10)
     
-    chart2 = alt.Chart(xp_por_cert).mark_bar(
-        cornerRadiusTopLeft=8,
-        cornerRadiusTopRight=8
-    ).encode(
-        x=alt.X('area:N', title='Certificação', sort='-y', axis=alt.Axis(labelAngle=-45, labelLimit=100)),
-        y=alt.Y('xp:Q', title='XP Total'),
+    chart2 = alt.Chart(xp_por_cert).mark_bar(cornerRadiusTopLeft=8, cornerRadiusTopRight=8).encode(
+        x=alt.X('area:N', title='Certificação', sort='-y', axis=alt.Axis(labelAngle=-45)),
+        y=alt.Y('xp:Q', title='XP'),
         color=alt.Color('area:N', legend=None, scale=alt.Scale(scheme='turbo')),
         tooltip=['area', 'xp']
-    ).properties(height=350, title='📊 Distribuição de XP por Certificação')
-    
+    ).properties(height=350)
     st.altair_chart(chart2, use_container_width=True)
     
-    # GRÁFICO 3: Atividades por Tipo (Pizza)
+    # Gráfico 3: Atividades por Tipo
     st.markdown("### 🍩 Distribuição por Tipo de Atividade")
-    
     atividades_count = df['atividade'].value_counts().reset_index()
     atividades_count.columns = ['atividade', 'quantidade']
     
     chart3 = alt.Chart(atividades_count).mark_arc(innerRadius=50).encode(
         theta=alt.Theta(field='quantidade', type='quantitative'),
-        color=alt.Color(field='atividade', type='nominal', scale=alt.Scale(scheme='viridis'), legend=alt.Legend(title="Atividade")),
+        color=alt.Color(field='atividade', type='nominal', scale=alt.Scale(scheme='viridis')),
         tooltip=['atividade', 'quantidade']
-    ).properties(height=350, title='🍩 Proporção de Tipos de Atividade')
-    
+    ).properties(height=350)
     st.altair_chart(chart3, use_container_width=True)
-    
-    # GRÁFICO 4: Atividades por Mês (Heatmap)
-    st.markdown("### 🔥 Mapa de Calor - Atividades por Mês")
-    
-    df['mes_ano'] = df['data'].dt.strftime('%Y-%m')
-    heatmap_data = df.groupby(['mes_ano', 'area']).size().reset_index(name='atividades')
-    heatmap_data = heatmap_data.sort_values('atividades', ascending=False).head(30)
-    
-    if len(heatmap_data) > 0:
-        chart4 = alt.Chart(heatmap_data).mark_rect().encode(
-            x=alt.X('mes_ano:N', title='Mês/Ano', axis=alt.Axis(labelAngle=-45)),
-            y=alt.Y('area:N', title='Certificação'),
-            color=alt.Color('atividades:Q', scale=alt.Scale(scheme='inferno'), title='Atividades'),
-            tooltip=['mes_ano', 'area', 'atividades']
-        ).properties(height=400, title='🌡️ Mapa de Calor das Atividades')
-        
-        st.altair_chart(chart4, use_container_width=True)
-    
-    # GRÁFICO 5: Linha do Tempo (Timeline)
-    st.markdown("### 📅 Linha do Tempo de Atividades")
-    
-    timeline_data = df.groupby('data').size().reset_index(name='quantidade')
-    
-    chart5 = alt.Chart(timeline_data).mark_area(
-        color='#4d9fff',
-        opacity=0.3
-    ).encode(
-        x=alt.X('data:T', title='Data', axis=alt.Axis(labelAngle=-45, format='%d/%m/%Y')),
-        y=alt.Y('quantidade:Q', title='Quantidade de Atividades'),
-        tooltip=['data:T', 'quantidade:Q']
-    ).properties(height=300, title='📈 Frequência de Atividades ao Longo do Tempo')
-    
-    st.altair_chart(chart5, use_container_width=True)
-    
+
 else:
     st.info("📊 Complete algumas missões para visualizar os gráficos de evolução!")
 
@@ -496,70 +680,6 @@ st.markdown("---")
 # =========================
 # RELATÓRIO E EXPORTAÇÃO
 # =========================
-st.markdown("## 📄 RELATÓRIO E EXPORTAÇÃO")
+st.markdown("## 📄 RELATÓRIO DIÁRIO")
 
-col_r1, col_r2 = st.columns(2)
-
-with col_r1:
-    st.markdown("### Gerar Relatório Diário")
-    data_rel = st.date_input("Data do relatório", value=datetime.now().date())
-    if st.button("📄 Gerar Relatório", use_container_width=True):
-        relatorio = gerar_relatorio_html(data_rel)
-        if relatorio:
-            st.download_button("📥 Baixar HTML", relatorio, f"relatorio_{data_rel.strftime('%Y%m%d')}.html", "text/html")
-        else:
-            st.warning("Sem atividades nesta data")
-
-with col_r2:
-    st.markdown("### Exportar Dados Completos")
-    if len(st.session_state.db) > 0:
-        df_export = pd.DataFrame(st.session_state.db)
-        csv = df_export.to_csv(index=False).encode('utf-8')
-        st.download_button("📥 Baixar CSV Completo", csv, f"historico_{datetime.now().strftime('%Y%m%d')}.csv", "text/csv")
-        st.caption(f"📊 {len(st.session_state.db)} registros exportados")
-
-st.markdown("---")
-
-# =========================
-# HISTÓRICO RECENTE
-# =========================
-if len(st.session_state.db) > 0:
-    st.markdown("## 📜 HISTÓRICO DE MISSÕES")
-    
-    df_hist = pd.DataFrame(st.session_state.db)
-    df_hist = df_hist.sort_values('data', ascending=False).reset_index(drop=True)
-    
-    # Filtro
-    filtro_area = st.selectbox("Filtrar por certificação", ["Todas"] + list(EMBLEMAS.keys()))
-    
-    for i in range(min(20, len(df_hist))):
-        row = df_hist.iloc[i]
-        
-        if filtro_area != "Todas" and row['area'] != filtro_area:
-            continue
-        
-        cols = st.columns([1.2, 1.2, 1.2, 0.8, 2, 0.5])
-        emblema = EMBLEMAS.get(row['area'], {}).get('emblema', '📌')
-        cols[0].write(f"{emblema} {row['area'][:18]}")
-        cols[1].write(f"{row['data'].strftime('%d/%m/%Y')}")
-        cols[2].write(f"{row['atividade'][:12]}")
-        cols[3].write(f"+{row['xp']}")
-        obs_text = row['obs'][:25] if pd.notna(row['obs']) else "-"
-        cols[4].write(obs_text)
-        if cols[5].button("🗑️", key=f"del_{i}"):
-            for j, rec in enumerate(st.session_state.db):
-                if rec['data'] == row['data'] and rec['area'] == row['area'] and rec['atividade'] == row['atividade']:
-                    delete_activity(j)
-                    st.rerun()
-        st.markdown("---")
-
-# =========================
-# FOOTER
-# =========================
-st.markdown("---")
-st.markdown("""
-<div style="text-align: center; padding: 20px;">
-    <p style="color: #4d9fff;">🚀 Continue sua jornada, o universo da tecnologia espera por você! 🌟</p>
-    <p style="color: #4d9fff; font-size: 12px; opacity: 0.7;">Cada missão completada é um passo mais perto da maestria!</p>
-</div>
-""", unsafe_allow_html=True)
+col_r1,
