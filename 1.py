@@ -132,3 +132,56 @@ with tab1:
                 </div>
                 '''
             row_html += '</div>'
+            st.markdown(row_html, unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with col_s:
+        sigla_at, _, _, nome_at = get_info_casa(dados['casa'])
+        st.metric("XP TOTAL", f"{dados['xp']} pts")
+        st.metric("SEMANA", f"{dados['casa']} / 80")
+        
+        st.info(f"**Foco Atual:**\n{nome_at}")
+        
+        if st.button("Avançar Semana ▶", use_container_width=True):
+            if dados['casa'] < 80:
+                dados['casa'] += 1
+                dados['xp'] += 100
+                salvar(dados); st.rerun()
+        
+        if st.button("Voltar Etapa ◀", use_container_width=True):
+            if dados['casa'] > 1:
+                dados['casa'] -= 1
+                dados['xp'] = max(0, dados['xp'] - 100)
+                salvar(dados); st.rerun()
+
+with tab2:
+    st.subheader("📝 Diário de Estudos")
+    c1, c2 = st.columns([1, 2])
+    with c1:
+        dt = st.date_input("Data", date.today())
+        txt = st.text_area("Notas:")
+        if st.button("Salvar Log 💾"):
+            dados.setdefault("eventos", {})[str(dt)] = txt
+            salvar(dados); st.rerun()
+    with c2:
+        if "eventos" in dados:
+            for k in sorted(dados["eventos"].keys(), reverse=True):
+                with st.expander(f"📌 {k}"):
+                    st.write(dados["eventos"][k])
+
+with tab3:
+    st.subheader("🏅 Checklist de Certificações")
+    objetivos = list(dict.fromkeys([t[2] for t in TEMAS_MAP]))
+    concluidas = dados.get("concluidas", [])
+    
+    for obj in objetivos:
+        if st.checkbox(obj, value=(obj in concluidas)):
+            if obj not in concluidas:
+                concluidas.append(obj)
+                dados["xp"] += 500
+                salvar(dados); st.rerun()
+        elif obj in concluidas:
+            concluidas.remove(obj)
+            dados["xp"] = max(0, dados["xp"] - 500)
+            salvar(dados); st.rerun()
+    dados["concluidas"] = concluidas
