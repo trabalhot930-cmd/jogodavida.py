@@ -30,6 +30,16 @@ html, body {
     font-weight: bold;
     border-radius: 10px;
 }
+
+.delete-button {
+    background-color: #dc3545 !important;
+    color: white !important;
+}
+
+.edit-button {
+    background-color: #ffc107 !important;
+    color: black !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -57,6 +67,23 @@ if "cert_xp" not in st.session_state:
         "CISSP": 0,
         "Pós-graduação": 0,
         "Inglês": 0
+    }
+
+if "cert_status" not in st.session_state:
+    st.session_state.cert_status = {
+        "AZ-900": "Não iniciada",
+        "ISO 27001": "Não iniciada",
+        "CCNA": "Não iniciada",
+        "SC-900": "Não iniciada",
+        "Python": "Não iniciada",
+        "SQL": "Não iniciada",
+        "Power BI": "Não iniciada",
+        "Security+": "Não iniciada",
+        "CySA+": "Não iniciada",
+        "GICSP": "Não iniciada",
+        "CISSP": "Não iniciada",
+        "Pós-graduação": "Não iniciada",
+        "Inglês": "Não iniciada"
     }
 
 # =========================
@@ -88,6 +115,38 @@ def badge(status):
         return "🟡"
     else:
         return "⬜"
+
+# =========================
+# FUNCTIONS
+# =========================
+def delete_activity(index):
+    """Delete an activity and update XP totals"""
+    activity = st.session_state.db[index]
+    xp_to_remove = activity["xp"]
+    
+    # Remove from global XP
+    st.session_state.xp -= xp_to_remove
+    
+    # Remove from certification XP
+    area = activity["area"]
+    st.session_state.cert_xp[area] -= xp_to_remove
+    
+    # Remove from database
+    st.session_state.db.pop(index)
+    
+    # Update certification status based on new XP
+    update_cert_status(area)
+
+def update_cert_status(area):
+    """Update certification status based on XP"""
+    xp = st.session_state.cert_xp[area]
+    new_status = status_por_xp(xp)
+    st.session_state.cert_status[area] = new_status
+
+def update_all_cert_statuses():
+    """Update all certification statuses"""
+    for area in st.session_state.cert_xp:
+        update_cert_status(area)
 
 # =========================
 # HEADER
@@ -133,11 +192,15 @@ with tab1:
             "area": area,
             "atividade": activity,
             "xp": xp_gain,
-            "obs": obs
+            "obs": obs,
+            "index": len(st.session_state.db)  # Add index for reference
         })
 
         st.session_state.xp += xp_gain
         st.session_state.cert_xp[area] += xp_gain
+        
+        # Update status for this certification
+        update_cert_status(area)
 
         st.success(f"+{xp_gain} XP!")
 
@@ -155,7 +218,7 @@ with tab1:
     col3.metric("Level", st.session_state.xp // 100 + 1)
 
     # =========================
-    # PROGRESSO GERAL (COM DATA + STATUS)
+    # PROGRESSO GERAL COM STATUS EDITÁVEL
     # =========================
     st.subheader("🏆 Progresso Geral com Planejamento")
 
@@ -177,43 +240,104 @@ with tab1:
 
     for item, xp in st.session_state.cert_xp.items():
 
-        status = status_por_xp(xp)
-        icon = badge(status)
-
+        # Get current status (from XP or manual override)
+        auto_status = status_por_xp(xp)
+        current_status = st.session_state.cert_status.get(item, auto_status)
+        
+        icon = badge(current_status)
         data_planejada = planejamento.get(item, "Não definido")
 
-        st.markdown(f"""
-### {icon} {item}
+        # Create expander for each certification
+        with st.expander(f"{icon} {item} - {current_status}"):
+            col1, col2 = st.columns([3, 1])
+            
+            with col1:
+                st.markdown(f"""
+**📅 Planejado:** {data_planejada}  
+**⭐ XP Acumulado:** {xp}  
+**📊 Status Automático:** {auto_status}
+                """)
+            
+            with col2:
+                # Manual status override
+                new_status = st.selectbox(
+                    f"Alterar status - {item}",
+                    ["Não iniciada", "Em andamento", "Concluída"],
+                    index=["Não iniciada", "Em andamento", "Concluída"].index(current_status),
+                    key=f"status_{item}"
+                )
+                
+                if new_status != current_status:
+                    st.session_state.cert_status[item] = new_status
+                    st.rerun()
+            
+            # Progress bar based on XP
+            progress = min(xp / 120, 1.0)
+            st.progress(progress)
+            st.caption(f"{xp}/120 XP para concluir")
 
-📅 **Planejado:** {data_planejada}  
-📊 **Status:** {status}  
-⭐ XP: {xp}
-
----
-""")
+        st.markdown("---")
 
     # =========================
-    # HISTÓRICO
+    # HISTÓRICO COM BOTÃO DE EXCLUIR
     # =========================
-    st.subheader("📚 Histórico")
+    st.subheader("📚 Histórico de Atividades")
 
     if not df.empty:
 
-        filtro = st.selectbox("Filtrar área", df["area"].unique())
-        df_f = df[df["area"] == filtro]
+        filtro = st.selectbox("Filtrar área", ["Todas"] + list(df["area"].unique()))
+        
+        if filtro != "Todas":
+            df_f = df[df["area"] == filtro].copy()
+        else:
+            df_f = df.copy()
 
-        st.dataframe(df_f, use_container_width=True)
+        # Add index column for reference
+        df_f = df_f.reset_index(drop=True)
+        
+        # Display activities with delete buttons
+        for idx, row in df_f.iterrows():
+            col1, col2, col3, col4, col5, col6 = st.columns([2, 2, 1, 2, 2, 0.8])
+            
+            with col1:
+                st.write(f"📅 {row['data'].strftime('%d/%m/%Y')}")
+            with col2:
+                st.write(f"📚 {row['area']}")
+            with col3:
+                st.write(f"🎯 {row['atividade']}")
+            with col4:
+                st.write(f"⭐ +{row['xp']} XP")
+            with col5:
+                st.write(f"📝 {row['obs'] if pd.notna(row['obs']) else '-'}")
+            with col6:
+                # Find the actual index in the main database
+                actual_idx = None
+                for i, record in enumerate(st.session_state.db):
+                    if (record['data'] == row['data'] and 
+                        record['area'] == row['area'] and 
+                        record['atividade'] == row['atividade'] and
+                        record['xp'] == row['xp']):
+                        actual_idx = i
+                        break
+                
+                if actual_idx is not None:
+                    if st.button("🗑️", key=f"delete_{actual_idx}_{idx}"):
+                        delete_activity(actual_idx)
+                        st.rerun()
+            
+            st.markdown("---")
 
-        timeline = df_f.groupby("data").size().reset_index(name="atividades")
-
-        st.altair_chart(
-            alt.Chart(timeline).mark_line(point=True).encode(
-                x="data:T",
-                y="atividades:Q",
-                tooltip=["data", "atividades"]
-            ),
-            use_container_width=True
-        )
+        # Timeline chart
+        if not df_f.empty:
+            timeline = df_f.groupby("data").size().reset_index(name="atividades")
+            st.altair_chart(
+                alt.Chart(timeline).mark_line(point=True).encode(
+                    x="data:T",
+                    y="atividades:Q",
+                    tooltip=["data", "atividades"]
+                ),
+                use_container_width=True
+            )
 
     # =========================
     # EXPORTAÇÃO
@@ -302,7 +426,40 @@ with tab3:
             use_container_width=True
         )
 
-        st.dataframe(df.sort_values("data", ascending=False), use_container_width=True)
+        # Display activities with delete buttons in calendar tab as well
+        st.subheader("Atividades Registradas")
+        df_sorted = df.sort_values("data", ascending=False).reset_index(drop=True)
+        
+        for idx, row in df_sorted.iterrows():
+            col1, col2, col3, col4, col5, col6 = st.columns([2, 2, 1, 2, 2, 0.8])
+            
+            with col1:
+                st.write(f"📅 {row['data'].strftime('%d/%m/%Y')}")
+            with col2:
+                st.write(f"📚 {row['area']}")
+            with col3:
+                st.write(f"🎯 {row['atividade']}")
+            with col4:
+                st.write(f"⭐ +{row['xp']} XP")
+            with col5:
+                st.write(f"📝 {row['obs'] if pd.notna(row['obs']) else '-'}")
+            with col6:
+                # Find the actual index in the main database
+                actual_idx = None
+                for i, record in enumerate(st.session_state.db):
+                    if (record['data'] == row['data'] and 
+                        record['area'] == row['area'] and 
+                        record['atividade'] == row['atividade'] and
+                        record['xp'] == row['xp']):
+                        actual_idx = i
+                        break
+                
+                if actual_idx is not None:
+                    if st.button("🗑️", key=f"delete_calendar_{actual_idx}_{idx}"):
+                        delete_activity(actual_idx)
+                        st.rerun()
+            
+            st.markdown("---")
 
     else:
         st.info("Sem dados ainda.")
