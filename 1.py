@@ -15,9 +15,10 @@ st.set_page_config(
 )
 
 # =========================
-# EMOJIS E ÍCONES ÉPICOS
+# EMOJIS E ÍCONES ÉPICOS - VERSÃO COMPLETA
 # =========================
 EMBLEMAS = {
+    # AZURE COMPLETO
     "AZ-900": {
         "icone": "☁️",
         "cor": "#00A4EF",
@@ -25,107 +26,211 @@ EMBLEMAS = {
         "titulo": "Azure Fundamentals",
         "descricao": "Fundamentos do Cloud Computing",
         "nivel": "Foundation",
-        "xp_necessario": 120
+        "xp_necessario": 120,
+        "ano": 2026,
+        "trimestre": "Q1"
     },
-    "ISO 27001": {
+    "AZ-104": {
+        "icone": "☁️",
+        "cor": "#0078D4",
+        "emblema": "⚙️",
+        "titulo": "Azure Administrator",
+        "descricao": "Administração de Infraestrutura Cloud",
+        "nivel": "Associate",
+        "xp_necessario": 150,
+        "ano": 2026,
+        "trimestre": "Q2"
+    },
+    "AZ-500": {
+        "icone": "☁️",
+        "cor": "#005BA1",
+        "emblema": "🔐",
+        "titulo": "Azure Security Engineer",
+        "descricao": "Segurança em Ambiente Azure",
+        "nivel": "Advanced",
+        "xp_necessario": 150,
+        "ano": 2026,
+        "trimestre": "Q3"
+    },
+    
+    # ISO 27001 COMPLETO
+    "ISO 27001 Fundamentals": {
         "icone": "🔒",
         "cor": "#FFD700",
-        "emblema": "🛡️",
-        "titulo": "Security Management",
-        "descricao": "Gestão de Segurança da Informação",
-        "nivel": "Professional",
-        "xp_necessario": 120
-    },
-    "CCNA": {
-        "icone": "🌐",
-        "cor": "#1BA0D7",
-        "emblema": "🕸️",
-        "titulo": "Networking Expert",
-        "descricao": "Redes e Infraestrutura",
-        "nivel": "Associate",
-        "xp_necessario": 120
-    },
-    "SC-900": {
-        "icone": "🔐",
-        "cor": "#0078D4",
-        "emblema": "🎯",
-        "titulo": "Security Compliance",
-        "descricao": "Segurança e Compliance",
+        "emblema": "📘",
+        "titulo": "ISO 27001 Foundation",
+        "descricao": "Fundamentos da Norma",
         "nivel": "Foundation",
-        "xp_necessario": 120
+        "xp_necessario": 100,
+        "ano": 2026,
+        "trimestre": "Q2"
     },
-    "Python": {
-        "icone": "🐍",
-        "cor": "#3776AB",
-        "emblema": "⚡",
-        "titulo": "Python Developer",
-        "descricao": "Automação e Análise de Dados",
+    "ISO 27001 Auditor": {
+        "icone": "🔒",
+        "cor": "#FFC000",
+        "emblema": "🔍",
+        "titulo": "ISO 27001 Lead Auditor",
+        "descricao": "Auditoria de SGSI",
+        "nivel": "Professional",
+        "xp_necessario": 150,
+        "ano": 2027,
+        "trimestre": "Q1"
+    },
+    "ISO 27001 Implementer": {
+        "icone": "🔒",
+        "cor": "#FFA000",
+        "emblema": "🛠️",
+        "titulo": "ISO 27001 Implementer",
+        "descricao": "Implementação de SGSI",
         "nivel": "Advanced",
-        "xp_necessario": 120
+        "xp_necessario": 150,
+        "ano": 2027,
+        "trimestre": "Q2"
     },
-    "SQL": {
-        "icone": "🗄️",
-        "cor": "#F29111",
-        "emblema": "📊",
-        "titulo": "Database Expert",
-        "descricao": "Consultas e Modelagem de Dados",
-        "nivel": "Intermediate",
-        "xp_necessario": 120
-    },
-    "Power BI": {
-        "icone": "📈",
-        "cor": "#F2C811",
-        "emblema": "🎨",
-        "titulo": "Data Visualization",
-        "descricao": "Dashboards e Analytics",
-        "nivel": "Intermediate",
-        "xp_necessario": 120
-    },
+    
+    # SEGURANÇA COMPLETA
     "Security+": {
         "icone": "🛡️",
         "cor": "#FF0000",
         "emblema": "⚔️",
-        "titulo": "Cybersecurity Core",
+        "titulo": "Security+",
         "descricao": "Fundamentos de Cibersegurança",
         "nivel": "Professional",
-        "xp_necessario": 120
+        "xp_necessario": 120,
+        "ano": 2027,
+        "trimestre": "Q3"
     },
     "CySA+": {
         "icone": "🔍",
         "cor": "#FF4500",
         "emblema": "🕵️",
-        "titulo": "Security Analyst",
+        "titulo": "CySA+",
         "descricao": "Análise de Vulnerabilidades",
         "nivel": "Advanced",
-        "xp_necessario": 120
-    },
-    "GICSP": {
-        "icone": "🏭",
-        "cor": "#808080",
-        "emblema": "⚙️",
-        "titulo": "ICS Security",
-        "descricao": "Segurança Industrial",
-        "nivel": "Expert",
-        "xp_necessario": 120
+        "xp_necessario": 150,
+        "ano": 2027,
+        "trimestre": "Q4"
     },
     "CISSP": {
         "icone": "👑",
         "cor": "#C0C0C0",
         "emblema": "🏆",
-        "titulo": "Security Architect",
+        "titulo": "CISSP",
         "descricao": "Arquitetura de Segurança",
         "nivel": "Master",
-        "xp_necessario": 120
+        "xp_necessario": 200,
+        "ano": 2029,
+        "trimestre": "Q2"
     },
+    
+    # OT/INDUSTRIAL COMPLETO
+    "IEC 62443": {
+        "icone": "🏭",
+        "cor": "#808080",
+        "emblema": "📏",
+        "titulo": "IEC 62443 Foundation",
+        "descricao": "Segurança em ICS/SCADA",
+        "nivel": "Foundation",
+        "xp_necessario": 120,
+        "ano": 2027,
+        "trimestre": "Q2"
+    },
+    "MITRE ATT&CK ICS": {
+        "icone": "🏭",
+        "cor": "#A0A0A0",
+        "emblema": "🎯",
+        "titulo": "MITRE ATT&CK for ICS",
+        "descricao": "Táticas e Técnicas para ICS",
+        "nivel": "Intermediate",
+        "xp_necessario": 120,
+        "ano": 2028,
+        "trimestre": "Q1"
+    },
+    "GICSP": {
+        "icone": "🏭",
+        "cor": "#606060",
+        "emblema": "⚙️",
+        "titulo": "GICSP",
+        "descricao": "Segurança Industrial Global",
+        "nivel": "Expert",
+        "xp_necessario": 180,
+        "ano": 2028,
+        "trimestre": "Q3"
+    },
+    
+    # DADOS
+    "Python": {
+        "icone": "🐍",
+        "cor": "#3776AB",
+        "emblema": "⚡",
+        "titulo": "Python for Data",
+        "descricao": "Automação e Análise de Dados",
+        "nivel": "Advanced",
+        "xp_necessario": 150,
+        "ano": 2026,
+        "trimestre": "Q3"
+    },
+    "SQL": {
+        "icone": "🗄️",
+        "cor": "#F29111",
+        "emblema": "📊",
+        "titulo": "Advanced SQL",
+        "descricao": "Consultas e Modelagem de Dados",
+        "nivel": "Intermediate",
+        "xp_necessario": 120,
+        "ano": 2026,
+        "trimestre": "Q4"
+    },
+    "Power BI": {
+        "icone": "📈",
+        "cor": "#F2C811",
+        "emblema": "🎨",
+        "titulo": "Power BI Expert",
+        "descricao": "Dashboards e Analytics",
+        "nivel": "Intermediate",
+        "xp_necessario": 120,
+        "ano": 2026,
+        "trimestre": "Q4"
+    },
+    
+    # NOVAS CERTIFICAÇÕES ESTRATÉGICAS
+    "CCNA": {
+        "icone": "🌐",
+        "cor": "#1BA0D7",
+        "emblema": "🕸️",
+        "titulo": "CCNA",
+        "descricao": "Redes e Infraestrutura",
+        "nivel": "Associate",
+        "xp_necessario": 150,
+        "ano": 2026,
+        "trimestre": "Q2"
+    },
+    "SC-900": {
+        "icone": "🔐",
+        "cor": "#0078D4",
+        "emblema": "🎯",
+        "titulo": "SC-900",
+        "descricao": "Segurança e Compliance",
+        "nivel": "Foundation",
+        "xp_necessario": 100,
+        "ano": 2026,
+        "trimestre": "Q1"
+    },
+    
+    # FORMAÇÃO ACADÊMICA
     "Pós-graduação": {
         "icone": "🎓",
         "cor": "#800080",
         "emblema": "📜",
-        "titulo": "Postgraduate",
-        "descricao": "Especialização Acadêmica",
+        "titulo": "Pós-graduação",
+        "descricao": "Cibersegurança e Governança de Dados",
         "nivel": "Advanced",
-        "xp_necessario": 200
+        "xp_necessario": 300,
+        "ano": 2026,
+        "trimestre": "Q2-Q4"
     },
+    
+    # IDIOMAS
     "Inglês": {
         "icone": "🇬🇧",
         "cor": "#1E90FF",
@@ -133,7 +238,33 @@ EMBLEMAS = {
         "titulo": "English Fluency",
         "descricao": "Proficiência Internacional",
         "nivel": "Essential",
-        "xp_necessario": 200
+        "xp_necessario": 250,
+        "ano": "Contínuo",
+        "trimestre": "2026-2029"
+    },
+    
+    # CERTIFICAÇÕES COMPLEMENTARES
+    "Cloud Security": {
+        "icone": "☁️",
+        "cor": "#00A4EF",
+        "emblema": "🔒",
+        "titulo": "Cloud Security",
+        "descricao": "Segurança Multi-Cloud",
+        "nivel": "Advanced",
+        "xp_necessario": 150,
+        "ano": 2028,
+        "trimestre": "Q4"
+    },
+    "DevSecOps": {
+        "icone": "🔄",
+        "cor": "#6C3483",
+        "emblema": "🚀",
+        "titulo": "DevSecOps",
+        "descricao": "Segurança no Ciclo DevOps",
+        "nivel": "Advanced",
+        "xp_necessario": 150,
+        "ano": 2029,
+        "trimestre": "Q1"
     }
 }
 
@@ -154,7 +285,6 @@ html, body {
     background: radial-gradient(circle at 20% 50%, rgba(0,100,255,0.05) 0%, rgba(0,0,0,0) 50%);
 }
 
-/* Títulos galácticos */
 h1, h2, h3 {
     font-family: 'Orbitron', monospace !important;
     background: linear-gradient(135deg, #00d4ff, #7b2ff7);
@@ -164,7 +294,6 @@ h1, h2, h3 {
     font-weight: bold !important;
 }
 
-/* Botões épicos */
 .stButton button {
     background: linear-gradient(135deg, #00d4ff, #7b2ff7) !important;
     color: white !important;
@@ -179,7 +308,6 @@ h1, h2, h3 {
     box-shadow: 0 10px 20px rgba(0,212,255,0.3);
 }
 
-/* Cards de certificação */
 .cert-card {
     background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
     border-radius: 15px;
@@ -195,7 +323,6 @@ h1, h2, h3 {
     box-shadow: 0 5px 25px rgba(0,212,255,0.2);
 }
 
-/* Badges de nível */
 .level-badge {
     display: inline-block;
     padding: 5px 10px;
@@ -205,19 +332,17 @@ h1, h2, h3 {
     margin-left: 10px;
 }
 
-/* Animações */
 @keyframes glow {
     0%, 100% { text-shadow: 0 0 5px rgba(0,212,255,0.5); }
     50% { text-shadow: 0 0 20px rgba(0,212,255,0.8); }
 }
 
-.glow-text {
-    animation: glow 2s infinite;
-}
-
-/* Progress bar personalizada */
-.stProgress > div > div {
-    background: linear-gradient(90deg, #00d4ff, #7b2ff7) !important;
+.trilha-card {
+    background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(123,47,247,0.1));
+    border-left: 4px solid #00d4ff;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 10px 0;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -248,7 +373,8 @@ def calc_xp(activity):
         "Revisão": 15,
         "Simulado": 15,
         "Aula Pós-graduação": 25,
-        "Inglês": 15
+        "Inglês": 15,
+        "Certificação": 50
     }
     return xp_table.get(activity, 10)
 
@@ -290,7 +416,6 @@ def delete_activity(index):
     st.session_state.cert_xp[area] -= xp_to_remove
     st.session_state.db.pop(index)
     
-    # Atualiza status
     new_status = status_por_xp(st.session_state.cert_xp[area], area)
     st.session_state.cert_status[area] = new_status
 
@@ -306,22 +431,38 @@ with st.sidebar:
     ### 📅 **Missões:** {len(st.session_state.db)}
     """)
     
-    # Barra de progresso para próximo nível
     xp_no_nivel = st.session_state.xp % 100
-    st.progress(xp_no_nivel / 100)
+    st.progress(xp_no_nivel / 100 if xp_no_nivel > 0 else 0)
     st.caption(f"Próximo nível: {100 - xp_no_nivel} XP")
     
     st.markdown("---")
-    st.markdown("### 🎯 **Ranking de Especialização**")
+    st.markdown("### 🎯 **Top 5 Especializações**")
     
-    # Ranking das certificações por XP
     ranking = sorted(st.session_state.cert_xp.items(), key=lambda x: x[1], reverse=True)
     for cert, xp in ranking[:5]:
         emblema = EMBLEMAS[cert]["emblema"]
         xp_necessario = EMBLEMAS[cert]["xp_necessario"]
         percent = (xp / xp_necessario) * 100
-        st.markdown(f"{emblema} **{cert}**: {xp}/{xp_necessario} XP ({percent:.0f}%)")
+        st.markdown(f"{emblema} **{cert[:15]}**: {percent:.0f}%")
         st.progress(min(xp / xp_necessario, 1.0))
+    
+    st.markdown("---")
+    st.markdown("### 📊 **Resumo por Trilha**")
+    
+    trilhas = {
+        "Azure": ["AZ-900", "AZ-104", "AZ-500"],
+        "ISO 27001": ["ISO 27001 Fundamentals", "ISO 27001 Auditor", "ISO 27001 Implementer"],
+        "Segurança": ["Security+", "CySA+", "CISSP"],
+        "OT/Industrial": ["IEC 62443", "MITRE ATT&CK ICS", "GICSP"],
+        "Dados": ["Python", "SQL", "Power BI"]
+    }
+    
+    for trilha, certs in trilhas.items():
+        xp_total = sum(st.session_state.cert_xp.get(cert, 0) for cert in certs)
+        xp_max = sum(EMBLEMAS[cert]["xp_necessario"] for cert in certs)
+        percent = (xp_total / xp_max) * 100 if xp_max > 0 else 0
+        st.markdown(f"**{trilha}**: {percent:.0f}%")
+        st.progress(percent / 100)
 
 # =========================
 # HEADER PRINCIPAL
@@ -329,20 +470,19 @@ with st.sidebar:
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     st.markdown("# 🚀 **MISSÃO CARREIRA**")
-    st.markdown("### *Juan Felipe da Silva - O Caminho do Especialista*")
+    st.markdown("### *Juan Felipe da Silva - Especialista em Cibersegurança e Cloud*")
     st.markdown("---")
 
 # =========================
 # ABAS
 # =========================
-tab1, tab2, tab3, tab4 = st.tabs(["🎮 **Dashboard Épico**", "🗺️ **Mapa da Jornada**", "📅 **Cronograma Estelar**", "🏅 **Conquistas**"])
+tab1, tab2, tab3, tab4 = st.tabs(["🎮 **Dashboard**", "🗺️ **Roadmap Completo**", "📅 **Trilhas**", "🏅 **Conquistas**"])
 
 # =========================
 # TAB 1 - DASHBOARD
 # =========================
 with tab1:
     
-    # Registro de Atividade
     with st.expander("✨ **NOVA MISSÃO**", expanded=True):
         col1, col2 = st.columns(2)
         
@@ -350,7 +490,7 @@ with tab1:
             area = st.selectbox("🎯 **Área de Especialização**", list(EMBLEMAS.keys()))
             activity = st.selectbox("⚔️ **Tipo de Missão**", 
                                    ["Estudo", "Laboratório", "Projeto", "Revisão", "Simulado", 
-                                    "Aula Pós-graduação", "Inglês"])
+                                    "Aula Pós-graduação", "Inglês", "Certificação"])
         
         with col2:
             data = st.date_input("📆 **Data**", value=pd.Timestamp.today())
@@ -373,38 +513,53 @@ with tab1:
             st.balloons()
             st.rerun()
     
-    # KPIs
     col1, col2, col3, col4 = st.columns(4)
     
-    # Calculando média de XP por dia
     if st.session_state.db:
         df_temp = pd.DataFrame(st.session_state.db)
         dias_unicos = df_temp['data'].nunique()
         media_xp_dia = st.session_state.xp / dias_unicos if dias_unicos > 0 else 0
-        col1.metric("🎮 **Total de Missões**", len(st.session_state.db))
-        col2.metric("⭐ **XP Global**", st.session_state.xp, delta=f"+{st.session_state.xp % 100}/100")
+        certificacoes_concluidas = sum(1 for cert, xp in st.session_state.cert_xp.items() 
+                                      if xp >= EMBLEMAS[cert]["xp_necessario"])
+        
+        col1.metric("🎮 **Missões**", len(st.session_state.db))
+        col2.metric("⭐ **XP Global**", st.session_state.xp)
         col3.metric("🏆 **Nível**", st.session_state.xp // 100 + 1)
-        col4.metric("📊 **Média XP/Dia**", f"{media_xp_dia:.1f}")
+        col4.metric("✅ **Certificações**", f"{certificacoes_concluidas}/{len(EMBLEMAS)}")
     else:
-        col1.metric("🎮 **Total de Missões**", 0)
+        col1.metric("🎮 **Missões**", 0)
         col2.metric("⭐ **XP Global**", 0)
         col3.metric("🏆 **Nível**", 1)
-        col4.metric("📊 **Média XP/Dia**", 0)
+        col4.metric("✅ **Certificações**", f"0/{len(EMBLEMAS)}")
     
     st.markdown("---")
+    st.markdown("## 🎖️ **PROGRESSO DAS CERTIFICAÇÕES**")
     
-    # Certificações com emblemas
-    st.markdown("## 🎖️ **JORNADA DAS CERTIFICAÇÕES**")
+    # Filtrar por trilha
+    trilha_filter = st.selectbox("📌 **Filtrar por Trilha**", 
+                                 ["Todas", "Azure", "ISO 27001", "Segurança", "OT/Industrial", "Dados", "Outras"])
     
     for cert, xp in st.session_state.cert_xp.items():
         emblema_data = EMBLEMAS[cert]
+        
+        # Aplicar filtro
+        if trilha_filter != "Todas":
+            if trilha_filter == "Azure" and cert not in ["AZ-900", "AZ-104", "AZ-500"]:
+                continue
+            elif trilha_filter == "ISO 27001" and cert not in ["ISO 27001 Fundamentals", "ISO 27001 Auditor", "ISO 27001 Implementer"]:
+                continue
+            elif trilha_filter == "Segurança" and cert not in ["Security+", "CySA+", "CISSP"]:
+                continue
+            elif trilha_filter == "OT/Industrial" and cert not in ["IEC 62443", "MITRE ATT&CK ICS", "GICSP"]:
+                continue
+            elif trilha_filter == "Dados" and cert not in ["Python", "SQL", "Power BI"]:
+                continue
+        
         xp_necessario = emblema_data["xp_necessario"]
         status = st.session_state.cert_status[cert]
-        auto_status = status_por_xp(xp, cert)
         badge_icon = get_badge_icon(status)
         nivel_icon = get_nivel_icon(emblema_data["nivel"])
         
-        # Card personalizado
         st.markdown(f"""
         <div class="cert-card">
             <div style="display: flex; align-items: center; justify-content: space-between;">
@@ -425,7 +580,6 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
         
-        # Progresso e controle
         col1, col2, col3 = st.columns([3, 1, 1])
         
         with col1:
@@ -450,26 +604,19 @@ with tab1:
         
         st.markdown("---")
     
-    # Histórico com deleção
+    # Histórico
     st.markdown("## 📜 **REGISTRO DE MISSÕES**")
     
     if st.session_state.db:
         df = pd.DataFrame(st.session_state.db)
-        filtro = st.selectbox("🎯 **Filtrar por Especialização**", ["Todas"] + list(df["area"].unique()))
-        
-        if filtro != "Todas":
-            df_f = df[df["area"] == filtro].copy()
-        else:
-            df_f = df.copy()
-        
-        df_f = df_f.sort_values("data", ascending=False).reset_index(drop=True)
+        df_f = df.sort_values("data", ascending=False).reset_index(drop=True)
         
         for idx, row in df_f.iterrows():
             emblema_icon = EMBLEMAS[row['area']]['emblema']
             
             cols = st.columns([1, 1.5, 1, 0.8, 2, 0.5])
             with cols[0]:
-                st.write(f"{emblema_icon} **{row['area']}**")
+                st.write(f"{emblema_icon} **{row['area'][:20]}**")
             with cols[1]:
                 st.write(f"📅 {row['data'].strftime('%d/%m/%Y')}")
             with cols[2]:
@@ -479,7 +626,6 @@ with tab1:
             with cols[4]:
                 st.write(f"📝 {row['obs'] if pd.notna(row['obs']) else '-'}")
             with cols[5]:
-                # Encontrar o índice real no banco de dados
                 for i, record in enumerate(st.session_state.db):
                     if (record['data'] == row['data'] and 
                         record['area'] == row['area'] and 
@@ -491,11 +637,8 @@ with tab1:
                         break
             st.markdown("---")
         
-        # Gráfico de evolução
-        st.markdown("## 📈 **EVOLUÇÃO ESTELAR**")
-        
-        # Agrupar por data e somar XP
-        evolucao = df_f.groupby('data').agg({'xp': 'sum'}).reset_index()
+        # Gráfico
+        evolucao = df.groupby('data').agg({'xp': 'sum'}).reset_index()
         evolucao = evolucao.sort_values('data')
         evolucao['xp_acumulado'] = evolucao['xp'].cumsum()
         
@@ -507,90 +650,134 @@ with tab1:
         
         st.altair_chart(chart, use_container_width=True)
         
-        # Exportação
-        st.markdown("## 💾 **BACKUP DA JORNADA**")
         csv = df.to_csv(index=False).encode("utf-8")
-        st.download_button("📥 **BAIXAR RELATÓRIO COMPLETO**", csv, "jornada_estelar.csv", "text/csv")
+        st.download_button("📥 **BAIXAR RELATÓRIO**", csv, "jornada_completa.csv", "text/csv")
 
 # =========================
-# TAB 2 - ROADMAP
+# TAB 2 - ROADMAP COMPLETO
 # =========================
 with tab2:
-    st.markdown("## 🗺️ **MAPA DA CONQUISTA**")
+    st.markdown("## 🗺️ **ROADMAP ESTRATÉGICO 2026-2029**")
     
     anos = {
-        "🌟 **2026 - Base + Pós**": ["AZ-900", "ISO 27001", "CCNA", "SC-900", "Python", "SQL", "Power BI", "Pós-graduação", "Inglês"],
-        "⚡ **2027 - Especialização**": ["Security+", "CySA+"],
-        "🎯 **2028 - Avançado**": ["GICSP"],
-        "👑 **2029 - Mestria**": ["CISSP"]
+        2026: "🌱 **ANO 1 - FUNDAÇÃO**",
+        2027: "⚡ **ANO 2 - ESPECIALIZAÇÃO**",
+        2028: "🎯 **ANO 3 - MAESTRIA TÉCNICA**",
+        2029: "👑 **ANO 4 - LIDERANÇA**"
     }
     
-    for ano, certs in anos.items():
-        with st.expander(f"{ano}", expanded=True):
-            cols = st.columns(min(len(certs), 4))
-            for i, cert in enumerate(certs):
-                emblema = EMBLEMAS[cert]
-                status = st.session_state.cert_status.get(cert, "Não iniciada")
-                badge = get_badge_icon(status)
-                xp_atual = st.session_state.cert_xp.get(cert, 0)
-                xp_necessario = emblema["xp_necessario"]
-                percent = (xp_atual / xp_necessario) * 100
-                
-                with cols[i % 4]:
-                    st.markdown(f"""
-                    <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, {emblema['cor']}20, {emblema['cor']}05); border-radius: 10px; margin: 5px;">
-                        <div style="font-size: 48px;">{emblema['emblema']}</div>
-                        <div style="font-size: 20px; font-weight: bold;">{cert}</div>
-                        <div style="font-size: 12px;">{emblema['titulo']}</div>
-                        <div style="font-size: 24px; margin-top: 10px;">{badge}</div>
-                        <div style="font-size: 12px;">{status}</div>
-                        <div style="font-size: 11px; margin-top: 5px;">{xp_atual}/{xp_necessario} XP</div>
-                        <div style="background: #333; border-radius: 5px; height: 5px; margin-top: 5px;">
-                            <div style="background: {emblema['cor']}; width: {percent}%; height: 5px; border-radius: 5px;"></div>
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
+    for ano, titulo in anos.items():
+        with st.expander(titulo, expanded=(ano == 2026)):
+            certs_ano = [cert for cert, data in EMBLEMAS.items() if data.get("ano") == ano]
+            
+            # Organizar por trimestre
+            trimestres = {"Q1": [], "Q2": [], "Q3": [], "Q4": []}
+            for cert in certs_ano:
+                trimestre = EMBLEMAS[cert].get("trimestre", "Q1")
+                if trimestre in trimestres:
+                    trimestres[trimestre].append(cert)
+            
+            for trimestre, certs in trimestres.items():
+                if certs:
+                    st.markdown(f"### {trimestre} - {ano}")
+                    cols = st.columns(min(len(certs), 4))
+                    for i, cert in enumerate(certs):
+                        emblema = EMBLEMAS[cert]
+                        status = st.session_state.cert_status.get(cert, "Não iniciada")
+                        badge = get_badge_icon(status)
+                        xp_atual = st.session_state.cert_xp.get(cert, 0)
+                        xp_necessario = emblema["xp_necessario"]
+                        percent = (xp_atual / xp_necessario) * 100
+                        
+                        with cols[i % 4]:
+                            st.markdown(f"""
+                            <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, {emblema['cor']}20, {emblema['cor']}05); border-radius: 10px; margin: 5px;">
+                                <div style="font-size: 48px;">{emblema['emblema']}</div>
+                                <div style="font-size: 16px; font-weight: bold;">{cert}</div>
+                                <div style="font-size: 11px;">{emblema['titulo']}</div>
+                                <div style="font-size: 24px;">{badge}</div>
+                                <div style="font-size: 11px;">{xp_atual}/{xp_necessario} XP</div>
+                                <div style="background: #333; border-radius: 5px; height: 5px; margin-top: 5px;">
+                                    <div style="background: {emblema['cor']}; width: {percent}%; height: 5px; border-radius: 5px;"></div>
+                                </div>
+                            </div>
+                            """, unsafe_allow_html=True)
 
 # =========================
-# TAB 3 - CALENDÁRIO
+# TAB 3 - TRILHAS
 # =========================
 with tab3:
-    st.markdown("## 📅 **LINHA DO TEMPO ESTELAR**")
+    st.markdown("## 🎯 **TRILHAS DE ESPECIALIZAÇÃO**")
     
-    if st.session_state.db:
-        df = pd.DataFrame(st.session_state.db)
-        df['mes'] = df['data'].dt.to_period('M').astype(str)
-        df['semana'] = df['data'].dt.isocalendar().week
+    trilhas_detalhadas = {
+        "☁️ **TRILHA AZURE**": {
+            "certs": ["AZ-900", "AZ-104", "AZ-500"],
+            "desc": "Domínio completo do ecossistema Microsoft Azure",
+            "objetivo": "Arquiteto de Soluções Cloud",
+            "cor": "#00A4EF"
+        },
+        "🔒 **TRILHA ISO 27001**": {
+            "certs": ["ISO 27001 Fundamentals", "ISO 27001 Auditor", "ISO 27001 Implementer"],
+            "desc": "Implementação e auditoria de SGSI completo",
+            "objetivo": "Lead Auditor e Implementer",
+            "cor": "#FFD700"
+        },
+        "🛡️ **TRILHA SEGURANÇA**": {
+            "certs": ["Security+", "CySA+", "CISSP"],
+            "desc": "Do fundamentals à arquitetura de segurança",
+            "objetivo": "Arquiteto de Cibersegurança",
+            "cor": "#FF0000"
+        },
+        "🏭 **TRILHA OT/INDUSTRIAL**": {
+            "certs": ["IEC 62443", "MITRE ATT&CK ICS", "GICSP"],
+            "desc": "Especialização em segurança industrial",
+            "objetivo": "Especialista em ICS Security",
+            "cor": "#808080"
+        },
+        "📊 **TRILHA DADOS**": {
+            "certs": ["Python", "SQL", "Power BI"],
+            "desc": "Análise e visualização de dados",
+            "objetivo": "Data Analyst Expert",
+            "cor": "#F2C811"
+        }
+    }
+    
+    for trilha, info in trilhas_detalhadas.items():
+        st.markdown(f"""
+        <div class="trilha-card">
+            <h3>{trilha}</h3>
+            <p>{info['desc']}</p>
+            <p><strong>🎯 Objetivo:</strong> {info['objetivo']}</p>
+        </div>
+        """, unsafe_allow_html=True)
         
-        # Heatmap mensal por certificação
-        st.markdown("### 🔥 **Mapa de Calor por Mês**")
-        heatmap_data = df.groupby(['mes', 'area']).size().reset_index(name='atividades')
-        
-        chart = alt.Chart(heatmap_data).mark_rect().encode(
-            x=alt.X('mes:N', title="Mês", axis=alt.Axis(labelAngle=-45)),
-            y=alt.Y('area:N', title="Certificação"),
-            color=alt.Color('atividades:Q', scale=alt.Scale(scheme='turbo'), title="Atividades"),
-            tooltip=['mes', 'area', 'atividades']
-        ).properties(height=400)
-        
-        st.altair_chart(chart, use_container_width=True)
-        
-        # Timeline detalhada
-        st.markdown("## 📋 **TODAS AS MISSÕES**")
-        df_sorted = df.sort_values("data", ascending=False)
-        
-        for _, row in df_sorted.iterrows():
-            emblema = EMBLEMAS[row['area']]['emblema']
-            status_icon = get_badge_icon(st.session_state.cert_status[row['area']])
+        cols = st.columns(len(info["certs"]))
+        for i, cert in enumerate(info["certs"]):
+            emblema = EMBLEMAS[cert]
+            xp_atual = st.session_state.cert_xp.get(cert, 0)
+            xp_necessario = emblema["xp_necessario"]
+            percent = (xp_atual / xp_necessario) * 100
+            status = st.session_state.cert_status.get(cert, "Não iniciada")
             
-            st.markdown(f"""
-            <div style="background: linear-gradient(90deg, rgba(0,212,255,0.1), transparent); padding: 10px; margin: 5px 0; border-radius: 5px;">
-                {status_icon} {emblema} <strong>{row['area']}</strong> - {row['atividade']} - ⭐+{row['xp']} - 📅 {row['data'].strftime('%d/%m/%Y')}
-                <br><small style="opacity: 0.7;">📝 {row['obs'] if pd.notna(row['obs']) else 'Sem observações'}</small>
-            </div>
-            """, unsafe_allow_html=True)
-    else:
-        st.info("🌌 Nenhuma missão registrada ainda. Inicie sua jornada!")
+            with cols[i]:
+                st.markdown(f"""
+                <div style="text-align: center; padding: 10px;">
+                    <div style="font-size: 40px;">{emblema['emblema']}</div>
+                    <div><strong>{cert}</strong></div>
+                    <div style="font-size: 12px;">{emblema['titulo']}</div>
+                    <div style="font-size: 20px;">{get_badge_icon(status)}</div>
+                    <div style="font-size: 12px;">{percent:.0f}%</div>
+                </div>
+                """, unsafe_allow_html=True)
+        
+        # Calcular progresso da trilha
+        xp_total = sum(st.session_state.cert_xp.get(cert, 0) for cert in info["certs"])
+        xp_max = sum(EMBLEMAS[cert]["xp_necessario"] for cert in info["certs"])
+        progresso_trilha = (xp_total / xp_max) * 100 if xp_max > 0 else 0
+        
+        st.progress(progresso_trilha / 100)
+        st.caption(f"Progresso da Trilha: {progresso_trilha:.0f}%")
+        st.markdown("---")
 
 # =========================
 # TAB 4 - CONQUISTAS
@@ -598,107 +785,11 @@ with tab3:
 with tab4:
     st.markdown("## 🏅 **HALL DA FAMA**")
     
-    # Conquistas calculadas dinamicamente
+    # Conquistas calculadas
     conquistas = []
     
     # Maratonista
-    if len(st.session_state.db) >= 10:
-        conquistas.append({"nome": "🏃 **Maratonista**", "desc": "Completou 10 ou mais missões", "icone": "🎯", "desbloqueado": True})
-    else:
-        conquistas.append({"nome": "🏃 **Maratonista**", "desc": f"Complete {10 - len(st.session_state.db)} missões restantes", "icone": "🎯", "desbloqueado": False})
-    
-    # Especialista
-    certificacoes_concluidas = sum(1 for cert, xp in st.session_state.cert_xp.items() 
-                                  if xp >= EMBLEMAS[cert]["xp_necessario"])
-    if certificacoes_concluidas >= 1:
-        conquistas.append({"nome": "🎖️ **Especialista**", "desc": "Concluiu sua primeira certificação", "icone": "🏆", "desbloqueado": True})
-    else:
-        conquistas.append({"nome": "🎖️ **Especialista**", "desc": "Conclua sua primeira certificação", "icone": "🏆", "desbloqueado": False})
-    
-    # Dedicado
-    if st.session_state.db:
-        dias_unicos = len(set([r['data'].date() for r in st.session_state.db]))
-        if dias_unicos >= 5:
-            conquistas.append({"nome": "📆 **Dedicado**", "desc": "Estudou em 5 ou mais dias diferentes", "icone": "📅", "desbloqueado": True})
-        else:
-            conquistas.append({"nome": "📆 **Dedicado**", "desc": f"Estude em {5 - dias_unicos} dias diferentes", "icone": "📅", "desbloqueado": False})
-    else:
-        conquistas.append({"nome": "📆 **Dedicado**", "desc": "Estude em 5 dias diferentes", "icone": "📅", "desbloqueado": False})
-    
-    # Veterano
-    if st.session_state.xp >= 500:
-        conquistas.append({"nome": "⚡ **Veterano**", "desc": "Acumulou 500+ XP", "icone": "💪", "desbloqueado": True})
-    else:
-        conquistas.append({"nome": "⚡ **Veterano**", "desc": f"Acumule {500 - st.session_state.xp} XP", "icone": "💪", "desbloqueado": False})
-    
-    # Lendário
-    if st.session_state.xp >= 1000:
-        conquistas.append({"nome": "👑 **Lendário**", "desc": "Ultrapassou 1000 XP", "icone": "🌟", "desbloqueado": True})
-    else:
-        conquistas.append({"nome": "👑 **Lendário**", "desc": f"Acumule {1000 - st.session_state.xp} XP", "icone": "🌟", "desbloqueado": False})
-    
-    # Mestre das Certificações
-    if certificacoes_concluidas >= 3:
-        conquistas.append({"nome": "🎓 **Mestre das Certificações**", "desc": "Concluiu 3 certificações", "icone": "📜", "desbloqueado": True})
-    else:
-        conquistas.append({"nome": "🎓 **Mestre das Certificações**", "desc": f"Conclua {3 - certificacoes_concluidas} certificações", "icone": "📜", "desbloqueado": False})
-    
-    # Exibir conquistas em grid
-    cols = st.columns(3)
-    for i, conquista in enumerate(conquistas):
-        with cols[i % 3]:
-            if conquista["desbloqueado"]:
-                st.markdown(f"""
-                <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, gold, #ff8c00); border-radius: 15px; margin: 10px; animation: glow 2s infinite;">
-                    <div style="font-size: 48px;">{conquista['icone']}</div>
-                    <div style="font-size: 20px; font-weight: bold;">{conquista['nome']}</div>
-                    <div style="font-size: 12px;">{conquista['desc']}</div>
-                    <div style="font-size: 24px; margin-top: 10px;">✅</div>
-                </div>
-                """, unsafe_allow_html=True)
-            else:
-                st.markdown(f"""
-                <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #333, #222); border-radius: 15px; margin: 10px; opacity: 0.5; filter: grayscale(0.3);">
-                    <div style="font-size: 48px;">{conquista['icone']}</div>
-                    <div style="font-size: 20px; font-weight: bold;">{conquista['nome']}</div>
-                    <div style="font-size: 12px;">{conquista['desc']}</div>
-                    <div style="font-size: 24px; margin-top: 10px;">🔒</div>
-                </div>
-                """, unsafe_allow_html=True)
-    
-    # Estatísticas Avançadas
-    st.markdown("## 📊 **ESTATÍSTICAS ÉPICAS**")
-    
-    if st.session_state.db:
-        df_stats = pd.DataFrame(st.session_state.db)
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.markdown("### 🎯 **Atividades Mais Realizadas**")
-            atividades_count = df_stats['atividade'].value_counts().head(5)
-            chart_atv = alt.Chart(atividades_count.reset_index()).mark_bar().encode(
-                x=alt.X('atividade:N', title="Atividade"),
-                y=alt.Y('count:Q', title="Quantidade"),
-                color=alt.Color('atividade:N', scale=alt.Scale(scheme='viridis'))
-            ).properties(height=300)
-            st.altair_chart(chart_atv, use_container_width=True)
-        
-        with col2:
-            st.markdown("### 🏆 **Ranking de XP por Certificação**")
-            ranking_xp = pd.DataFrame([
-                {"Certificação": cert, "XP": xp, "Necessário": EMBLEMAS[cert]["xp_necessario"]}
-                for cert, xp in st.session_state.cert_xp.items()
-            ])
-            ranking_xp = ranking_xp.sort_values('XP', ascending=False).head(8)
-            
-            chart_rank = alt.Chart(ranking_xp).mark_bar().encode(
-                x=alt.X('Certificação:N', sort='-y'),
-                y=alt.Y('XP:Q', title="XP Acumulado"),
-                color=alt.Color('Certificação:N', scale=alt.Scale(scheme='turbo'))
-            ).properties(height=300)
-            st.altair_chart(chart_rank, use_container_width=True)
-
-# Footer épico
-st.markdown("---")
-st.markdown("<p style='text-align: center; opacity: 0.6; font-size: 14px;'>🚀 *Continue sua jornada, o universo da tecnologia espera por você!* 🌟<br>⚡ Cada missão completada é um passo mais perto da maestria! ⚡</p>", unsafe_allow_html=True)
+    if len(st.session_state.db) >= 20:
+        conquistas.append({"nome": "🏃 **Maratonista Épico**", "desc": "Completou 20+ missões", "icone": "🎯", "desbloqueado": True})
+    elif len(st.session_state.db) >= 10:
+        conquistas.append({"nome": "🏃 **Maratonista**", "desc": "Completou 10 missões
