@@ -20,7 +20,7 @@ USUARIO_VALIDO = "Juan"
 SENHA_VALIDA = "Ju@n1990"
 
 # =========================
-# SOFT SKILLS - ATIVIDADES PRÁTICAS
+# SOFT SKILLS - ATIVIDADES PRÁTICAS (NOVO)
 # =========================
 SOFT_SKILLS_ATIVIDADES = {
     "Comunicação e Apresentação": {
@@ -66,247 +66,404 @@ SOFT_SKILLS_ATIVIDADES = {
 }
 
 # =========================
-# CONTEÚDO DAS CERTIFICAÇÕES
+# CONTEÚDO DAS CERTIFICAÇÕES (ADICIONADO AWS e Scrum)
 # =========================
 CONTEUDO_CERTIFICACOES = {
     "AZ-900": {
         "titulo": "Microsoft Azure Fundamentals",
-        "descricao": "Certificação de entrada para Azure. Valida conhecimentos básicos de cloud computing.",
+        "descricao": "Certificação de entrada para Azure. Valida conhecimentos básicos de cloud computing e serviços Azure.",
         "dominios": [
-            {"nome": "Conceitos de nuvem (25-30%)", "topicos": [
-                "Benefícios da nuvem", "Modelos de serviço (IaaS, PaaS, SaaS)",
-                "Modelos de implantação", "CAPEX vs OPEX"
+            {"nome": "Descrever conceitos de nuvem (25-30%)", "topicos": [
+                "Benefícios da nuvem (alta disponibilidade, escalabilidade, elasticidade)",
+                "Modelos de serviço (IaaS, PaaS, SaaS)",
+                "Modelos de implantação (pública, privada, híbrida)",
+                "CAPEX vs OPEX"
             ]},
-            {"nome": "Serviços principais (20-25%)", "topicos": [
-                "Computação (VMs, Containers)", "Redes (VNet, VPN)",
-                "Armazenamento (Blob, File)", "Banco de dados"
+            {"nome": "Descrever serviços principais do Azure (20-25%)", "topicos": [
+                "Computação (VMs, Containers, Functions)",
+                "Redes (VNet, VPN, Load Balancer)",
+                "Armazenamento (Blob, File, Queue, Table)",
+                "Banco de dados (Cosmos DB, SQL Database)"
             ]},
-            {"nome": "Soluções de segurança (15-20%)", "topicos": [
-                "Segurança de rede", "Identidade (Azure AD)",
-                "Proteção de dados", "Conformidade"
+            {"nome": "Descrever soluções de segurança (15-20%)", "topicos": [
+                "Segurança de rede (NSG, Firewall)",
+                "Identidade (Azure AD, MFA)",
+                "Proteção de dados (encryption, Key Vault)",
+                "Conformidade (Policy, Blueprints)"
             ]},
-            {"nome": "Gerenciamento e governança (10-15%)", "topicos": [
-                "Cost Management", "Resource Groups",
-                "Azure Monitor", "Azure Advisor"
-            ]]
+            {"nome": "Descrever gerenciamento e governança (10-15%)", "topicos": [
+                "Cost Management",
+                "Resource Groups e Tags",
+                "Azure Monitor",
+                "Azure Advisor"
+            ]}
         ],
-        "recursos": ["Microsoft Learn", "YouTube - John Savill", "GitHub"],
-        "simulados": ["Microsoft Assessment", "ExamTopics", "Udemy"],
+        "recursos": [
+            "Microsoft Learn - AZ-900 Learning Path (grátis)",
+            "YouTube - John Savill (AZ-900 Playlist)",
+            "GitHub - Microsoft Learning"
+        ],
+        "simulados": [
+            "Microsoft Learn - Assessment gratuito",
+            "ExamTopics - Questões gratuitas",
+            "Udemy - Simulados (promoção)"
+        ],
         "semanas": 3, "horas": 30, "custo": "$99", "voucher": True
     },
     "SC-900": {
-        "titulo": "Microsoft Security, Compliance and Identity",
-        "descricao": "Certificação sobre segurança, compliance e identidade.",
+        "titulo": "Microsoft Security, Compliance, and Identity Fundamentals",
+        "descricao": "Certificação sobre conceitos de segurança, compliance e identidade na Microsoft.",
         "dominios": [
-            {"nome": "Conceitos de segurança (25-30%)", "topicos": [
-                "Zero Trust", "Defesa em profundidade", "Responsabilidade compartilhada", "Criptografia"
+            {"nome": "Descrever conceitos de segurança (25-30%)", "topicos": [
+                "Zero Trust", "Defesa em profundidade", "Responsabilidade compartilhada", "Criptografia e hashing"
             ]},
-            {"nome": "Capacidades de identidade (35-40%)", "topicos": [
-                "Azure AD", "MFA e Conditional Access", "Identity Protection", "Privileged Identity Management"
+            {"nome": "Descrever capacidades de identidade (35-40%)", "topicos": [
+                "Azure AD e identidades híbridas", "MFA e Conditional Access", "Identity Protection", "Privileged Identity Management (PIM)"
             ]},
-            {"nome": "Capacidades de segurança (20-25%)", "topicos": [
-                "Microsoft Defender", "Microsoft Sentinel", "Defender para endpoint", "Defender Office 365"
+            {"nome": "Descrever capacidades de segurança (20-25%)", "topicos": [
+                "Microsoft Defender para nuvem", "Microsoft Sentinel", "Defender para endpoint", "Defender para Office 365"
             ]},
-            {"nome": "Capacidades de compliance (10-15%)", "topicos": [
+            {"nome": "Descrever capacidades de compliance (10-15%)", "topicos": [
                 "Service Trust Portal", "Compliance Manager", "Azure Policy", "LGPD e GDPR"
             ]}
         ],
-        "recursos": ["Microsoft Learn", "YouTube - John Savill", "Microsoft Docs"],
-        "simulados": ["Microsoft Assessment", "ExamTopics", "Whizlabs"],
+        "recursos": [
+            "Microsoft Learn - SC-900 Learning Path",
+            "YouTube - John Savill",
+            "Microsoft Security Documentation"
+        ],
+        "simulados": [
+            "Microsoft Learn - Assessment",
+            "ExamTopics",
+            "Whizlabs"
+        ],
         "semanas": 2, "horas": 25, "custo": "$99", "voucher": True
     },
     "AWS Cloud Practitioner": {
         "titulo": "AWS Cloud Practitioner",
-        "descricao": "Certificação fundamental da AWS.",
+        "descricao": "Certificação fundamental da AWS, valida conhecimentos básicos de cloud computing.",
         "dominios": [
             {"nome": "Conceitos de Nuvem (20%)", "topicos": [
                 "Benefícios da AWS", "Modelos de implantação",
                 "Modelos de serviço", "Infraestrutura global AWS"
             ]},
-            {"nome": "Serviços Principais (30%)", "topicos": [
+            {"nome": "Serviços Principais da AWS (30%)", "topicos": [
                 "Computação (EC2, Lambda)", "Armazenamento (S3, EBS)",
                 "Banco de dados (RDS, DynamoDB)", "Redes (VPC, CloudFront)"
             ]},
-            {"nome": "Segurança (25%)", "topicos": [
-                "Responsabilidade compartilhada", "IAM",
+            {"nome": "Segurança e Conformidade (25%)", "topicos": [
+                "Modelo de responsabilidade compartilhada", "IAM",
                 "AWS Shield, WAF", "Conformidade"
             ]},
             {"nome": "Preços e Suporte (15%)", "topicos": [
                 "Modelos de precificação", "AWS Pricing Calculator",
                 "Planos de suporte", "AWS Organizations"
             ]},
-            {"nome": "Tecnologias (10%)", "topicos": [
+            {"nome": "Tecnologias Principais (10%)", "topicos": [
                 "Machine Learning", "IoT", "Serverless", "DevOps"
             ]}
         ],
-        "recursos": ["AWS Skill Builder", "YouTube - Stephane Maarek", "AWS Free Tier"],
-        "simulados": ["AWS Official Practice", "TutorialsDojo", "Udemy"],
+        "recursos": [
+            "AWS Skill Builder (gratuito)",
+            "YouTube - Stephane Maarek",
+            "AWS Free Tier"
+        ],
+        "simulados": [
+            "AWS Official Practice Exam",
+            "TutorialsDojo",
+            "Udemy"
+        ],
         "semanas": 4, "horas": 30, "custo": "$100", "voucher": True
     },
     "Security+": {
         "titulo": "CompTIA Security+ (SY0-701)",
-        "descricao": "Certificação fundamental de cibersegurança.",
+        "descricao": "Certificação fundamental de cibersegurança, reconhecida mundialmente.",
         "dominios": [
-            {"nome": "Ameaças e Ataques (24%)", "topicos": [
-                "Malware", "Ataques de rede", "Ataques de aplicação", "OWASP Top 10"
+            {"nome": "Ameaças, Ataques e Vulnerabilidades (24%)", "topicos": [
+                "Tipos de malware (vírus, worm, ransomware, trojan)",
+                "Ataques de rede (DoS, DDoS, MITM, DNS poisoning)",
+                "Ataques de aplicação (SQL Injection, XSS, CSRF)",
+                "Ameaças internas e externas",
+                "Vulnerabilidades comuns (OWASP Top 10)"
             ]},
-            {"nome": "Tecnologias de Segurança (26%)", "topicos": [
-                "Firewalls", "IDS/IPS", "SIEM", "Criptografia", "PKI", "MFA"
+            {"nome": "Tecnologias e Ferramentas de Segurança (26%)", "topicos": [
+                "Firewalls (NGFW, WAF)", "IDS/IPS (Signature, Anomaly)", "SIEM (Security Information and Event Management)",
+                "Criptografia simétrica e assimétrica", "PKI e certificados digitais", "MFA e autenticação forte",
+                "EDR, DLP, UTM"
             ]},
-            {"nome": "Arquitetura e Design (21%)", "topicos": [
-                "Zero Trust", "Defesa em profundidade", "Segurança em nuvem", "Hardening"
+            {"nome": "Arquitetura e Design de Segurança (21%)", "topicos": [
+                "Zero Trust Architecture", "Defesa em profundidade", "Segurança em nuvem (IaaS, PaaS, SaaS)",
+                "Segurança de redes (segmentação, VLAN)", "Segurança de endpoints (hardening)", "Redundância e alta disponibilidade"
             ]},
-            {"nome": "Gestão de Acesso (16%)", "topicos": [
-                "IAM", "SSO", "RBAC", "Kerberos", "PAM"
+            {"nome": "Gestão de Identidade e Acesso (16%)", "topicos": [
+                "IAM fundamentals", "SSO e federação", "RBAC, ABAC, DAC, MAC",
+                "Kerberos, RADIUS, LDAP", "Contas privilegiadas (PAM)", "JIT e JEA"
             ]},
-            {"nome": "Riscos e Compliance (13%)", "topicos": [
-                "Análise de risco", "BCP/DRP", "Resposta a incidentes", "LGPD/GDPR"
+            {"nome": "Gestão de Riscos e Compliance (13%)", "topicos": [
+                "Análise de risco (qualitativa/quantitativa)", "BCP e DRP (RTO, RPO, MTD)",
+                "Planos de resposta a incidentes", "LGPD, GDPR, HIPAA, PCI-DSS", "Forensics e cadeia de custódia", "Tipos de controles"
             ]}
         ],
-        "recursos": ["YouTube - Professor Messer", "CompTIA Objectives", "GitHub"],
-        "simulados": ["ExamCompass", "Professor Messer", "Jason Dion", "MeasureUp"],
+        "recursos": [
+            "YouTube - Professor Messer (playlist completa - grátis)",
+            "CompTIA Security+ SY0-701 Objectives (PDF oficial)",
+            "GitHub - Security+ Study Guide"
+        ],
+        "simulados": [
+            "ExamCompass (gratuito)",
+            "Professor Messer Practice Exams",
+            "Jason Dion (Udemy)",
+            "MeasureUp (pago)"
+        ],
         "semanas": 10, "horas": 80, "custo": "$392", "voucher": False
     },
     "Scrum Fundamentals": {
-        "titulo": "Scrum Fundamentals Certified",
-        "descricao": "Certificação básica de Scrum.",
+        "titulo": "Scrum Fundamentals Certified (SFC)",
+        "descricao": "Certificação básica de Scrum, metodologia ágil para gestão de projetos.",
         "dominios": [
-            {"nome": "Fundamentos (30%)", "topicos": [
-                "Manifesto Ágil", "Princípios ágeis", "Scrum vs Waterfall"
+            {"nome": "Fundamentos do Scrum (30%)", "topicos": [
+                "Manifesto Ágil e seus 4 valores", "Os 12 princípios ágeis", "Scrum vs Waterfall", "Benefícios da metodologia ágil"
             ]},
-            {"nome": "Papéis (25%)", "topicos": [
-                "Product Owner", "Scrum Master", "Development Team"
+            {"nome": "Papéis do Scrum (25%)", "topicos": [
+                "Product Owner (responsabilidades)", "Scrum Master (facilitador)",
+                "Development Team (auto-organização)", "Características de times de alta performance"
             ]},
-            {"nome": "Eventos (25%)", "topicos": [
-                "Sprint Planning", "Daily Scrum", "Review", "Retrospective"
+            {"nome": "Eventos Scrum (25%)", "topicos": [
+                "Sprint Planning (planejamento)", "Daily Scrum (15 minutos)",
+                "Sprint Review (demonstração)", "Sprint Retrospective (melhoria contínua)"
             ]},
-            {"nome": "Artefatos (20%)", "topicos": [
-                "Product Backlog", "Sprint Backlog", "Increment", "Definition of Done"
+            {"nome": "Artefatos Scrum (20%)", "topicos": [
+                "Product Backlog (priorização)", "Sprint Backlog (compromisso da sprint)",
+                "Increment (entregável)", "Definição de Pronto (DoD) e Definição de Feito"
             ]}
         ],
-        "recursos": ["Scrum Guide", "YouTube - Scrum Framework", "Scrum.org"],
-        "simulados": ["Scrum.org Assessment", "ScrumStudy", "Udemy"],
+        "recursos": [
+            "Scrum Guide (gratuito)",
+            "YouTube - Scrum Framework",
+            "Scrum.org - Open Assessments"
+        ],
+        "simulados": [
+            "Scrum.org Open Assessment (gratuito)",
+            "ScrumStudy.com Practice Tests",
+            "Udemy - Mock Exams"
+        ],
         "semanas": 1, "horas": 16, "custo": "R$ 500", "voucher": False
     },
     "CySA+": {
         "titulo": "CompTIA CySA+ (CS0-003)",
-        "descricao": "Certificação de análise de segurança.",
+        "descricao": "Certificação de análise de segurança e resposta a incidentes.",
         "dominios": [
-            {"nome": "Segurança de Software (22%)", "topicos": [
-                "SSDLC", "SAST/DAST/IAST", "DevSecOps"
+            {"nome": "Segurança de Software e Sistemas (22%)", "topicos": [
+                "Secure Software Development Lifecycle (SSDLC)", "SAST, DAST, IAST",
+                "DevSecOps e CI/CD security", "Análise de vulnerabilidades"
             ]},
-            {"nome": "Operações de Segurança (25%)", "topicos": [
-                "SIEM", "SOAR", "Log management", "Threat hunting"
+            {"nome": "Operações de Segurança e Monitoramento (25%)", "topicos": [
+                "SIEM (configuração, correlação, análise)", "SOAR (automação e orquestração)",
+                "Log management e análise", "Threat hunting"
             ]},
             {"nome": "Inteligência de Ameaças (20%)", "topicos": [
-                "Threat Intelligence", "MITRE ATT&CK", "Indicadores de comprometimento"
+                "Threat Intelligence (TIP, STIX, TAXII)", "MITRE ATT&CK Framework",
+                "Indicadores de comprometimento (IoC)", "Threat modeling"
             ]},
             {"nome": "Resposta a Incidentes (18%)", "topicos": [
-                "Ciclo de vida NIST", "Playbooks", "Forensics"
+                "Ciclo de vida da resposta a incidentes (NIST)", "Playbooks e runbooks",
+                "Forensics e análise de malware", "Comunicação e relatórios"
             ]},
             {"nome": "Gestão de Vulnerabilidades (15%)", "topicos": [
-                "Scanning", "Vulnerability management", "Patch management"
+                "Scanning e assessment", "Vulnerability management lifecycle",
+                "Patch management", "Relatórios e priorização"
             ]}
         ],
-        "recursos": ["YouTube - Certify Breakfast", "CompTIA Objectives", "TryHackMe"],
-        "simulados": ["Jason Dion", "Sybex", "ExamCompass"],
+        "recursos": [
+            "YouTube - Certify Breakfast",
+            "CompTIA CySA+ Objectives PDF",
+            "TryHackMe (SOC Level 1)"
+        ],
+        "simulados": [
+            "Jason Dion (Udemy)",
+            "Sybex Practice Tests",
+            "ExamCompass"
+        ],
         "semanas": 8, "horas": 60, "custo": "$392", "voucher": False
     },
     "Power BI": {
-        "titulo": "Microsoft Power BI Data Analyst",
-        "descricao": "Certificação para análise de dados com Power BI.",
+        "titulo": "Microsoft Power BI Data Analyst (PL-900)",
+        "descricao": "Certificação para análise e visualização de dados com Power BI.",
         "dominios": [
             {"nome": "Preparação de Dados (20%)", "topicos": [
-                "Power Query", "Limpeza de dados", "Combinação de tabelas"
+                "Power Query (ETL)", "Limpeza e transformação de dados",
+                "Tratamento de erros e nulos", "Combinação de tabelas (Merge/Append)"
             ]},
             {"nome": "Modelagem de Dados (25%)", "topicos": [
-                "Modelos star", "Relacionamentos", "DAX"
+                "Modelos star e snowflake", "Relacionamentos entre tabelas",
+                "Medidas e colunas calculadas (DAX)", "Hierarquias e roles"
             ]},
-            {"nome": "Visualização (30%)", "topicos": [
-                "Gráficos", "Dashboards", "Drill-through"
+            {"nome": "Visualização de Dados (30%)", "topicos": [
+                "Gráficos e visuais básicos", "Dashboards interativos",
+                "Drill-through e drill-down", "Bookmarks e botões"
             ]},
             {"nome": "Análise de Dados (15%)", "topicos": [
-                "Funções DAX", "Inteligência de tempo", "Segmentação"
+                "Funções DAX (CALCULATE, FILTER)", "Inteligência de tempo (YTD, MTD)",
+                "Segmentação de dados", "Quick measures"
             ]},
-            {"nome": "Implantação (10%)", "topicos": [
-                "Publicação", "Gateways", "RLS"
+            {"nome": "Implantação e Manutenção (10%)", "topicos": [
+                "Publicação no Service", "Gateways e atualização de dados",
+                "Row-Level Security (RLS)", "Workspaces e apps"
             ]}
         ],
-        "recursos": ["Hashtag Treinamentos", "Microsoft Learn", "YouTube - SQLBI"],
-        "simulados": ["Microsoft Assessment", "ExamTopics", "MeasureUp"],
+        "recursos": [
+            "Hashtag Treinamentos (curso completo)",
+            "Microsoft Learn - PL-900 Path",
+            "YouTube - SQLBI (DAX avançado)"
+        ],
+        "simulados": [
+            "Microsoft Learn Assessment",
+            "ExamTopics",
+            "MeasureUp"
+        ],
         "semanas": 6, "horas": 50, "custo": "$99", "voucher": False
     },
     "Python": {
         "titulo": "Python para Análise de Dados",
-        "descricao": "Linguagem Python para automação e análise.",
+        "descricao": "Linguagem Python aplicada à automação e análise de dados.",
         "dominios": [
-            {"nome": "Fundamentos (25%)", "topicos": [
-                "Sintaxe", "Estruturas de controle", "Funções", "Listas/Dicionários"
+            {"nome": "Fundamentos de Python (25%)", "topicos": [
+                "Sintaxe básica (variáveis, tipos, operadores)", "Estruturas de controle (if, for, while)",
+                "Funções e módulos", "Listas, tuplas, dicionários, sets"
             ]},
             {"nome": "Manipulação de Dados (30%)", "topicos": [
-                "Pandas", "Leitura de arquivos", "Filtros", "Tratamento de nulos"
+                "Biblioteca Pandas (DataFrame, Series)", "Leitura de arquivos (CSV, Excel, JSON)",
+                "Filtros, agregações e merges", "Tratamento de dados nulos"
             ]},
-            {"nome": "Visualização (20%)", "topicos": [
-                "Matplotlib", "Seaborn", "Plotly"
+            {"nome": "Visualização de Dados (20%)", "topicos": [
+                "Matplotlib (gráficos básicos)", "Seaborn (gráficos estatísticos)", "Plotly (gráficos interativos)"
             ]},
             {"nome": "Automação (25%)", "topicos": [
-                "Automação de planilhas", "E-mails", "Web scraping", "APIs"
+                "Automação de planilhas", "Envio de e-mails automáticos",
+                "Web scraping (BeautifulSoup)", "APIs (requests)"
             ]}
         ],
-        "recursos": ["Hashtag Treinamentos", "Curso em Vídeo", "DataCamp"],
-        "simulados": ["HackerRank", "LeetCode", "Python Institute"],
+        "recursos": [
+            "Hashtag Treinamentos - Python Impressionador",
+            "Curso em Vídeo (Guanabara - grátis)",
+            "DataCamp - Python for Data Science"
+        ],
+        "simulados": [
+            "HackerRank - Python Challenges",
+            "LeetCode - Python",
+            "Python Institute (PCAP)"
+        ],
         "semanas": 8, "horas": 60, "custo": "R$ 650", "voucher": False
     },
     "SQL": {
         "titulo": "SQL para Análise de Dados",
-        "descricao": "Linguagem SQL para consultas.",
+        "descricao": "Linguagem SQL para consultas e manipulação de bancos de dados.",
         "dominios": [
             {"nome": "Consultas Básicas (30%)", "topicos": [
-                "SELECT/WHERE", "ORDER BY", "Operadores", "Agregações"
+                "SELECT, FROM, WHERE", "ORDER BY, LIMIT, DISTINCT",
+                "Operadores (LIKE, IN, BETWEEN)", "Funções de agregação (COUNT, SUM, AVG)"
             ]},
-            {"nome": "Joins (30%)", "topicos": [
-                "INNER/LEFT/RIGHT JOIN", "Self JOIN", "Subconsultas", "CTEs"
+            {"nome": "Joins e Subconsultas (30%)", "topicos": [
+                "INNER, LEFT, RIGHT, FULL JOIN", "Self JOIN e CROSS JOIN",
+                "Subconsultas correlacionadas", "CTEs (Common Table Expressions)"
             ]},
-            {"nome": "Manipulação (20%)", "topicos": [
-                "INSERT/UPDATE/DELETE", "CREATE/ALTER/DROP", "Índices", "Transações"
+            {"nome": "Manipulação de Dados (20%)", "topicos": [
+                "INSERT, UPDATE, DELETE", "CREATE, ALTER, DROP",
+                "Índices e chaves", "Transações (COMMIT, ROLLBACK)"
             ]},
             {"nome": "Funções Avançadas (20%)", "topicos": [
-                "Window Functions", "GROUP BY", "Funções string/date", "Stored Procedures"
+                "Window Functions (ROW_NUMBER, RANK)", "GROUP BY e HAVING",
+                "Funções de string e data", "Stored Procedures e Views"
             ]}
         ],
-        "recursos": ["Hashtag Treinamentos", "SQLZoo", "Mode Analytics"],
-        "simulados": ["HackerRank", "LeetCode", "StrataScratch"],
+        "recursos": [
+            "Hashtag Treinamentos - SQL Impressionador",
+            "SQLZoo (interativo e grátis)",
+            "Mode Analytics SQL Tutorial"
+        ],
+        "simulados": [
+            "HackerRank - SQL",
+            "LeetCode - Database",
+            "StrataScratch"
+        ],
         "semanas": 6, "horas": 45, "custo": "R$ 650", "voucher": False
     },
     "CISSP": {
         "titulo": "Certified Information Systems Security Professional",
-        "descricao": "Certificação mais reconhecida em cibersegurança.",
+        "descricao": "Certificação mais reconhecida globalmente em cibersegurança.",
         "dominios": [
-            {"nome": "Security and Risk Management (15%)", "topicos": ["CIA Triade", "Governança", "Gestão de riscos", "LGPD/GDPR"]},
-            {"nome": "Asset Security (10%)", "topicos": ["Classificação de dados", "Retenção", "Handling"]},
-            {"nome": "Security Architecture (13%)", "topicos": ["Arquitetura", "Criptografia", "Modelos de segurança"]},
-            {"nome": "Network Security (13%)", "topicos": ["Segurança de redes", "TLS/IPsec", "Segurança sem fio"]},
-            {"nome": "IAM (13%)", "topicos": ["IAM", "SSO/MFA", "Federação", "PAM"]},
-            {"nome": "Security Assessment (12%)", "topicos": ["Pentest", "Análise de vulnerabilidades", "Auditoria"]},
-            {"nome": "Security Operations (13%)", "topicos": ["Resposta a incidentes", "BCP/DRP", "Forensics"]},
-            {"nome": "Software Security (11%)", "topicos": ["DevSecOps", "SDLC seguro", "OWASP"]}
+            {"nome": "Security and Risk Management (15%)", "topicos": [
+                "Confidencialidade, Integridade, Disponibilidade", "Governança e compliance",
+                "Gestão de riscos", "LGPD, GDPR, HIPAA"
+            ]},
+            {"nome": "Asset Security (10%)", "topicos": [
+                "Classificação de dados", "Retenção e destruição", "Handling de dados sensíveis"
+            ]},
+            {"nome": "Security Architecture and Engineering (13%)", "topicos": [
+                "Arquitetura de segurança", "Criptografia e PKI", "Modelos de segurança"
+            ]},
+            {"nome": "Communication and Network Security (13%)", "topicos": [
+                "Segurança de redes", "Protocolos seguros (TLS, IPsec)", "Segurança sem fio"
+            ]},
+            {"nome": "Identity and Access Management (13%)", "topicos": [
+                "IAM, SSO, MFA", "Federacão de identidades", "Privileged Access Management"
+            ]},
+            {"nome": "Security Assessment and Testing (12%)", "topicos": [
+                "Testes de penetração", "Análise de vulnerabilidades", "Auditoria de segurança"
+            ]},
+            {"nome": "Security Operations (13%)", "topicos": [
+                "Resposta a incidentes", "BCP e DRP", "Forensics e investigação"
+            ]},
+            {"nome": "Software Development Security (11%)", "topicos": [
+                "DevSecOps", "Segurança em SDLC", "OWASP Top 10"
+            ]}
         ],
-        "recursos": ["ISC2 Official Guide", "YouTube - Destination Certification", "LinkedIn Learning"],
-        "simulados": ["ISC2 Official Tests", "Boson", "Pocket Prep"],
+        "recursos": [
+            "ISC2 Official Study Guide",
+            "YouTube - Destination Certification",
+            "LinkedIn Learning - CISSP Prep"
+        ],
+        "simulados": [
+            "ISC2 Official Practice Tests",
+            "Boson",
+            "Pocket Prep"
+        ],
         "semanas": 16, "horas": 200, "custo": "$749", "voucher": False
     },
     "GICSP": {
         "titulo": "Global Industrial Cyber Security Professional",
-        "descricao": "Certificação especializada em segurança industrial (OT/ICS).",
+        "descricao": "Certificação especializada em segurança de sistemas industriais (OT/ICS).",
         "dominios": [
-            {"nome": "OT/ICS Fundamentals (25%)", "topicos": ["Arquitetura ICS", "Protocolos industriais", "Ataques industriais", "TI vs OT"]},
-            {"nome": "Riscos em OT (20%)", "topicos": ["Análise de risco", "Vulnerabilidades ICS", "MITRE ATT&CK ICS"]},
-            {"nome": "Segurança de Rede Industrial (20%)", "topicos": ["Segmentação", "Firewalls industriais", "Network monitoring", "IEC 62443"]},
-            {"nome": "Controles de Segurança (20%)", "topicos": ["Hardening de PLCs", "Controle de acesso", "Patch management", "Backup"]},
-            {"nome": "Resposta a Incidentes OT (15%)", "topicos": ["Planos de resposta OT", "Forensics industrial", "Recuperação"]}
+            {"nome": "OT/ICS Fundamentals (25%)", "topicos": [
+                "Arquitetura ICS (PLC, SCADA, DCS, HMI, RTU)", "Protocolos industriais (Modbus, DNP3, OPC, PROFINET)",
+                "Histórico e evolução de ataques industriais (Stuxnet, Triton)", "Diferenças entre TI e OT"
+            ]},
+            {"nome": "Riscos e Vulnerabilidades em OT (20%)", "topicos": [
+                "Análise de risco em ambientes industriais", "Vulnerabilidades comuns em ICS",
+                "Threat modeling para OT", "MITRE ATT&CK for ICS"
+            ]},
+            {"nome": "Segurança de Rede Industrial (20%)", "topicos": [
+                "Segmentação de redes (DMZ industrial)", "Firewalls industriais e unidirecionais",
+                "Network monitoring para OT", "Zona e conduits (IEC 62443)"
+            ]},
+            {"nome": "Controles de Segurança para OT (20%)", "topicos": [
+                "Hardening de PLCs e RTUs", "Controle de acesso em sistemas industriais",
+                "Patch management em OT", "Backup e recuperação industrial"
+            ]},
+            {"nome": "Resposta a Incidentes em OT (15%)", "topicos": [
+                "Planos de resposta específicos para OT", "Forensics industrial",
+                "Recuperação de sistemas críticos", "Exercícios de simulação"
+            ]}
         ],
-        "recursos": ["GIAC Official Course", "SANS ICS Security", "CISA ICS Training"],
-        "simulados": ["GIAC Practice Tests", "CyberSecurity Training"],
+        "recursos": [
+            "GIAC GICSP Official Course",
+            "SANS ICS Security",
+            "CISA ICS Training (gratuito)"
+        ],
+        "simulados": [
+            "GIAC Practice Tests",
+            "CyberSecurity Training (OT específico)"
+        ],
         "semanas": 12, "horas": 120, "custo": "$949", "voucher": False
     }
 }
@@ -335,13 +492,13 @@ EMBLEMAS = {
 # =========================
 EMENTA_PUC = {
     "Arquitetura de Cibersegurança e Zero Trust": {
-        "ementa": "Fundamentos de arquitetura de segurança. Zero Trust. Defesa em profundidade.",
+        "ementa": "Fundamentos de arquitetura de segurança. Paradigma Zero Trust. Segurança em camadas.",
         "certificacoes": ["Security+", "CCNA"],
         "topicos": ["Zero Trust", "Defesa em profundidade", "Segurança em nuvem", "Firewalls", "IDS/IPS"],
         "horas": 60
     },
     "Gestão de Riscos Cibernéticos": {
-        "ementa": "Fundamentos de riscos. ISO 27005. NIST CSF.",
+        "ementa": "Fundamentos de riscos. ISO 27005. NIST Cybersecurity Framework.",
         "certificacoes": ["CISSP", "Security+"],
         "topicos": ["ISO 27005", "NIST CSF", "Análise de riscos", "Tratamento de riscos"],
         "horas": 45
@@ -361,7 +518,7 @@ EMENTA_PUC = {
 }
 
 # =========================
-# STYLE
+# STYLE (MANTIDO O MESMO DA REFERÊNCIA)
 # =========================
 st.markdown("""
 <style>
@@ -414,7 +571,7 @@ h1, h2, h3 {
 """, unsafe_allow_html=True)
 
 # =========================
-# SESSION STATE
+# INICIALIZAÇÃO DO SESSION STATE
 # =========================
 if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
@@ -437,10 +594,13 @@ if "cert_topicos_concluidos" not in st.session_state:
 ARQUIVO_BACKUP = "backup_diario.json"
 
 def salvar_backup():
-    dados = {"db": st.session_state.db, "xp": st.session_state.xp,
-             "cert_xp": st.session_state.cert_xp, "cert_status": st.session_state.cert_status,
-             "soft_skills_concluidas": st.session_state.soft_skills_concluidas,
-             "cert_topicos_concluidos": st.session_state.cert_topicos_concluidos}
+    dados = {
+        "db": st.session_state.db, "xp": st.session_state.xp,
+        "cert_xp": st.session_state.cert_xp, "cert_status": st.session_state.cert_status,
+        "soft_skills_concluidas": st.session_state.soft_skills_concluidas,
+        "cert_topicos_concluidos": st.session_state.cert_topicos_concluidos,
+        "data_backup": datetime.now().isoformat()
+    }
     with open(ARQUIVO_BACKUP, "w") as f:
         json.dump(dados, f, default=str)
     return True
@@ -456,295 +616,3 @@ def carregar_backup():
             st.session_state.soft_skills_concluidas = dados.get("soft_skills_concluidas", {})
             st.session_state.cert_topicos_concluidos = dados.get("cert_topicos_concluidos", {})
             return True
-    return False
-
-# =========================
-# FUNÇÕES PRINCIPAIS
-# =========================
-def calc_xp(atividade):
-    tabela = {"📚 Estudo": 10, "🔬 Laboratório": 20, "🏗️ Projeto": 30, "🔄 Revisão": 15,
-              "📝 Simulado": 15, "🎓 Aula Pós": 25, "🌎 Inglês": 15, "🏅 Certificação": 50}
-    return tabela.get(atividade, 10)
-
-def get_badge(status):
-    if status == "Concluída": return "🏆"
-    elif status == "Em andamento": return "⚡"
-    return "💤"
-
-def verificar_atraso(cert, ano):
-    if ano == "Contínuo": return False
-    if isinstance(ano, int) and datetime.now().year > ano:
-        if st.session_state.cert_xp.get(cert, 0) < EMBLEMAS[cert]["xp"]:
-            return True
-    return False
-
-def adicionar_atividade(area, atividade, xp, obs):
-    st.session_state.db.append({"data": datetime.now().isoformat(), "area": area, "atividade": atividade, "xp": xp, "obs": obs})
-    st.session_state.xp += xp
-    st.session_state.cert_xp[area] += xp
-    if st.session_state.cert_xp[area] >= EMBLEMAS[area]["xp"]:
-        st.session_state.cert_status[area] = "Concluída"
-    elif st.session_state.cert_xp[area] >= EMBLEMAS[area]["xp"] * 0.3:
-        st.session_state.cert_status[area] = "Em andamento"
-    salvar_backup()
-
-def adicionar_soft_skill(categoria, atividade, xp):
-    key = f"{categoria}_{atividade}"
-    if key not in st.session_state.soft_skills_concluidas:
-        st.session_state.soft_skills_concluidas[key] = True
-        st.session_state.xp += xp
-        salvar_backup()
-        return True
-    return False
-
-def marcar_topico_certificacao(cert, dominio, topico, concluido):
-    key = f"{cert}_{dominio}_{topico}"
-    if concluido and key not in st.session_state.cert_topicos_concluidos:
-        st.session_state.cert_topicos_concluidos[key] = True
-        st.session_state.xp += 3
-        salvar_backup()
-    elif not concluido and key in st.session_state.cert_topicos_concluidos:
-        del st.session_state.cert_topicos_concluidos[key]
-        st.session_state.xp -= 3
-        salvar_backup()
-
-def get_atividades_hoje():
-    hoje = datetime.now().date()
-    resultado = []
-    for a in st.session_state.db:
-        try:
-            data_atv = datetime.fromisoformat(a['data']).date() if isinstance(a['data'], str) else a['data'].date()
-            if data_atv == hoje:
-                resultado.append(a)
-        except:
-            pass
-    return resultado
-
-def get_xp_semana():
-    hoje = datetime.now()
-    inicio = hoje - timedelta(days=hoje.weekday())
-    total = 0
-    for a in st.session_state.db:
-        try:
-            data_atv = datetime.fromisoformat(a['data']) if isinstance(a['data'], str) else a['data']
-            if data_atv.date() >= inicio.date():
-                total += a['xp']
-        except:
-            pass
-    return total
-
-def get_xp_mes():
-    hoje = datetime.now()
-    total = 0
-    for a in st.session_state.db:
-        try:
-            data_atv = datetime.fromisoformat(a['data']) if isinstance(a['data'], str) else a['data']
-            if data_atv.month == hoje.month and data_atv.year == hoje.year:
-                total += a['xp']
-        except:
-            pass
-    return total
-
-# =========================
-# LOGIN
-# =========================
-def fazer_login():
-    st.markdown("""
-    <div style="max-width: 400px; margin: 100px auto; padding: 40px; background: linear-gradient(135deg, rgba(77,159,255,0.1), rgba(123,47,247,0.05)); border-radius: 20px; text-align: center;">
-        <h1>🚀 MISSÃO CARREIRA</h1>
-        <h3>Acesso Autorizado</h3>
-    </div>
-    """, unsafe_allow_html=True)
-    usuario = st.text_input("Usuário")
-    senha = st.text_input("Senha", type="password")
-    if st.button("Entrar", use_container_width=True):
-        if usuario == USUARIO_VALIDO and senha == SENHA_VALIDA:
-            st.session_state.autenticado = True
-            st.rerun()
-        else:
-            st.error("Credenciais inválidas!")
-
-# =========================
-# CARREGAR DADOS
-# =========================
-carregar_backup()
-if not st.session_state.autenticado:
-    fazer_login()
-    st.stop()
-
-# =========================
-# DATA ATUAL
-# =========================
-hoje = datetime.now()
-st.markdown(f"""
-<div style="background: linear-gradient(135deg, rgba(77,159,255,0.15), rgba(123,47,247,0.08)); border-radius: 15px; padding: 15px; text-align: center; margin-bottom: 20px;">
-    <div style="font-size: 28px; font-weight: bold;">{hoje.strftime('%d/%m/%Y')}</div>
-    <div>{hoje.strftime('%A')}</div>
-</div>
-""", unsafe_allow_html=True)
-
-st.title("🚀 MISSÃO CARREIRA")
-st.caption("Juan Felipe da Silva - Especialista em Cibersegurança")
-st.markdown('<p class="green-text">💾 Seu progresso é salvo automaticamente!</p>', unsafe_allow_html=True)
-st.markdown("---")
-
-# =========================
-# SIDEBAR
-# =========================
-with st.sidebar:
-    st.markdown("## 🚀 NAVE")
-    st.markdown(f"👨‍🚀 **Juan Felipe**")
-    st.markdown(f"⭐ **XP:** {st.session_state.xp}")
-    st.markdown(f"🎖️ **Nível:** {st.session_state.xp // 100 + 1}")
-    st.markdown(f"📅 **Missões:** {len(st.session_state.db)}")
-    st.markdown("---")
-    
-    atrasadas = [c for c, d in EMBLEMAS.items() if verificar_atraso(c, d.get("ano", 2030))]
-    if atrasadas:
-        st.markdown('<p class="red-text">⚠️ Atrasadas:</p>', unsafe_allow_html=True)
-        for c in atrasadas[:3]:
-            st.markdown(f'<p class="red-text">• {EMBLEMAS[c]["emblema"]} {c[:15]}</p>', unsafe_allow_html=True)
-    st.markdown("---")
-    
-    xp_hoje = sum(a['xp'] for a in get_atividades_hoje())
-    st.markdown(f"**📅 Hoje:** +{xp_hoje} XP")
-    st.markdown(f"**📆 Semana:** +{get_xp_semana()} XP")
-    st.markdown(f"**📅 Mês:** +{get_xp_mes()} XP")
-    st.markdown("---")
-    
-    if st.button("📥 Backup", use_container_width=True):
-        salvar_backup()
-        st.success("Backup salvo!")
-    if st.button("🚪 Sair", use_container_width=True):
-        st.session_state.autenticado = False
-        st.rerun()
-
-# =========================
-# ABAS
-# =========================
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["📊 Dashboard", "📚 Certificações", "💪 Soft Skills", "🎓 Pós PUC", "🎖️ Progresso", "🗺️ Roadmap"])
-
-# =========================
-# TAB 1 - DASHBOARD
-# =========================
-with tab1:
-    st.markdown("## ⚡ ATIVIDADES DE HOJE")
-    col1, col2, col3 = st.columns([2, 1, 1])
-    with col1:
-        with st.form("nova_atividade", clear_on_submit=True):
-            area = st.selectbox("Certificação", list(EMBLEMAS.keys()))
-            atividade = st.selectbox("Tipo", ["📚 Estudo", "🔬 Laboratório", "🏗️ Projeto", "🔄 Revisão", "📝 Simulado", "🎓 Aula Pós", "🌎 Inglês", "🏅 Certificação"])
-            obs = st.text_area("Observação")
-            if st.form_submit_button("🚀 Lançar", use_container_width=True):
-                adicionar_atividade(area, atividade, calc_xp(atividade), obs)
-                st.success("Missão concluída!", icon="🎉")
-                st.rerun()
-    with col2:
-        st.markdown(f'<div class="kpi-card"><div style="font-size:36px;">⭐</div><div style="font-size:28px;">+{xp_hoje}</div><div>XP hoje</div></div>', unsafe_allow_html=True)
-    with col3:
-        st.markdown(f'<div class="kpi-card"><div style="font-size:36px;">🎯</div><div style="font-size:28px;">{xp_hoje}/50</div><div>Meta</div></div>', unsafe_allow_html=True)
-        st.progress(min(xp_hoje / 50, 1.0))
-    
-    for atv in get_atividades_hoje():
-        emblema = EMBLEMAS.get(atv['area'], {}).get('emblema', '📌')
-        st.markdown(f'<div class="atividade-card">{emblema} **{atv["area"][:30]}** | {atv["atividade"]} | ⭐ +{atv["xp"]}<br><small>📝 {atv["obs"][:50] if atv["obs"] else "-"}</small></div>', unsafe_allow_html=True)
-    if not get_atividades_hoje():
-        st.info("✨ Nenhuma atividade hoje. Comece agora!")
-
-# =========================
-# TAB 2 - CERTIFICAÇÕES
-# =========================
-with tab2:
-    st.markdown("## 📚 PLANO DE ESTUDOS")
-    cert_selecionada = st.selectbox("Selecione a certificação", list(CONTEUDO_CERTIFICACOES.keys()))
-    if cert_selecionada in CONTEUDO_CERTIFICACOES:
-        info = CONTEUDO_CERTIFICACOES[cert_selecionada]
-        st.markdown(f'<div class="cert-card"><h2>{EMBLEMAS[cert_selecionada]["emblema"]} {cert_selecionada}</h2><h3>{info["titulo"]}</h3><p>{info["descricao"]}</p><p><strong>Duração:</strong> {info["semanas"]} semanas ({info["horas"]} horas)</p></div>', unsafe_allow_html=True)
-        sub1, sub2, sub3 = st.tabs(["📖 Conteúdo", "🎓 Recursos", "📝 Simulados"])
-        with sub1:
-            for dominio in info['dominios']:
-                st.markdown(f'<div class="dominio-header">📌 {dominio["nome"]}</div>', unsafe_allow_html=True)
-                for topico in dominio['topicos']:
-                    key = f"{cert_selecionada}_{dominio['nome']}_{topico}"
-                    if st.checkbox(topico, value=key in st.session_state.cert_topicos_concluidos, key=key):
-                        marcar_topico_certificacao(cert_selecionada, dominio['nome'], topico, True)
-                    else:
-                        marcar_topico_certificacao(cert_selecionada, dominio['nome'], topico, False)
-        with sub2:
-            for r in info['recursos']:
-                st.markdown(f"- {r}")
-        with sub3:
-            for s in info['simulados']:
-                st.markdown(f"- {s}")
-
-# =========================
-# TAB 3 - SOFT SKILLS
-# =========================
-with tab3:
-    st.markdown("## 💪 SOFT SKILLS")
-    for categoria, info in SOFT_SKILLS_ATIVIDADES.items():
-        with st.expander(f"📌 {categoria}"):
-            st.markdown(f"*{info['descricao']}*")
-            cols = st.columns(2)
-            for i, atv in enumerate(info['atividades']):
-                with cols[i % 2]:
-                    key = f"soft_{categoria}_{atv['nome']}"
-                    if st.button(f"✅ {atv['nome']} (+{atv['xp']} XP)", key=key):
-                        if adicionar_soft_skill(categoria, atv['nome'], atv['xp']):
-                            st.success(f"+{atv['xp']} XP!")
-                            st.rerun()
-
-# =========================
-# TAB 4 - PÓS PUC
-# =========================
-with tab4:
-    st.markdown("## 🎓 PÓS-GRADUAÇÃO PUC MINAS")
-    for disciplina, info in EMENTA_PUC.items():
-        with st.expander(f"📖 {disciplina}"):
-            st.markdown(f"*{info['ementa']}*")
-            st.markdown(f"**Certificações:** {', '.join(info['certificacoes'])}")
-            for topico in info['topicos']:
-                st.markdown(f"- {topico}")
-
-# =========================
-# TAB 5 - PROGRESSO
-# =========================
-with tab5:
-    st.markdown("## 🎖️ PROGRESSO")
-    filtro = st.selectbox("Filtrar", ["Todas", "Em andamento", "Concluída", "Não iniciada"])
-    certs = list(st.session_state.cert_xp.items())
-    for i in range(0, len(certs), 4):
-        cols = st.columns(4)
-        for j in range(4):
-            if i+j < len(certs):
-                cert, xp = certs[i+j]
-                info = EMBLEMAS[cert]
-                status = st.session_state.cert_status[cert]
-                if filtro != "Todas" and status != filtro:
-                    continue
-                atrasado = verificar_atraso(cert, info.get("ano", 2030))
-                with cols[j]:
-                    st.markdown(f'<div class="cert-card {"atrasado" if atrasado else ""}"><div style="text-align:center; font-size:32px;">{info["emblema"]}</div><div style="font-weight:bold;">{cert[:15]}</div><div style="font-size:24px;">{get_badge(status)}</div><div>{xp}/{info["xp"]} XP</div></div>', unsafe_allow_html=True)
-                    st.progress(min(xp/info["xp"], 1.0))
-                    novo = st.selectbox("", ["Não iniciada", "Em andamento", "Concluída"], index=["Não iniciada", "Em andamento", "Concluída"].index(status), key=f"status_{cert}", label_visibility="collapsed")
-                    if novo != status:
-                        st.session_state.cert_status[cert] = novo
-                        salvar_backup()
-                        st.rerun()
-
-# =========================
-# TAB 6 - ROADMAP
-# =========================
-with tab6:
-    st.markdown("## 🗺️ ROADMAP")
-    for ano in [2026, 2027, 2028, 2029]:
-        titulo = {2026: "🌱 2026 - Fundação", 2027: "⚡ 2027 - Especialização", 2028: "🎯 2028 - Maestria", 2029: "👑 2029 - Liderança"}[ano]
-        with st.expander(titulo):
-            certs_ano = [c for c, d in EMBLEMAS.items() if d.get("ano") == ano]
-            if certs_ano:
-                cols = st.columns(min(4, len(certs_ano)))
-                for i, cert in enumerate(certs_ano):
-                    info = EMBLEMAS[cert]
-                    st.markdown(f'<div style="text-align:center;"><div style="font-size:32px;">{info["emblema"]}</div><div>{cert}</div><div>{get_badge(st.session_state.cert_status[cert])}</div><div>{st.session_state.cert_xp[cert]}/{info["xp"]} XP</div></div>', unsafe_allow_html=True)
-
-st.caption("🚀 Continue sua jornada, o universo te espera!")
