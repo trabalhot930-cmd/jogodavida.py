@@ -22,26 +22,28 @@ SENHA_VALIDA = "Ju@n1990"
 # ATIVIDADES COMPLEMENTARES COM PONTOS
 # =========================
 ATIVIDADES_COMPLEMENTARES = {
-    "📝 Post no LinkedIn": {"xp": 15, "desc": "Post técnico sobre segurança ou cibersegurança"},
-    "🔗 Conexão estratégica": {"xp": 5, "desc": "Conectar com recrutador ou especialista da área"},
+    "📝 Post no LinkedIn": {"xp": 15, "desc": "Post técnico sobre segurança ou ciberseguranca"},
+    "🔗 Conexao estrategica": {"xp": 5, "desc": "Conectar com recrutador ou especialista da area"},
     "📄 Atualizar LinkedIn": {"xp": 10, "desc": "Atualizar perfil com novas conquistas"},
     "🎯 Aplicar para vaga": {"xp": 20, "desc": "Candidatar-se a uma vaga alinhada com a meta"},
-    "📚 Ler artigo técnico": {"xp": 8, "desc": "Ler artigo sobre OT Security, ISO 27001, etc"},
-    "🎧 Ouvir podcast técnico": {"xp": 8, "desc": "Podcast sobre cibersegurança industrial"},
-    "💻 Projeto GitHub": {"xp": 25, "desc": "Publicar projeto no GitHub com documentação"},
+    "📚 Ler artigo tecnico": {"xp": 8, "desc": "Ler artigo sobre OT Security, ISO 27001, etc"},
+    "🎧 Ouvir podcast tecnico": {"xp": 8, "desc": "Podcast sobre ciberseguranca industrial"},
+    "💻 Projeto GitHub": {"xp": 25, "desc": "Publicar projeto no GitHub com documentacao"},
     "📊 Dashboard Power BI": {"xp": 30, "desc": "Criar dashboard com dados reais"},
     "🤝 Networking evento": {"xp": 20, "desc": "Participar de webinar ou evento online"},
-    "📝 Escrever artigo": {"xp": 35, "desc": "Artigo técnico para LinkedIn ou Medium"},
-    "🎓 Webinar assistido": {"xp": 10, "desc": "Assistir webinar da área"},
+    "📝 Escrever artigo": {"xp": 35, "desc": "Artigo tecnico para LinkedIn ou Medium"},
+    "🎓 Webinar assistido": {"xp": 10, "desc": "Assistir webinar da area"},
     "📋 Planejamento semanal": {"xp": 10, "desc": "Planejar a semana de estudos"},
-    "🏆 Certificação concluída": {"xp": 100, "desc": "Completar certificação do roadmap"},
+    "🏆 Certificacao concluida": {"xp": 100, "desc": "Completar certificacao do roadmap"},
     "📁 Portfolio atualizado": {"xp": 20, "desc": "Atualizar portfolio com novos projetos"},
-    "🗣️ Inglês - 1h estudo": {"xp": 15, "desc": "Estudar inglês por 1 hora"},
-    "🔬 Laboratório prático": {"xp": 25, "desc": "Laboratório de OT Security ou rede"},
+    "🗣️ Ingles - 1h estudo": {"xp": 15, "desc": "Estudar ingles por 1 hora"},
+    "🔬 Laboratorio pratico": {"xp": 25, "desc": "Laboratorio de OT Security ou rede"},
+    "📖 CISA ICS Module": {"xp": 30, "desc": "Completar modulo do CISA ICS"},
+    "🎯 Simulado Security+": {"xp": 20, "desc": "Fazer simulado da Security+"},
 }
 
 # =========================
-# EMBLEMAS DAS CERTIFICAÇÕES
+# EMBLEMAS DAS CERTIFICACOES
 # =========================
 EMBLEMAS = {
     "AZ-900": {"emblema": "☁️🌩️", "cor": "#00A4EF", "titulo": "Azure Fundamentals", "xp": 120, "ano": 2026},
@@ -61,8 +63,8 @@ EMBLEMAS = {
     "Power BI": {"emblema": "📈🎨", "cor": "#F2C811", "titulo": "Power BI", "xp": 120, "ano": 2026},
     "CCNA": {"emblema": "🌐🕸️", "cor": "#1BA0D7", "titulo": "CCNA", "xp": 150, "ano": 2026},
     "SC-900": {"emblema": "🔐🎯", "cor": "#0078D4", "titulo": "SC-900", "xp": 100, "ano": 2026},
-    "Pos-graduacao": {"emblema": "🎓📜", "cor": "#800080", "titulo": "Pós-graduação", "xp": 300, "ano": 2026},
-    "Ingles": {"emblema": "🇬🇧💬", "cor": "#1E90FF", "titulo": "Inglês", "xp": 250, "ano": "Contínuo"},
+    "Pos-graduacao": {"emblema": "🎓📜", "cor": "#800080", "titulo": "Pos-graduacao", "xp": 300, "ano": 2026},
+    "Ingles": {"emblema": "🇬🇧💬", "cor": "#1E90FF", "titulo": "Ingles", "xp": 250, "ano": "Continuo"},
     "CISA ICS 101": {"emblema": "🏭📘", "cor": "#00A4EF", "titulo": "CISA ICS 101", "xp": 80, "ano": 2026},
     "CISA ICS 201": {"emblema": "🏭📗", "cor": "#0078D4", "titulo": "CISA ICS 201", "xp": 100, "ano": 2026},
 }
@@ -221,7 +223,7 @@ h1, h2, h3 {
 """, unsafe_allow_html=True)
 
 # =========================
-# INICIALIZAÇÃO DO SESSION STATE
+# INICIALIZACAO DO SESSION STATE
 # =========================
 if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
@@ -233,22 +235,22 @@ if "xp" not in st.session_state:
 if "cert_xp" not in st.session_state:
     st.session_state.cert_xp = {cert: 0 for cert in EMBLEMAS.keys()}
 if "cert_status" not in st.session_state:
-    st.session_state.cert_status = {cert: "Não iniciada" for cert in EMBLEMAS.keys()}
+    st.session_state.cert_status = {cert: "Nao iniciada" for cert in EMBLEMAS.keys()}
 if "atividades_complementares_db" not in st.session_state:
     st.session_state.atividades_complementares_db = []
 
 # =========================
-# FUNÇÃO DE LOGIN
+# FUNCAO DE LOGIN
 # =========================
 def fazer_login():
     st.markdown("""
     <div style="max-width: 400px; margin: 100px auto; padding: 40px; background: linear-gradient(135deg, rgba(77,159,255,0.1), rgba(123,47,247,0.05)); border-radius: 20px; border: 1px solid rgba(77,159,255,0.3); text-align: center;">
-        <h1>🚀 MISSÃO CARREIRA</h1>
+        <h1>🚀 MISSAO CARREIRA</h1>
         <h3>Acesso Autorizado</h3>
     </div>
     """, unsafe_allow_html=True)
     
-    usuario = st.text_input("👨‍🚀 Usuário")
+    usuario = st.text_input("👨‍🚀 Usuario")
     senha = st.text_input("🔒 Senha", type="password")
     
     if st.button("🚀 Entrar", use_container_width=True):
@@ -257,28 +259,28 @@ def fazer_login():
             st.success("✅ Acesso concedido!")
             st.rerun()
         else:
-            st.error("❌ Usuário ou senha incorretos!")
+            st.error("❌ Usuario ou senha incorretos!")
 
 # =========================
-# FUNÇÕES PRINCIPAIS
+# FUNCOES PRINCIPAIS
 # =========================
 def calc_xp(atividade):
     tabela = {
-        "📚 Estudo": 10, "🔬 Laboratório": 20, "🏗️ Projeto": 30,
-        "🔄 Revisão": 15, "📝 Simulado": 15, "🎓 Aula Pós": 25,
-        "🌎 Inglês": 15, "🏅 Certificação": 50
+        "📚 Estudo": 10, "🔬 Laboratorio": 20, "🏗️ Projeto": 30,
+        "🔄 Revisao": 15, "📝 Simulado": 15, "🎓 Aula Pos": 25,
+        "🌎 Ingles": 15, "🏅 Certificacao": 50
     }
     return tabela.get(atividade, 10)
 
 def get_badge(status):
-    if status == "Concluída":
+    if status == "Concluida":
         return "🏆"
     elif status == "Em andamento":
         return "⚡"
     return "💤"
 
 def verificar_atraso(cert, ano):
-    if ano == "Contínuo":
+    if ano == "Continuo":
         return False
     if isinstance(ano, int) and datetime.now().year > ano:
         if st.session_state.cert_xp.get(cert, 0) < EMBLEMAS[cert]["xp"]:
@@ -297,7 +299,7 @@ def adicionar_atividade(area, atividade, xp, obs):
     st.session_state.cert_xp[area] += xp
     
     if st.session_state.cert_xp[area] >= EMBLEMAS[area]["xp"]:
-        st.session_state.cert_status[area] = "Concluída"
+        st.session_state.cert_status[area] = "Concluida"
     elif st.session_state.cert_xp[area] >= EMBLEMAS[area]["xp"] * 0.3:
         st.session_state.cert_status[area] = "Em andamento"
 
@@ -341,8 +343,8 @@ if not st.session_state.autenticado:
 # DATA ATUAL - DESTAQUE
 # =========================
 hoje = datetime.now()
-dias_semana = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"]
-meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
+dias_semana = ["Segunda", "Terca", "Quarta", "Quinta", "Sexta", "Sabado", "Domingo"]
+meses = ["Janeiro", "Fevereiro", "Marco", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
 
 st.markdown(f"""
 <div class="date-box">
@@ -354,34 +356,31 @@ st.markdown(f"""
 # =========================
 # HEADER
 # =========================
-st.title("🚀 MISSÃO CARREIRA")
-st.markdown("### *Juan Felipe da Silva - Especialista em Segurança Corporativa | Infraestrutura Crítica | Cibersegurança*")
-st.markdown(f"*Abril de 2026 – Junho de 2028 | Usina Hidrelétrica de Belo Monte*")
-st.markdown('<p class="green-text">💾 Seu progresso é salvo automaticamente!</p>', unsafe_allow_html=True)
+st.title("🚀 MISSAO CARREIRA")
+st.markdown("### *Juan Felipe da Silva - Especialista em Seguranca Corporativa | Infraestrutura Critica | Ciberseguranca*")
+st.markdown('<p class="green-text">💾 Seu progresso e salvo automaticamente!</p>', unsafe_allow_html=True)
 st.markdown("---")
 
 # =========================
 # ABAS
 # =========================
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["🎮 Dashboard", "📋 Atividades", "🎖️ Certificações", "🗺️ Roadmap", "📊 Plano Estratégico"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["🎮 Dashboard", "📋 Atividades", "🎖️ Certificacoes", "🗺️ Roadmap", "📊 Plano Estrategico"])
 
 # =========================
 # TAB 1 - DASHBOARD
 # =========================
 with tab1:
-    # KPIs principais
     c1, c2, c3, c4 = st.columns(4)
     concluidas = sum(1 for cert, xp in st.session_state.cert_xp.items() if xp >= EMBLEMAS[cert]["xp"])
     total_certs = len(EMBLEMAS)
     
-    c1.metric("🎮 Missões", len(st.session_state.db) + len(st.session_state.atividades_complementares_db))
+    c1.metric("🎮 Missoes", len(st.session_state.db) + len(st.session_state.atividades_complementares_db))
     c2.metric("⭐ XP Total", st.session_state.xp)
-    c3.metric("🏆 Nível", st.session_state.xp // 100 + 1)
-    c4.metric("✅ Certificações", f"{concluidas}/{total_certs}")
+    c3.metric("🏆 Nivel", st.session_state.xp // 100 + 1)
+    c4.metric("✅ Certificacoes", f"{concluidas}/{total_certs}")
     
     st.markdown("---")
     
-    # Resumo do dia
     st.markdown("## 📊 Resumo do Dia")
     col1, col2, col3 = st.columns(3)
     
@@ -411,15 +410,14 @@ with tab1:
         <div class="kpi-card">
             <div style="font-size: 36px;">📅</div>
             <div style="font-size: 28px; font-weight: bold;">+{get_xp_mes()}</div>
-            <div>XP Mês</div>
+            <div>XP Mes</div>
         </div>
         """, unsafe_allow_html=True)
     
-    # Meta diária
     meta_diaria = 50
     progresso_meta = min(xp_hoje / meta_diaria, 1.0)
     st.progress(progresso_meta)
-    st.caption(f"Meta diária: {xp_hoje}/{meta_diaria} XP")
+    st.caption(f"Meta diaria: {xp_hoje}/{meta_diaria} XP")
 
 # =========================
 # TAB 2 - ATIVIDADES
@@ -427,17 +425,16 @@ with tab1:
 with tab2:
     st.markdown("## ⚡ ATIVIDADES DO DIA")
     
-    # Atividades principais
-    st.markdown("### 📚 Estudos e Certificações")
+    st.markdown("### 📚 Estudos e Certificacoes")
     with st.form("nova_atividade", clear_on_submit=True):
         col1, col2 = st.columns(2)
         with col1:
-            area = st.selectbox("Certificação", list(EMBLEMAS.keys()))
-            atividade = st.selectbox("Tipo", ["📚 Estudo", "🔬 Laboratório", "🏗️ Projeto", "🔄 Revisão", "📝 Simulado", "🎓 Aula Pós", "🌎 Inglês", "🏅 Certificação"])
+            area = st.selectbox("Certificacao", list(EMBLEMAS.keys()))
+            atividade = st.selectbox("Tipo", ["📚 Estudo", "🔬 Laboratorio", "🏗️ Projeto", "🔄 Revisao", "📝 Simulado", "🎓 Aula Pos", "🌎 Ingles", "🏅 Certificacao"])
         with col2:
-            obs = st.text_area("Observação")
+            obs = st.text_area("Observacao")
         
-        if st.form_submit_button("🚀 Lançar Missão Principal", use_container_width=True):
+        if st.form_submit_button("🚀 Lancar Missao Principal", use_container_width=True):
             xp_ganho = calc_xp(atividade)
             adicionar_atividade(area, atividade, xp_ganho, obs)
             st.success(f"+{xp_ganho} XP!", icon="🎉")
@@ -445,11 +442,8 @@ with tab2:
     
     st.markdown("---")
     
-    # Atividades Complementares
     st.markdown("### 🎯 Atividades Complementares (PONTUAM XP)")
-    st.markdown("*Realize ações estratégicas para acelerar sua carreira*")
     
-    # Grid de atividades complementares
     cols = st.columns(4)
     for i, (nome, info) in enumerate(ATIVIDADES_COMPLEMENTARES.items()):
         with cols[i % 4]:
@@ -464,12 +458,11 @@ with tab2:
             
             if st.button(f"✅ Realizar", key=f"comp_{i}", use_container_width=True):
                 adicionar_atividade_complementar(nome, info['xp'])
-                st.success(f"+{info['xp']} XP - {nome} concluída!", icon="🎉")
+                st.success(f"+{info['xp']} XP - {nome} concluida!", icon="🎉")
                 st.rerun()
     
     st.markdown("---")
     
-    # Lista de atividades de hoje
     st.markdown("### 📝 Atividades Registradas Hoje")
     
     atividades_hoje = get_atividades_hoje()
@@ -486,21 +479,20 @@ with tab2:
             """, unsafe_allow_html=True)
         
         for atv in complementares_hoje:
-            info = ATIVIDADES_COMPLEMENTARES.get(atv['atividade'], {})
             st.markdown(f"""
             <div class="atividade-card">
                 🎯 **{atv['atividade']}** | ⭐ +{atv['xp']}<br>
-                <small>✅ Atividade complementar concluída</small>
+                <small>✅ Atividade complementar concluida</small>
             </div>
             """, unsafe_allow_html=True)
     else:
         st.info("✨ Nenhuma atividade hoje. Comece agora!")
 
 # =========================
-# TAB 3 - CERTIFICAÇÕES
+# TAB 3 - CERTIFICACOES
 # =========================
 with tab3:
-    st.markdown("## 🎖️ JORNADA DAS CERTIFICAÇÕES")
+    st.markdown("## 🎖️ JORNADA DAS CERTIFICACOES")
     
     certs_list = list(st.session_state.cert_xp.items())
     
@@ -527,7 +519,7 @@ with tab3:
                     """, unsafe_allow_html=True)
                     st.progress(progresso)
                     
-                    opcoes = ["Não iniciada", "Em andamento", "Concluída"]
+                    opcoes = ["Nao iniciada", "Em andamento", "Concluida"]
                     idx_status = opcoes.index(status) if status in opcoes else 0
                     novo_status = st.selectbox("", opcoes, index=idx_status, key=f"status_{cert}", label_visibility="collapsed")
                     if novo_status != status:
@@ -538,116 +530,119 @@ with tab3:
 # TAB 4 - ROADMAP
 # =========================
 with tab4:
-    st.markdown("## 🗺️ ROADMAP DAS CERTIFICAÇÕES")
+    st.markdown("## 🗺️ ROADMAP DAS CERTIFICACOES")
     
-    anos = {
-        2026: "🌱 2026 - Fundação",
-        2027: "⚡ 2027 - Especialização",
-        2028: "🎯 2028 - Maestria Técnica",
-        2029: "👑 2029 - Liderança"
-    }
+    fases = [
+        {"ano": "Abr-Dez 2026", "titulo": "🌱 FUNDACAO - Primeiras Certificacoes", "certs": ["CISA ICS 101", "CISA ICS 201", "Security+", "AZ-900", "SC-900"]},
+        {"ano": "2027", "titulo": "⚡ ESPECIALIZACAO - Aprofundamento", "certs": ["ISO 27001 Auditor", "ISO 27001 Implementer", "IEC 62443", "CySA+"]},
+        {"ano": "2028", "titulo": "🎯 MAESTRIA TECNICA", "certs": ["MITRE ATT&CK ICS", "GICSP", "Cloud Security"]},
+        {"ano": "2029", "titulo": "👑 LIDERANCA", "certs": ["CISSP", "DevSecOps"]}
+    ]
     
-    for ano, titulo in anos.items():
-        with st.expander(titulo, expanded=(ano == 2026)):
-            certs_ano = [c for c, d in EMBLEMAS.items() if d.get("ano") == ano]
-            if certs_ano:
-                cols = st.columns(min(4, len(certs_ano)))
-                for i, cert in enumerate(certs_ano):
+    for fase in fases:
+        with st.expander(f"{fase['titulo']} - {fase['ano']}", expanded=True):
+            cols = st.columns(min(4, len(fase['certs'])))
+            for i, cert in enumerate(fase['certs']):
+                if cert in EMBLEMAS:
                     info = EMBLEMAS[cert]
-                    status = st.session_state.cert_status[cert]
-                    xp_atual = st.session_state.cert_xp[cert]
+                    status = st.session_state.cert_status.get(cert, "Nao iniciada")
+                    xp_atual = st.session_state.cert_xp.get(cert, 0)
                     percent = (xp_atual / info["xp"]) * 100
                     
                     with cols[i % 4]:
                         st.markdown(f"""
-                        <div style="text-align: center; padding: 10px; background: rgba(77,159,255,0.1); border-radius: 10px;">
-                            <div style="font-size: 32px;">{info['emblema']}</div>
-                            <div style="font-weight: bold; font-size: 11px;">{cert[:20]}</div>
-                            <div style="font-size: 20px;">{get_badge(status)}</div>
-                            <div style="font-size: 10px;">{xp_atual}/{info['xp']} XP</div>
-                            <div style="background: #333; border-radius: 5px; height: 4px; margin-top: 5px;">
-                                <div style="background: {info['cor']}; width: {percent}%; height: 4px; border-radius: 5px;"></div>
+                        <div style="text-align: center; padding: 15px; background: rgba(77,159,255,0.1); border-radius: 10px;">
+                            <div style="font-size: 40px;">{info['emblema']}</div>
+                            <div style="font-weight: bold; font-size: 12px;">{cert}</div>
+                            <div style="font-size: 24px;">{get_badge(status)}</div>
+                            <div style="font-size: 11px;">{xp_atual}/{info['xp']} XP</div>
+                            <div style="background: #333; border-radius: 5px; height: 5px; margin-top: 5px;">
+                                <div style="background: {info['cor']}; width: {percent}%; height: 5px; border-radius: 5px;"></div>
                             </div>
                         </div>
                         """, unsafe_allow_html=True)
 
 # =========================
-# TAB 5 - PLANO ESTRATÉGICO
+# TAB 5 - PLANO ESTRATEGICO
 # =========================
 with tab5:
-    st.markdown("## 📊 PLANO ESTRATÉGICO DE CARREIRA")
+    st.markdown("## 📊 PLANO ESTRATEGICO DE CARREIRA")
     st.markdown("### *Juan Felipe da Silva*")
-    st.markdown("#### Especialista em Segurança Corporativa | Infraestrutura Crítica | Cibersegurança")
-    st.markdown("*Abril de 2026 – Junho de 2028 | Usina Hidrelétrica de Belo Monte*")
+    st.markdown("#### Especialista em Seguranca Corporativa | Infraestrutura Critica | Ciberseguranca")
     st.markdown("---")
     
-    # Visão Geral
-    st.markdown("### 🎯 VISÃO GERAL")
-    st.markdown("""
-    <div class="plano-card">
-    Profissional com mais de 10 anos de experiência em segurança corporativa e infraestrutura crítica, 
-    atuando na Usina Hidrelétrica de Belo Monte (11.233 MW). Este documento mapeia os passos concretos 
-    para a transição de <strong>Técnico Sênior (R$ 7.500)</strong> para <strong>Especialista/Coordenador de Cibersegurança (R$ 18.000 - R$ 25.000)</strong> 
-    até meados de 2028, usando a própria Norte Energia como laboratório estratégico de aprendizado e construção de portfólio.
-    </div>
-    """, unsafe_allow_html=True)
+    # Projecao Salarial
+    st.markdown("### 💰 PROJECAO SALARIAL")
     
-    # Projeção Salarial
-    st.markdown("### 💰 PROJEÇÃO SALARIAL")
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.markdown("""
+        <div style="text-align:center; padding:15px; background:linear-gradient(135deg,#4d9fff20,rgba(123,47,247,0.05)); border-radius:10px;">
+            <div style="font-size:14px;">Hoje - Abr/2026</div>
+            <div style="font-size:20px; font-weight:bold; color:#4d9fff;">R$ 7.500</div>
+            <div style="font-size:11px;">Tecnico Senior</div>
+        </div>
+        """, unsafe_allow_html=True)
     
-    salarios = [
-        {"periodo": "Hoje - Abr/2026", "cargo": "Técnico Sênior", "salario": "R$ 7.500", "cor": "#4d9fff"},
-        {"periodo": "Dez/2026", "cargo": "Especialista", "salario": "R$ 10-11k", "cor": "#00ff88"},
-        {"periodo": "2027", "cargo": "Especialista Sênior", "salario": "R$ 13-16k", "cor": "#ffaa00"},
-        {"periodo": "Saída 2028", "cargo": "Coordenador/Consultor", "salario": "R$ 18-25k", "cor": "#ff4444"}
-    ]
+    with col2:
+        st.markdown("""
+        <div style="text-align:center; padding:15px; background:linear-gradient(135deg,#00ff8820,rgba(123,47,247,0.05)); border-radius:10px;">
+            <div style="font-size:14px;">Dez/2026</div>
+            <div style="font-size:20px; font-weight:bold; color:#00ff88;">R$ 10-11k</div>
+            <div style="font-size:11px;">Com Security+</div>
+        </div>
+        """, unsafe_allow_html=True)
     
-    cols = st.columns(4)
-    for i, s in enumerate(salarios):
-        with cols[i]:
-            st.markdown(f"""
-            <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, {s['cor']}20, rgba(123,47,247,0.05)); border-radius: 10px;">
-                <div style="font-size: 14px; font-weight: bold;">{s['periodo']}</div>
-                <div style="font-size: 18px; font-weight: bold; color: {s['cor']};">{s['salario']}</div>
-                <div style="font-size: 11px;">{s['cargo']}</div>
-            </div>
-            """, unsafe_allow_html=True)
+    with col3:
+        st.markdown("""
+        <div style="text-align:center; padding:15px; background:linear-gradient(135deg,#ffaa0020,rgba(123,47,247,0.05)); border-radius:10px;">
+            <div style="font-size:14px;">2027</div>
+            <div style="font-size:20px; font-weight:bold; color:#ffaa00;">R$ 13-16k</div>
+            <div style="font-size:11px;">Especialista Senior</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col4:
+        st.markdown("""
+        <div style="text-align:center; padding:15px; background:linear-gradient(135deg,#ff444420,rgba(123,47,247,0.05)); border-radius:10px;">
+            <div style="font-size:14px;">Saida 2028</div>
+            <div style="font-size:20px; font-weight:bold; color:#ff4444;">R$ 18-25k</div>
+            <div style="font-size:11px;">Coordenador</div>
+        </div>
+        """, unsafe_allow_html=True)
     
     st.markdown("---")
     
     # Linha do Tempo
     st.markdown("### 📅 LINHA DO TEMPO - PASSO A PASSO")
     
-    fases = [
-        {"periodo": "Abr–Jun 2026", "titulo": "Decolagem — colocar tudo em movimento", "cor": "#00ff88",
-         "itens": [
-            "✅ CISA ICS 101 — iniciar agora (Gratuito, online)",
-            "✅ Iniciar estudo Security+ SY0-701 (10h/semana)",
-            "✅ Pós PUC Minas em andamento",
-            "✅ LinkedIn e currículo atualizados",
-            "✅ Projeto 1 — Dashboard KPIs de segurança"
+    etapas = [
+        {"periodo": "Abr-Jun 2026", "titulo": "DECOLAGEM", "cor": "#00ff88",
+         "atividades": [
+            "🎯 Concluir CISA ICS 101 e 201 (gratuito, online)",
+            "🎯 Iniciar estudos para Security+ (10h/semana)",
+            "🎯 Pos PUC Minas - Governanca e Gestao de Riscos",
+            "🎯 Projeto 1: Dashboard KPIs de seguranca no Power BI"
          ]},
-        {"periodo": "Jul–Set 2026", "titulo": "Construção — projetos e base técnica", "cor": "#4d9fff",
-         "itens": [
-            "✅ CISA ICS 201 + Security+ intensivo",
-            "✅ Python intermediário (Pandas, Matplotlib)",
-            "✅ Projeto 2 — Automação de relatórios",
-            "✅ GitHub ativo com projetos reais"
+        {"periodo": "Jul-Set 2026", "titulo": "CONSTRUCAO", "cor": "#4d9fff",
+         "atividades": [
+            "🎯 Avancar nos simulados da Security+",
+            "🎯 Python intermediario - Pandas e automacoes",
+            "🎯 Projeto 2: Automacao de relatorios com Python",
+            "🎯 GitHub com projetos publicos"
          ]},
-        {"periodo": "Out–Dez 2026", "titulo": "Primeira grande conquista", "cor": "#ffaa00",
-         "itens": [
-            "🎯 Aprovação CompTIA Security+",
-            "✅ IAM + Resposta a Incidentes (Pós)",
-            "✅ SQL avançado + Power BI publicado",
-            "✅ Proposta formal de reajuste interno (R$ 10-11k)"
+        {"periodo": "Out-Dez 2026", "titulo": "PRIMEIRA GRANDE CONQUISTA", "cor": "#ffaa00",
+         "atividades": [
+            "🏆 APROVACAO Security+ - Meta principal",
+            "✅ Pos PUC Minas - IAM e Resposta a Incidentes",
+            "✅ SQL avancado + Power BI publicado",
+            "✅ Proposta de reajuste interno (R$ 10-11k)"
          ]},
-        {"periodo": "Jan–Jun 2027", "titulo": "Profundidade OT — o salto para especialista", "cor": "#ff8800",
-         "itens": [
+        {"periodo": "Jan-Jun 2027", "titulo": "PROFUNDIDADE OT", "cor": "#ff8800",
+         "atividades": [
             "🎯 ISO 27001 Lead Implementer",
             "🎯 ISA/IEC 62443 Cybersecurity Specialist",
-            "✅ Criptografia + DevSecOps + Ethical Hacking",
-            "✅ Projeto 3 — Política TI/OT convergida"
+            "✅ Pos PUC Minas - Criptografia e DevSecOps",
+            "✅ Projeto 3: Politica TI/OT convergida"
          ]},
-        {"periodo": "Jul–Dez 2027", "titulo": "Consolidação — especialista reconhecido", "cor": "#ff4444",
-         "itens": [
-            "
+        {"periodo":
