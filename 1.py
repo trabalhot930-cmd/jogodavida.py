@@ -174,6 +174,37 @@ if "cert_xp" not in st.session_state:
     st.session_state.cert_xp = {cert: 0 for cert in EMBLEMAS.keys()}
 if "cert_status" not in st.session_state:
     st.session_state.cert_status = {cert: "Não iniciada" for cert in EMBLEMAS.keys()}
+if "dados_carregados" not in st.session_state:
+    st.session_state.dados_carregados = False
+
+# =========================
+# FUNÇÃO PARA CARREGAR DADOS DO LOCALSTORAGE VIA COMPONENTE
+# =========================
+import streamlit.components.v1 as components
+
+def carregar_do_localstorage():
+    """Carrega dados do localStorage usando componente HTML"""
+    components.html("""
+    <script>
+    try {
+        const dados = localStorage.getItem('diario_carreira_juan');
+        if (dados) {
+            const dadosObj = JSON.parse(dados);
+            // Salvar no sessionStorage para recuperar
+            sessionStorage.setItem('dados_recuperados', dados);
+            console.log('Dados carregados do localStorage:', dadosObj.db?.length || 0);
+        }
+    } catch(e) {
+        console.log('Erro ao carregar:', e);
+    }
+    </script>
+    """, height=0)
+    
+    # Tentar recuperar dados do sessionStorage via query param
+    import os
+    if not st.session_state.dados_carregados:
+        # Verificar se há dados para carregar
+        pass
 
 # =========================
 # FUNÇÕES DE SALVAMENTO
@@ -192,7 +223,8 @@ def salvar_dados_local():
     st.markdown(f"""
     <script>
     try {{
-        localStorage.setItem('diario_carreira_juan', JSON.stringify({dados_json}));
+        const dadosParaSalvar = {dados_json};
+        localStorage.setItem('diario_carreira_juan', JSON.stringify(dadosParaSalvar));
         console.log('✅ Dados salvos:', {len(st.session_state.db)} atividades);
         
         const indicator = document.createElement('div');
@@ -206,27 +238,54 @@ def salvar_dados_local():
     </script>
     """, unsafe_allow_html=True)
 
-def carregar_dados_local():
-    """Carrega dados do localStorage"""
-    st.markdown("""
-    <script>
-    try {
-        const dados = localStorage.getItem('diario_carreira_juan');
-        if (dados) {
-            const dadosObj = JSON.parse(dados);
-            window.dadosCarregados = dadosObj;
-            console.log('✅ Dados carregados:', dadosObj.db?.length || 0, 'atividades');
-        }
-    } catch(e) {
-        console.log('Erro ao carregar:', e);
-    }
-    </script>
-    """, unsafe_allow_html=True)
+# =========================
+# CARREGAR DADOS SALVOS (executa uma vez)
+# =========================
+if not st.session_state.dados_carregados:
+    # Tentar carregar via componente
+    carregar_do_localstorage()
+    
+    # Tentar recuperar de um arquivo local (fallback)
+    import os
+    if os.path.exists("backup_diario.json"):
+        try:
+            with open("backup_diario.json", "r") as f:
+                dados = json.load(f)
+                if dados.get("db") and len(dados.get("db", [])) > len(st.session_state.db):
+                    st.session_state.db = dados.get("db", [])
+                    st.session_state.xp = dados.get("xp", 0)
+                    st.session_state.cert_xp = dados.get("cert_xp", st.session_state.cert_xp)
+                    st.session_state.cert_status = dados.get("cert_status", st.session_state.cert_status)
+                    st.session_state.dados_carregados = True
+        except:
+            pass
 
 # =========================
-# TENTAR CARREGAR DADOS
+# FUNÇÃO PARA BACKUP MANUAL EM ARQUIVO
 # =========================
-carregar_dados_local()
+def fazer_backup_manual():
+    dados = {
+        "db": st.session_state.db,
+        "xp": st.session_state.xp,
+        "cert_xp": st.session_state.cert_xp,
+        "cert_status": st.session_state.cert_status,
+        "data_backup": datetime.now().isoformat()
+    }
+    with open("backup_diario.json", "w") as f:
+        json.dump(dados, f, default=str)
+    return True
+
+def restaurar_backup_manual():
+    import os
+    if os.path.exists("backup_diario.json"):
+        with open("backup_diario.json", "r") as f:
+            dados = json.load(f)
+            st.session_state.db = dados.get("db", [])
+            st.session_state.xp = dados.get("xp", 0)
+            st.session_state.cert_xp = dados.get("cert_xp", st.session_state.cert_xp)
+            st.session_state.cert_status = dados.get("cert_status", st.session_state.cert_status)
+            return True
+    return False
 
 # =========================
 # VERIFICAR LOGIN
@@ -267,6 +326,7 @@ def delete_activity(index):
     st.session_state.cert_xp[atividade["area"]] -= atividade["xp"]
     st.session_state.db.pop(index)
     salvar_dados_local()
+    fazer_backup_manual()
 
 def adicionar_atividade(area, atividade, xp, obs):
     st.session_state.db.append({
@@ -285,6 +345,7 @@ def adicionar_atividade(area, atividade, xp, obs):
         st.session_state.cert_status[area] = "Em andamento"
     
     salvar_dados_local()
+    fazer_backup_manual()
 
 def get_atividades_hoje():
     hoje = datetime.now().date()
@@ -356,6 +417,20 @@ with st.sidebar:
     st.markdown(f"**📅 Hoje:** {len(atividades_hoje)} atv | +{xp_hoje} XP")
     st.markdown(f"**📆 Semana:** +{get_xp_semana()} XP")
     st.markdown(f"**📅 Mês:** +{get_xp_mes()} XP")
+    
+    st.markdown("---")
+    st.markdown("### 💾 Backup")
+    
+    if st.button("📥 Backup Manual", use_container_width=True):
+        fazer_backup_manual()
+        st.success("Backup salvo em arquivo!")
+    
+    if st.button("🔄 Restaurar Backup", use_container_width=True):
+        if restaurar_backup_manual():
+            st.success("Backup restaurado!")
+            st.rerun()
+        else:
+            st.warning("Nenhum backup encontrado")
     
     st.markdown("---")
     
