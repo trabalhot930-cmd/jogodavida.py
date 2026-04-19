@@ -20,7 +20,53 @@ USUARIO_VALIDO = "Juan"
 SENHA_VALIDA = "Ju@n1990"
 
 # =========================
-# CONTEÚDO DAS CERTIFICAÇÕES
+# SOFT SKILLS - ATIVIDADES PRÁTICAS (NOVO)
+# =========================
+SOFT_SKILLS_ATIVIDADES = {
+    "Comunicação e Apresentação": {
+        "descricao": "Capacidade de transmitir ideias claramente, fazer apresentações impactantes.",
+        "atividades": [
+            {"nome": "🎤 Apresentação Técnica", "descricao": "Apresentar um projeto para sua equipe", "xp": 30},
+            {"nome": "📝 Escrever Documentação", "descricao": "Documentar um procedimento", "xp": 20},
+            {"nome": "🎯 Pitch de Ideia", "descricao": "Apresentar melhoria para liderança", "xp": 40},
+            {"nome": "📊 Dashboard para Gestão", "descricao": "Criar relatório visual", "xp": 35},
+            {"nome": "🗣️ Reunião em Inglês", "descricao": "Participar de reunião em inglês", "xp": 50}
+        ]
+    },
+    "Liderança de Equipes": {
+        "descricao": "Capacidade de motivar e coordenar pessoas.",
+        "atividades": [
+            {"nome": "👥 Mentorar Colega", "descricao": "Ensinar um processo a um colega", "xp": 35},
+            {"nome": "📋 Liderar Reunião", "descricao": "Conduzir uma reunião", "xp": 30},
+            {"nome": "🎯 Definir Metas", "descricao": "Estabelecer objetivos", "xp": 40},
+            {"nome": "🔄 Delegar Tarefas", "descricao": "Distribuir atividades", "xp": 25},
+            {"nome": "🏆 Reconhecer Time", "descricao": "Dar feedback positivo", "xp": 20}
+        ]
+    },
+    "Gestão de Projetos": {
+        "descricao": "Planejar, executar e monitorar projetos.",
+        "atividades": [
+            {"nome": "📅 Planejar Projeto", "descricao": "Criar cronograma", "xp": 40},
+            {"nome": "💰 Controlar Orçamento", "descricao": "Monitorar gastos", "xp": 35},
+            {"nome": "📊 Relatório de Status", "descricao": "Produzir relatório", "xp": 30},
+            {"nome": "⚠️ Gestão de Risco", "descricao": "Identificar riscos", "xp": 45},
+            {"nome": "🔄 Kanban/Scrum", "descricao": "Aplicar metodologia ágil", "xp": 50}
+        ]
+    },
+    "Inteligência Emocional": {
+        "descricao": "Capacidade de reconhecer e gerenciar emoções.",
+        "atividades": [
+            {"nome": "😌 Gerenciar Estresse", "descricao": "Aplicar técnica de respiração", "xp": 20},
+            {"nome": "👂 Escuta Ativa", "descricao": "Ouvir sem interromper", "xp": 25},
+            {"nome": "📝 Diário de Emoções", "descricao": "Registrar gatilhos", "xp": 15},
+            {"nome": "💬 Feedback Construtivo", "descricao": "Dar feedback com técnica SBI", "xp": 35},
+            {"nome": "🙏 Reconhecer Erro", "descricao": "Admitir erro", "xp": 30}
+        ]
+    }
+}
+
+# =========================
+# CONTEÚDO DAS CERTIFICAÇÕES (ADICIONADO AWS e Scrum)
 # =========================
 CONTEUDO_CERTIFICACOES = {
     "AZ-900": {
@@ -107,6 +153,54 @@ CONTEUDO_CERTIFICACOES = {
         "semanas": 2,
         "horas": 25
     },
+    "AWS Cloud Practitioner": {
+        "titulo": "AWS Cloud Practitioner",
+        "descricao": "Certificação fundamental da AWS, valida conhecimentos básicos de cloud computing.",
+        "dominios": [
+            {"nome": "Conceitos de Nuvem (20%)", "topicos": [
+                "Benefícios da AWS",
+                "Modelos de implantação (nuvem, híbrida, on-premise)",
+                "Modelos de serviço (IaaS, PaaS, SaaS)",
+                "Infraestrutura global AWS"
+            ]},
+            {"nome": "Serviços Principais (30%)", "topicos": [
+                "Computação (EC2, Lambda)",
+                "Armazenamento (S3, EBS, EFS)",
+                "Banco de dados (RDS, DynamoDB)",
+                "Redes (VPC, CloudFront, Route 53)"
+            ]},
+            {"nome": "Segurança e Conformidade (25%)", "topicos": [
+                "Modelo de responsabilidade compartilhada",
+                "IAM (Identity and Access Management)",
+                "AWS Shield, WAF, KMS",
+                "Conformidade (Artifacts, Config, CloudTrail)"
+            ]},
+            {"nome": "Preços e Suporte (15%)", "topicos": [
+                "Modelos de precificação",
+                "AWS Pricing Calculator",
+                "Planos de suporte",
+                "AWS Organizations"
+            ]},
+            {"nome": "Tecnologias Principais (10%)", "topicos": [
+                "Machine Learning",
+                "IoT Core",
+                "Serverless",
+                "DevOps"
+            ]}
+        ],
+        "recursos": [
+            "AWS Skill Builder (gratuito)",
+            "YouTube - Stephane Maarek",
+            "AWS Free Tier"
+        ],
+        "simulados": [
+            "AWS Official Practice Exam",
+            "TutorialsDojo",
+            "Udemy"
+        ],
+        "semanas": 4,
+        "horas": 30
+    },
     "Security+": {
         "titulo": "CompTIA Security+ (SY0-701)",
         "descricao": "Certificação fundamental de cibersegurança, reconhecida mundialmente.",
@@ -166,6 +260,48 @@ CONTEUDO_CERTIFICACOES = {
         ],
         "semanas": 10,
         "horas": 80
+    },
+    "Scrum Fundamentals": {
+        "titulo": "Scrum Fundamentals Certified (SFC)",
+        "descricao": "Certificação básica de Scrum, metodologia ágil para gestão de projetos.",
+        "dominios": [
+            {"nome": "Fundamentos do Scrum (30%)", "topicos": [
+                "Manifesto Ágil e seus 4 valores",
+                "Os 12 princípios ágeis",
+                "Scrum vs Waterfall",
+                "Benefícios da metodologia ágil"
+            ]},
+            {"nome": "Papéis do Scrum (25%)", "topicos": [
+                "Product Owner (responsabilidades)",
+                "Scrum Master (facilitador)",
+                "Development Team (auto-organização)",
+                "Características de times de alta performance"
+            ]},
+            {"nome": "Eventos Scrum (25%)", "topicos": [
+                "Sprint Planning (planejamento)",
+                "Daily Scrum (15 minutos)",
+                "Sprint Review (demonstração)",
+                "Sprint Retrospective (melhoria contínua)"
+            ]},
+            {"nome": "Artefatos Scrum (20%)", "topicos": [
+                "Product Backlog (priorização)",
+                "Sprint Backlog (compromisso da sprint)",
+                "Increment (entregável)",
+                "Definição de Pronto (DoD) e Definição de Feito"
+            ]}
+        ],
+        "recursos": [
+            "Scrum Guide (gratuito)",
+            "YouTube - Scrum Framework",
+            "Scrum.org - Open Assessments"
+        ],
+        "simulados": [
+            "Scrum.org Open Assessment (gratuito)",
+            "ScrumStudy.com Practice Tests",
+            "Udemy - Mock Exams"
+        ],
+        "semanas": 1,
+        "horas": 16
     },
     "CySA+": {
         "titulo": "CompTIA CySA+ (CS0-003)",
@@ -823,7 +959,7 @@ EMENTA_PUC = {
 }
 
 # =========================
-# EMBLEMAS DAS CERTIFICAÇÕES
+# EMBLEMAS DAS CERTIFICAÇÕES (ADICIONADO AWS e Scrum)
 # =========================
 EMBLEMAS = {
     "AZ-900": {"emblema": "☁️🌩️", "cor": "#00A4EF", "titulo": "Azure Fundamentals", "xp": 120, "ano": 2026},
@@ -833,6 +969,8 @@ EMBLEMAS = {
     "ISO 27001 Auditor": {"emblema": "🔒🔍", "cor": "#FFC000", "titulo": "ISO Auditor", "xp": 150, "ano": 2027},
     "ISO 27001 Implementer": {"emblema": "🔒🛠️", "cor": "#FFA000", "titulo": "ISO Implementer", "xp": 150, "ano": 2027},
     "Security+": {"emblema": "🛡️⚔️", "cor": "#FF0000", "titulo": "Security Plus", "xp": 120, "ano": 2027},
+    "AWS Cloud Practitioner": {"emblema": "☁️📘", "cor": "#FF9900", "titulo": "AWS Cloud", "xp": 100, "ano": 2027},
+    "Scrum Fundamentals": {"emblema": "🔄📋", "cor": "#0A5C4A", "titulo": "Scrum", "xp": 60, "ano": 2026},
     "CySA+": {"emblema": "🔍🕵️", "cor": "#FF4500", "titulo": "CySA Plus", "xp": 150, "ano": 2027},
     "CISSP": {"emblema": "👑🏆", "cor": "#C0C0C0", "titulo": "CISSP", "xp": 200, "ano": 2029},
     "IEC 62443": {"emblema": "🏭📏", "cor": "#808080", "titulo": "IEC 62443", "xp": 120, "ano": 2027},
@@ -925,6 +1063,13 @@ h1, h2, h3 {
     margin: 10px 0 5px 0;
     font-weight: bold;
 }
+.soft-card {
+    background: linear-gradient(135deg, rgba(255,68,68,0.1), rgba(123,47,247,0.05));
+    border-radius: 12px;
+    padding: 15px;
+    margin: 10px 0;
+    border-left: 3px solid #ff8800;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -948,6 +1093,8 @@ if "topicos_concluidos" not in st.session_state:
     st.session_state.topicos_concluidos = {}
 if "cert_topicos_concluidos" not in st.session_state:
     st.session_state.cert_topicos_concluidos = {}
+if "soft_skills_concluidas" not in st.session_state:
+    st.session_state.soft_skills_concluidas = {}
 
 # =========================
 # FUNÇÃO DE LOGIN
@@ -985,6 +1132,7 @@ def salvar_backup():
         "disciplinas_progresso": st.session_state.disciplinas_progresso,
         "topicos_concluidos": st.session_state.topicos_concluidos,
         "cert_topicos_concluidos": st.session_state.cert_topicos_concluidos,
+        "soft_skills_concluidas": st.session_state.soft_skills_concluidas,
         "data_backup": datetime.now().isoformat()
     }
     with open(ARQUIVO_BACKUP, "w") as f:
@@ -1002,6 +1150,7 @@ def carregar_backup():
             st.session_state.disciplinas_progresso = dados.get("disciplinas_progresso", st.session_state.disciplinas_progresso)
             st.session_state.topicos_concluidos = dados.get("topicos_concluidos", {})
             st.session_state.cert_topicos_concluidos = dados.get("cert_topicos_concluidos", {})
+            st.session_state.soft_skills_concluidas = dados.get("soft_skills_concluidas", {})
             return True
     return False
 
@@ -1053,6 +1202,15 @@ def adicionar_xp_disciplina(disciplina, xp):
     st.session_state.disciplinas_progresso[disciplina] += xp
     st.session_state.xp += xp
     salvar_backup()
+
+def adicionar_soft_skill(categoria, atividade, xp):
+    key = f"{categoria}_{atividade}"
+    if key not in st.session_state.soft_skills_concluidas:
+        st.session_state.soft_skills_concluidas[key] = True
+        st.session_state.xp += xp
+        salvar_backup()
+        return True
+    return False
 
 def marcar_topico_puc(disciplina, topico, concluido):
     if disciplina not in st.session_state.topicos_concluidos:
@@ -1205,7 +1363,7 @@ with st.sidebar:
 # =========================
 # ABAS PRINCIPAIS
 # =========================
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["🎮 Dashboard", "📚 Certificações", "🎓 Pós PUC", "🎖️ Progresso", "🗺️ Roadmap", "📊 Relatórios"])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["🎮 Dashboard", "📚 Certificações", "💪 Soft Skills", "🎓 Pós PUC", "🎖️ Progresso", "🗺️ Roadmap", "📊 Relatórios"])
 
 # =========================
 # TAB 1 - DASHBOARD
@@ -1358,9 +1516,34 @@ with tab2:
             st.markdown("4. Descanse bem na véspera")
 
 # =========================
-# TAB 3 - PÓS PUC (EMENTA COMPLETA)
+# TAB 3 - SOFT SKILLS (NOVA)
 # =========================
 with tab3:
+    st.markdown("## 💪 DESENVOLVIMENTO DE SOFT SKILLS")
+    st.markdown("Atividades práticas para desenvolver habilidades comportamentais essenciais.")
+    st.markdown("---")
+    
+    for categoria, info in SOFT_SKILLS_ATIVIDADES.items():
+        with st.expander(f"📌 {categoria}", expanded=False):
+            st.markdown(f"*{info['descricao']}*")
+            st.markdown("---")
+            
+            cols = st.columns(2)
+            for i, atividade in enumerate(info['atividades']):
+                with cols[i % 2]:
+                    key = f"soft_{categoria}_{atividade['nome']}"
+                    if st.button(f"✅ {atividade['nome']} (+{atividade['xp']} XP)", key=key, use_container_width=True):
+                        if adicionar_soft_skill(categoria, atividade['nome'], atividade['xp']):
+                            st.success(f"+{atividade['xp']} XP - {atividade['nome']} concluída!")
+                            st.rerun()
+                        else:
+                            st.info("Você já concluiu esta atividade hoje!")
+                    st.caption(f"📝 {atividade['descricao']}")
+
+# =========================
+# TAB 4 - PÓS PUC (EMENTA COMPLETA)
+# =========================
+with tab4:
     st.markdown("## 🎓 PÓS-GRADUAÇÃO PUC MINAS")
     st.markdown("### Cibersegurança e Governança de Dados")
     st.markdown("---")
@@ -1414,9 +1597,9 @@ with tab3:
                     st.rerun()
 
 # =========================
-# TAB 4 - PROGRESSO DAS CERTIFICAÇÕES
+# TAB 5 - PROGRESSO DAS CERTIFICAÇÕES
 # =========================
-with tab4:
+with tab5:
     st.markdown("## 🎖️ PROGRESSO DAS CERTIFICAÇÕES")
     
     filtro = st.selectbox("🔍 Filtrar por status", ["Todas", "Em andamento", "Concluída", "Não iniciada"])
@@ -1459,9 +1642,9 @@ with tab4:
                         st.rerun()
 
 # =========================
-# TAB 5 - ROADMAP
+# TAB 6 - ROADMAP
 # =========================
-with tab5:
+with tab6:
     st.markdown("## 🗺️ ROADMAP DAS CERTIFICAÇÕES")
     
     for ano in [2026, 2027, 2028, 2029]:
@@ -1489,9 +1672,9 @@ with tab5:
                         """, unsafe_allow_html=True)
 
 # =========================
-# TAB 6 - RELATÓRIOS
+# TAB 7 - RELATÓRIOS
 # =========================
-with tab6:
+with tab7:
     st.markdown("## 📊 RELATÓRIOS")
     
     if len(st.session_state.db) > 0:
@@ -1553,6 +1736,7 @@ with tab6:
             "disciplinas_puc": st.session_state.disciplinas_progresso,
             "topicos_concluidos": st.session_state.topicos_concluidos,
             "cert_topicos_concluidos": st.session_state.cert_topicos_concluidos,
+            "soft_skills_concluidas": st.session_state.soft_skills_concluidas,
             "historico": st.session_state.db
         }
         export_json = json.dumps(export_data, default=str, indent=2)
