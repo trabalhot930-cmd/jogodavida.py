@@ -2,301 +2,773 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
 import json
-from supabase import create_client, Client
+import os
+from pathlib import Path
 
 # =========================
-# CONFIGURAÇÃO SUPABASE
+# CONFIGURAÇÃO DE PERSISTÊNCIA (RENDER)
 # =========================
-SUPABASE_URL = "https://bhwqrfolkusuzvwavanc.supabase.co"
-SUPABASE_KEY = "sb_publishable_J_z2LmOOVT0cmJuYhqW0qg_9iAEHt4u"
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+def get_data_path():
+    """Retorna o caminho correto para salvar dados no Render ou localmente"""
+    render_disk = Path("/opt/render/project/src/dados")
+    if render_disk.exists() or os.getenv("RENDER"):
+        render_disk.mkdir(exist_ok=True)
+        return render_disk
+    return Path(".")
+
+DATA_FILE = get_data_path() / "progresso_juan.json"
+
+def carregar_dados():
+    """Carrega os dados do arquivo JSON"""
+    if DATA_FILE.exists():
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+
+def salvar_dados(dados):
+    """Salva os dados no arquivo JSON"""
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(dados, f, indent=2, ensure_ascii=False)
 
 # =========================
-# CONFIGURAÇÃO DA PÁGINA
+# CONFIG
 # =========================
-st.set_page_config(page_title="🚀 Missão Carreira - Juan Felipe", layout="wide")
+st.set_page_config(
+    page_title="🚀 Missão Carreira - Juan Felipe da Silva",
+    layout="wide"
+)
 
 # =========================
-# CREDENCIAIS
+# CREDENCIAIS DE ACESSO
 # =========================
 USUARIO_VALIDO = "Juan"
 SENHA_VALIDA = "Ju@n1990"
 
 # =========================
-# DADOS DAS CERTIFICAÇÕES
+# SOFT SKILLS - ATIVIDADES PRÁTICAS
 # =========================
-CERTIFICACOES = {
-    "AZ-900": {"emblema": "☁️", "xp_max": 120, "cor": "#00A4EF", "ano": 2026, "descricao": "Microsoft Azure Fundamentals - Conceitos básicos de nuvem"},
-    "SC-900": {"emblema": "🔐", "xp_max": 100, "cor": "#0078D4", "ano": 2026, "descricao": "Security, Compliance and Identity Fundamentals"},
-    "AWS Cloud Practitioner": {"emblema": "☁️📘", "xp_max": 100, "cor": "#FF9900", "ano": 2027, "descricao": "Fundamentos da AWS Cloud"},
-    "Security+": {"emblema": "🛡️", "xp_max": 120, "cor": "#FF0000", "ano": 2027, "descricao": "CompTIA Security+ - Cibersegurança"},
-    "CCNA": {"emblema": "🌐", "xp_max": 150, "cor": "#1BA0D7", "ano": 2026, "descricao": "Cisco Certified Network Associate"},
-    "Python": {"emblema": "🐍", "xp_max": 150, "cor": "#3776AB", "ano": 2026, "descricao": "Python para Análise de Dados"},
-    "Power BI": {"emblema": "📊", "xp_max": 120, "cor": "#F2C811", "ano": 2026, "descricao": "Microsoft Power BI Data Analyst"},
-    "SQL": {"emblema": "🗄️", "xp_max": 120, "cor": "#F29111", "ano": 2026, "descricao": "SQL para Análise de Dados"},
-    "ISO 27001": {"emblema": "🔒", "xp_max": 100, "cor": "#FFD700", "ano": 2026, "descricao": "ISO 27001 Fundamentals"},
-    "CySA+": {"emblema": "🔍", "xp_max": 150, "cor": "#FF4500", "ano": 2027, "descricao": "CompTIA CySA+ - Análise de Segurança"},
-    "Scrum": {"emblema": "🔄", "xp_max": 60, "cor": "#0A5C4A", "ano": 2026, "descricao": "Scrum Fundamentals Certified"},
-    "CISSP": {"emblema": "👑", "xp_max": 200, "cor": "#C0C0C0", "ano": 2029, "descricao": "Certified Information Systems Security Professional"},
-    "GICSP": {"emblema": "🏭", "xp_max": 180, "cor": "#606060", "ano": 2028, "descricao": "Global Industrial Cyber Security Professional"},
+SOFT_SKILLS_ATIVIDADES = {
+    "Comunicação e Apresentação": {
+        "descricao": "Capacidade de transmitir ideias claramente, fazer apresentações impactantes.",
+        "atividades": [
+            {"nome": "🎤 Apresentação Técnica", "descricao": "Apresentar um projeto para sua equipe", "xp": 30},
+            {"nome": "📝 Escrever Documentação", "descricao": "Documentar um procedimento", "xp": 20},
+            {"nome": "🎯 Pitch de Ideia", "descricao": "Apresentar melhoria para liderança", "xp": 40},
+            {"nome": "📊 Dashboard para Gestão", "descricao": "Criar relatório visual", "xp": 35},
+            {"nome": "🗣️ Reunião em Inglês", "descricao": "Participar de reunião em inglês", "xp": 50}
+        ]
+    },
+    "Liderança de Equipes": {
+        "descricao": "Capacidade de motivar e coordenar pessoas.",
+        "atividades": [
+            {"nome": "👥 Mentorar Colega", "descricao": "Ensinar um processo a um colega", "xp": 35},
+            {"nome": "📋 Liderar Reunião", "descricao": "Conduzir uma reunião", "xp": 30},
+            {"nome": "🎯 Definir Metas", "descricao": "Estabelecer objetivos", "xp": 40},
+            {"nome": "🔄 Delegar Tarefas", "descricao": "Distribuir atividades", "xp": 25},
+            {"nome": "🏆 Reconhecer Time", "descricao": "Dar feedback positivo", "xp": 20}
+        ]
+    },
+    "Gestão de Projetos": {
+        "descricao": "Planejar, executar e monitorar projetos.",
+        "atividades": [
+            {"nome": "📅 Planejar Projeto", "descricao": "Criar cronograma", "xp": 40},
+            {"nome": "💰 Controlar Orçamento", "descricao": "Monitorar gastos", "xp": 35},
+            {"nome": "📊 Relatório de Status", "descricao": "Produzir relatório", "xp": 30},
+            {"nome": "⚠️ Gestão de Risco", "descricao": "Identificar riscos", "xp": 45},
+            {"nome": "🔄 Kanban/Scrum", "descricao": "Aplicar metodologia ágil", "xp": 50}
+        ]
+    },
+    "Inteligência Emocional": {
+        "descricao": "Capacidade de reconhecer e gerenciar emoções.",
+        "atividades": [
+            {"nome": "😌 Gerenciar Estresse", "descricao": "Aplicar técnica de respiração", "xp": 20},
+            {"nome": "👂 Escuta Ativa", "descricao": "Ouvir sem interromper", "xp": 25},
+            {"nome": "📝 Diário de Emoções", "descricao": "Registrar gatilhos", "xp": 15},
+            {"nome": "💬 Feedback Construtivo", "descricao": "Dar feedback com técnica SBI", "xp": 35},
+            {"nome": "🙏 Reconhecer Erro", "descricao": "Admitir erro", "xp": 30}
+        ]
+    }
 }
 
 # =========================
-# CONTEÚDO DETALHADO DAS CERTIFICAÇÕES
+# CONTEÚDO DAS CERTIFICAÇÕES
 # =========================
-CONTEUDO_CERT = {
+CONTEUDO_CERTIFICACOES = {
     "AZ-900": {
-        "topicos": ["Conceitos de nuvem", "Serviços principais do Azure", "Segurança e compliance", "Preços e suporte"],
-        "recursos": ["Microsoft Learn", "YouTube - John Savill", "GitHub Learning Lab"]
+        "titulo": "Microsoft Azure Fundamentals",
+        "descricao": "Certificação de entrada para Azure. Valida conhecimentos básicos de cloud computing e serviços Azure.",
+        "dominios": [
+            {"nome": "Descrever conceitos de nuvem (25-30%)", "topicos": [
+                "Benefícios da nuvem (alta disponibilidade, escalabilidade, elasticidade)",
+                "Modelos de serviço (IaaS, PaaS, SaaS)",
+                "Modelos de implantação (pública, privada, híbrida)",
+                "CAPEX vs OPEX"
+            ]},
+            {"nome": "Descrever serviços principais do Azure (20-25%)", "topicos": [
+                "Computação (VMs, Containers, Functions)",
+                "Redes (VNet, VPN, Load Balancer)",
+                "Armazenamento (Blob, File, Queue, Table)",
+                "Banco de dados (Cosmos DB, SQL Database)"
+            ]},
+            {"nome": "Descrever soluções de segurança (15-20%)", "topicos": [
+                "Segurança de rede (NSG, Firewall)",
+                "Identidade (Azure AD, MFA)",
+                "Proteção de dados (encryption, Key Vault)",
+                "Conformidade (Policy, Blueprints)"
+            ]},
+            {"nome": "Descrever gerenciamento e governança (10-15%)", "topicos": [
+                "Cost Management",
+                "Resource Groups e Tags",
+                "Azure Monitor",
+                "Azure Advisor"
+            ]}
+        ],
+        "recursos": [
+            "Microsoft Learn - AZ-900 Learning Path (grátis)",
+            "YouTube - John Savill (AZ-900 Playlist)",
+            "GitHub - Microsoft Learning"
+        ],
+        "simulados": [
+            "Microsoft Learn - Assessment gratuito",
+            "ExamTopics - Questões gratuitas",
+            "Udemy - Simulados (promoção)"
+        ],
+        "semanas": 3,
+        "horas": 30
+    },
+    "SC-900": {
+        "titulo": "Microsoft Security, Compliance, and Identity Fundamentals",
+        "descricao": "Certificação sobre conceitos de segurança, compliance e identidade na Microsoft.",
+        "dominios": [
+            {"nome": "Descrever conceitos de segurança (25-30%)", "topicos": [
+                "Zero Trust",
+                "Defesa em profundidade",
+                "Responsabilidade compartilhada",
+                "Criptografia e hashing"
+            ]},
+            {"nome": "Descrever capacidades de identidade (35-40%)", "topicos": [
+                "Azure AD e identidades híbridas",
+                "MFA e Conditional Access",
+                "Identity Protection",
+                "Privileged Identity Management (PIM)"
+            ]},
+            {"nome": "Descrever capacidades de segurança (20-25%)", "topicos": [
+                "Microsoft Defender para nuvem",
+                "Microsoft Sentinel",
+                "Defender para endpoint",
+                "Defender para Office 365"
+            ]},
+            {"nome": "Descrever capacidades de compliance (10-15%)", "topicos": [
+                "Service Trust Portal",
+                "Compliance Manager",
+                "Azure Policy",
+                "LGPD e GDPR"
+            ]}
+        ],
+        "recursos": [
+            "Microsoft Learn - SC-900 Learning Path",
+            "YouTube - John Savill",
+            "Microsoft Security Documentation"
+        ],
+        "simulados": [
+            "Microsoft Learn - Assessment",
+            "ExamTopics",
+            "Whizlabs"
+        ],
+        "semanas": 2,
+        "horas": 25
+    },
+    "AWS Cloud Practitioner": {
+        "titulo": "AWS Cloud Practitioner",
+        "descricao": "Certificação fundamental da AWS, valida conhecimentos básicos de cloud computing.",
+        "dominios": [
+            {"nome": "Conceitos de Nuvem (20%)", "topicos": [
+                "Benefícios da AWS",
+                "Modelos de implantação (nuvem, híbrida, on-premise)",
+                "Modelos de serviço (IaaS, PaaS, SaaS)",
+                "Infraestrutura global AWS"
+            ]},
+            {"nome": "Serviços Principais (30%)", "topicos": [
+                "Computação (EC2, Lambda)",
+                "Armazenamento (S3, EBS, EFS)",
+                "Banco de dados (RDS, DynamoDB)",
+                "Redes (VPC, CloudFront, Route 53)"
+            ]},
+            {"nome": "Segurança e Conformidade (25%)", "topicos": [
+                "Modelo de responsabilidade compartilhada",
+                "IAM (Identity and Access Management)",
+                "AWS Shield, WAF, KMS",
+                "Conformidade (Artifacts, Config, CloudTrail)"
+            ]},
+            {"nome": "Preços e Suporte (15%)", "topicos": [
+                "Modelos de precificação",
+                "AWS Pricing Calculator",
+                "Planos de suporte",
+                "AWS Organizations"
+            ]},
+            {"nome": "Tecnologias Principais (10%)", "topicos": [
+                "Machine Learning",
+                "IoT Core",
+                "Serverless",
+                "DevOps"
+            ]}
+        ],
+        "recursos": [
+            "AWS Skill Builder (gratuito)",
+            "YouTube - Stephane Maarek",
+            "AWS Free Tier"
+        ],
+        "simulados": [
+            "AWS Official Practice Exam",
+            "TutorialsDojo",
+            "Udemy"
+        ],
+        "semanas": 4,
+        "horas": 30
     },
     "Security+": {
-        "topicos": ["Ameaças e ataques", "Tecnologias de segurança", "Arquitetura e design", "Identidade e acesso", "Gestão de riscos"],
-        "recursos": ["Professor Messer", "CompTIA Official", "ExamCompass"]
+        "titulo": "CompTIA Security+ (SY0-701)",
+        "descricao": "Certificação fundamental de cibersegurança, reconhecida mundialmente.",
+        "dominios": [
+            {"nome": "Ameaças, Ataques e Vulnerabilidades (24%)", "topicos": [
+                "Tipos de malware (vírus, worm, ransomware, trojan)",
+                "Ataques de rede (DoS, DDoS, MITM, DNS poisoning)",
+                "Ataques de aplicação (SQL Injection, XSS, CSRF)",
+                "Ameaças internas e externas",
+                "Vulnerabilidades comuns (OWASP Top 10)"
+            ]},
+            {"nome": "Tecnologias e Ferramentas de Segurança (26%)", "topicos": [
+                "Firewalls (NGFW, WAF)",
+                "IDS/IPS (Signature, Anomaly)",
+                "SIEM (Security Information and Event Management)",
+                "Criptografia simétrica e assimétrica",
+                "PKI e certificados digitais",
+                "MFA e autenticação forte",
+                "EDR, DLP, UTM"
+            ]},
+            {"nome": "Arquitetura e Design de Segurança (21%)", "topicos": [
+                "Zero Trust Architecture",
+                "Defesa em profundidade",
+                "Segurança em nuvem (IaaS, PaaS, SaaS)",
+                "Segurança de redes (segmentação, VLAN)",
+                "Segurança de endpoints (hardening)",
+                "Redundância e alta disponibilidade"
+            ]},
+            {"nome": "Gestão de Identidade e Acesso (16%)", "topicos": [
+                "IAM fundamentals",
+                "SSO e federação",
+                "RBAC, ABAC, DAC, MAC",
+                "Kerberos, RADIUS, LDAP",
+                "Contas privilegiadas (PAM)",
+                "JIT e JEA"
+            ]},
+            {"nome": "Gestão de Riscos e Compliance (13%)", "topicos": [
+                "Análise de risco (qualitativa/quantitativa)",
+                "BCP e DRP (RTO, RPO, MTD)",
+                "Planos de resposta a incidentes",
+                "LGPD, GDPR, HIPAA, PCI-DSS",
+                "Forensics e cadeia de custódia",
+                "Tipos de controles (preventivo, detetivo, corretivo)"
+            ]}
+        ],
+        "recursos": [
+            "YouTube - Professor Messer (playlist completa - grátis)",
+            "YouTube - Inside Cloud and Security",
+            "CompTIA Security+ SY0-701 Objectives (PDF oficial)",
+            "GitHub - Security+ Study Guide"
+        ],
+        "simulados": [
+            "ExamCompass (gratuito)",
+            "Professor Messer Practice Exams",
+            "Jason Dion (Udemy)",
+            "MeasureUp (pago)"
+        ],
+        "semanas": 10,
+        "horas": 80
+    },
+    "Scrum Fundamentals": {
+        "titulo": "Scrum Fundamentals Certified (SFC)",
+        "descricao": "Certificação básica de Scrum, metodologia ágil para gestão de projetos.",
+        "dominios": [
+            {"nome": "Fundamentos do Scrum (30%)", "topicos": [
+                "Manifesto Ágil e seus 4 valores",
+                "Os 12 princípios ágeis",
+                "Scrum vs Waterfall",
+                "Benefícios da metodologia ágil"
+            ]},
+            {"nome": "Papéis do Scrum (25%)", "topicos": [
+                "Product Owner (responsabilidades)",
+                "Scrum Master (facilitador)",
+                "Development Team (auto-organização)",
+                "Características de times de alta performance"
+            ]},
+            {"nome": "Eventos Scrum (25%)", "topicos": [
+                "Sprint Planning (planejamento)",
+                "Daily Scrum (15 minutos)",
+                "Sprint Review (demonstração)",
+                "Sprint Retrospective (melhoria contínua)"
+            ]},
+            {"nome": "Artefatos Scrum (20%)", "topicos": [
+                "Product Backlog (priorização)",
+                "Sprint Backlog (compromisso da sprint)",
+                "Increment (entregável)",
+                "Definição de Pronto (DoD) e Definição de Feito"
+            ]}
+        ],
+        "recursos": [
+            "Scrum Guide (gratuito)",
+            "YouTube - Scrum Framework",
+            "Scrum.org - Open Assessments"
+        ],
+        "simulados": [
+            "Scrum.org Open Assessment (gratuito)",
+            "ScrumStudy.com Practice Tests",
+            "Udemy - Mock Exams"
+        ],
+        "semanas": 1,
+        "horas": 16
+    },
+    "CySA+": {
+        "titulo": "CompTIA CySA+ (CS0-003)",
+        "descricao": "Certificação de análise de segurança e resposta a incidentes.",
+        "dominios": [
+            {"nome": "Segurança de Software e Sistemas (22%)", "topicos": [
+                "Secure Software Development Lifecycle (SSDLC)",
+                "SAST, DAST, IAST",
+                "DevSecOps e CI/CD security",
+                "Análise de vulnerabilidades"
+            ]},
+            {"nome": "Operações de Segurança e Monitoramento (25%)", "topicos": [
+                "SIEM (configuração, correlação, análise)",
+                "SOAR (automação e orquestração)",
+                "Log management e análise",
+                "Threat hunting"
+            ]},
+            {"nome": "Inteligência de Ameaças (20%)", "topicos": [
+                "Threat Intelligence (TIP, STIX, TAXII)",
+                "MITRE ATT&CK Framework",
+                "Indicadores de comprometimento (IoC)",
+                "Threat modeling"
+            ]},
+            {"nome": "Resposta a Incidentes (18%)", "topicos": [
+                "Ciclo de vida da resposta a incidentes (NIST)",
+                "Playbooks e runbooks",
+                "Forensics e análise de malware",
+                "Comunicação e relatórios"
+            ]},
+            {"nome": "Gestão de Vulnerabilidades (15%)", "topicos": [
+                "Scanning e assessment",
+                "Vulnerability management lifecycle",
+                "Patch management",
+                "Relatórios e priorização"
+            ]}
+        ],
+        "recursos": [
+            "YouTube - Certify Breakfast",
+            "CompTIA CySA+ Objectives PDF",
+            "TryHackMe (SOC Level 1)"
+        ],
+        "simulados": [
+            "Jason Dion (Udemy)",
+            "Sybex Practice Tests",
+            "ExamCompass"
+        ],
+        "semanas": 8,
+        "horas": 60
+    },
+    "ISO 27001 Fundamentals": {
+        "titulo": "ISO 27001 Foundation",
+        "descricao": "Fundamentos da norma de Sistema de Gestão de Segurança da Informação (SGSI).",
+        "dominios": [
+            {"nome": "Contexto da Organização (10%)", "topicos": [
+                "Partes interessadas",
+                "Escopo do SGSI",
+                "Contexto interno e externo"
+            ]},
+            {"nome": "Liderança e Comprometimento (15%)", "topicos": [
+                "Política de segurança da informação",
+                "Responsabilidades da alta direção",
+                "Papéis e responsabilidades"
+            ]},
+            {"nome": "Planejamento do SGSI (20%)", "topicos": [
+                "Análise de riscos (ISO 31000)",
+                "Avaliação e tratamento de riscos",
+                "Declaração de Aplicabilidade (SoA)",
+                "Plano de tratamento de riscos"
+            ]},
+            {"nome": "Suporte e Operação (25%)", "topicos": [
+                "Recursos e competências",
+                "Conscientização e treinamento",
+                "Controles do Anexo A",
+                "Gestão de incidentes"
+            ]},
+            {"nome": "Avaliação de Desempenho (15%)", "topicos": [
+                "Monitoramento e medição",
+                "Auditoria interna",
+                "Análise crítica pela direção"
+            ]},
+            {"nome": "Melhoria Contínua (15%)", "topicos": [
+                "Não conformidade e ação corretiva",
+                "Melhoria contínua do SGSI"
+            ]}
+        ],
+        "recursos": [
+            "ISO 27001:2022 (norma oficial)",
+            "ISO 27002 (controles)",
+            "YouTube - ISACA Training",
+            "NIST SP 800-53"
+        ],
+        "simulados": [
+            "ExamTopics",
+            "Udemy - Simulados ISO 27001"
+        ],
+        "semanas": 4,
+        "horas": 40
     },
     "CCNA": {
-        "topicos": ["Fundamentos de rede", "Switching e VLANs", "Roteamento", "Serviços IP", "Segurança de rede"],
-        "recursos": ["Jeremy's IT Lab", "Cisco Packet Tracer", "Boson ExSim"]
-    },
-    "Python": {
-        "topicos": ["Sintaxe básica", "Estruturas de dados", "Pandas", "Visualização", "Automação"],
-        "recursos": ["Hashtag Treinamentos", "Curso em Vídeo", "DataCamp"]
+        "titulo": "Cisco Certified Network Associate",
+        "descricao": "Certificação fundamental de redes da Cisco.",
+        "dominios": [
+            {"nome": "Fundamentos de Rede (20%)", "topicos": [
+                "Modelo OSI e TCP/IP",
+                "Switching e VLANs",
+                "IPv4 e IPv6 (sub-redes)",
+                "Roteamento estático e dinâmico"
+            ]},
+            {"nome": "Acesso à Rede (20%)", "topicos": [
+                "Spanning Tree Protocol (STP)",
+                "EtherChannel",
+                "Wireless LAN",
+                "Cisco Discovery Protocol (CDP)"
+            ]},
+            {"nome": "Conectividade IP (25%)", "topicos": [
+                "OSPF (Open Shortest Path First)",
+                "Roteamento entre VLANs",
+                "NAT (Network Address Translation)",
+                "DHCP, DNS, NTP"
+            ]},
+            {"nome": "Serviços de IP (15%)", "topicos": [
+                "ACLs (Access Control Lists)",
+                "QoS (Quality of Service)",
+                "Syslog, SNMP, NetFlow",
+                "FHRP (HSRP, VRRP)"
+            ]},
+            {"nome": "Fundamentos de Segurança (15%)", "topicos": [
+                "Segurança de dispositivos",
+                "Port Security",
+                "DHCP Snooping",
+                "VPN e criptografia básica"
+            ]},
+            {"nome": "Automação e Programabilidade (5%)", "topicos": [
+                "REST API e JSON",
+                "Ansible, Puppet, Chef",
+                "Modelos de dados (YANG)"
+            ]}
+        ],
+        "recursos": [
+            "YouTube - NetworkChuck",
+            "YouTube - Jeremy's IT Lab",
+            "Cisco Packet Tracer (gratuito)",
+            "GNS3 (laboratórios)"
+        ],
+        "simulados": [
+            "Boson ExSim (recomendado)",
+            "AlphaPrep",
+            "ExamTopics"
+        ],
+        "semanas": 12,
+        "horas": 120
     },
     "Power BI": {
-        "topicos": ["Power Query", "Modelagem de dados", "DAX", "Dashboards", "Publicação"],
-        "recursos": ["Hashtag Treinamentos", "Microsoft Learn", "SQLBI"]
+        "titulo": "Microsoft Power BI Data Analyst (PL-900)",
+        "descricao": "Certificação para análise e visualização de dados com Power BI.",
+        "dominios": [
+            {"nome": "Preparação de Dados (20%)", "topicos": [
+                "Power Query (ETL)",
+                "Limpeza e transformação de dados",
+                "Tratamento de erros e nulos",
+                "Combinação de tabelas (Merge/Append)"
+            ]},
+            {"nome": "Modelagem de Dados (25%)", "topicos": [
+                "Modelos star e snowflake",
+                "Relacionamentos entre tabelas",
+                "Medidas e colunas calculadas (DAX)",
+                "Hierarquias e roles"
+            ]},
+            {"nome": "Visualização de Dados (30%)", "topicos": [
+                "Gráficos e visuais básicos",
+                "Dashboards interativos",
+                "Drill-through e drill-down",
+                "Bookmarks e botões"
+            ]},
+            {"nome": "Análise de Dados (15%)", "topicos": [
+                "Funções DAX (CALCULATE, FILTER)",
+                "Inteligência de tempo (YTD, MTD)",
+                "Segmentação de dados",
+                "Quick measures"
+            ]},
+            {"nome": "Implantação e Manutenção (10%)", "topicos": [
+                "Publicação no Service",
+                "Gateways e atualização de dados",
+                "Row-Level Security (RLS)",
+                "Workspaces e apps"
+            ]}
+        ],
+        "recursos": [
+            "Hashtag Treinamentos (curso completo)",
+            "Microsoft Learn - PL-900 Path",
+            "YouTube - SQLBI (DAX avançado)"
+        ],
+        "simulados": [
+            "Microsoft Learn Assessment",
+            "ExamTopics",
+            "MeasureUp"
+        ],
+        "semanas": 6,
+        "horas": 50
+    },
+    "Python": {
+        "titulo": "Python para Análise de Dados",
+        "descricao": "Linguagem Python aplicada à automação e análise de dados.",
+        "dominios": [
+            {"nome": "Fundamentos de Python (25%)", "topicos": [
+                "Sintaxe básica (variáveis, tipos, operadores)",
+                "Estruturas de controle (if, for, while)",
+                "Funções e módulos",
+                "Listas, tuplas, dicionários, sets"
+            ]},
+            {"nome": "Manipulação de Dados (30%)", "topicos": [
+                "Biblioteca Pandas (DataFrame, Series)",
+                "Leitura de arquivos (CSV, Excel, JSON)",
+                "Filtros, agregações e merges",
+                "Tratamento de dados nulos"
+            ]},
+            {"nome": "Visualização de Dados (20%)", "topicos": [
+                "Matplotlib (gráficos básicos)",
+                "Seaborn (gráficos estatísticos)",
+                "Plotly (gráficos interativos)"
+            ]},
+            {"nome": "Automação (25%)", "topicos": [
+                "Automação de planilhas",
+                "Envio de e-mails automáticos",
+                "Web scraping (BeautifulSoup)",
+                "APIs (requests)"
+            ]}
+        ],
+        "recursos": [
+            "Hashtag Treinamentos - Python Impressionador",
+            "Curso em Vídeo (Guanabara - grátis)",
+            "DataCamp - Python for Data Science"
+        ],
+        "simulados": [
+            "HackerRank - Python Challenges",
+            "LeetCode - Python",
+            "Python Institute (PCAP)"
+        ],
+        "semanas": 8,
+        "horas": 60
     },
     "SQL": {
-        "topicos": ["Consultas básicas", "Joins", "Subconsultas", "Funções agregadas", "Manipulação de dados"],
-        "recursos": ["SQLZoo", "Mode Analytics", "HackerRank"]
+        "titulo": "SQL para Análise de Dados",
+        "descricao": "Linguagem SQL para consultas e manipulação de bancos de dados.",
+        "dominios": [
+            {"nome": "Consultas Básicas (30%)", "topicos": [
+                "SELECT, FROM, WHERE",
+                "ORDER BY, LIMIT, DISTINCT",
+                "Operadores (LIKE, IN, BETWEEN)",
+                "Funções de agregação (COUNT, SUM, AVG)"
+            ]},
+            {"nome": "Joins e Subconsultas (30%)", "topicos": [
+                "INNER, LEFT, RIGHT, FULL JOIN",
+                "Self JOIN e CROSS JOIN",
+                "Subconsultas correlacionadas",
+                "CTEs (Common Table Expressions)"
+            ]},
+            {"nome": "Manipulação de Dados (20%)", "topicos": [
+                "INSERT, UPDATE, DELETE",
+                "CREATE, ALTER, DROP",
+                "Índices e chaves",
+                "Transações (COMMIT, ROLLBACK)"
+            ]},
+            {"nome": "Funções Avançadas (20%)", "topicos": [
+                "Window Functions (ROW_NUMBER, RANK)",
+                "GROUP BY e HAVING",
+                "Funções de string e data",
+                "Stored Procedures e Views"
+            ]}
+        ],
+        "recursos": [
+            "Hashtag Treinamentos - SQL Impressionador",
+            "SQLZoo (interativo e grátis)",
+            "Mode Analytics SQL Tutorial"
+        ],
+        "simulados": [
+            "HackerRank - SQL",
+            "LeetCode - Database",
+            "StrataScratch"
+        ],
+        "semanas": 6,
+        "horas": 45
+    },
+    "CISSP": {
+        "titulo": "Certified Information Systems Security Professional",
+        "descricao": "Certificação mais reconhecida globalmente em cibersegurança.",
+        "dominios": [
+            {"nome": "Security and Risk Management (15%)", "topicos": [
+                "Confidencialidade, Integridade, Disponibilidade",
+                "Governança e compliance",
+                "Gestão de riscos",
+                "LGPD, GDPR, HIPAA"
+            ]},
+            {"nome": "Asset Security (10%)", "topicos": [
+                "Classificação de dados",
+                "Retenção e destruição",
+                "Handling de dados sensíveis"
+            ]},
+            {"nome": "Security Architecture and Engineering (13%)", "topicos": [
+                "Arquitetura de segurança",
+                "Criptografia e PKI",
+                "Modelos de segurança"
+            ]},
+            {"nome": "Communication and Network Security (13%)", "topicos": [
+                "Segurança de redes",
+                "Protocolos seguros (TLS, IPsec)",
+                "Segurança sem fio"
+            ]},
+            {"nome": "Identity and Access Management (13%)", "topicos": [
+                "IAM, SSO, MFA",
+                "Federacão de identidades",
+                "Privileged Access Management"
+            ]},
+            {"nome": "Security Assessment and Testing (12%)", "topicos": [
+                "Testes de penetração",
+                "Análise de vulnerabilidades",
+                "Auditoria de segurança"
+            ]},
+            {"nome": "Security Operations (13%)", "topicos": [
+                "Resposta a incidentes",
+                "BCP e DRP",
+                "Forensics e investigação"
+            ]},
+            {"nome": "Software Development Security (11%)", "topicos": [
+                "DevSecOps",
+                "Segurança em SDLC",
+                "OWASP Top 10"
+            ]}
+        ],
+        "recursos": [
+            "ISC2 Official Study Guide",
+            "YouTube - Destination Certification",
+            "LinkedIn Learning - CISSP Prep"
+        ],
+        "simulados": [
+            "ISC2 Official Practice Tests",
+            "Boson",
+            "Pocket Prep"
+        ],
+        "semanas": 16,
+        "horas": 200
+    },
+    "GICSP": {
+        "titulo": "Global Industrial Cyber Security Professional",
+        "descricao": "Certificação especializada em segurança de sistemas industriais (OT/ICS).",
+        "dominios": [
+            {"nome": "OT/ICS Fundamentals (25%)", "topicos": [
+                "Arquitetura ICS (PLC, SCADA, DCS, HMI, RTU)",
+                "Protocolos industriais (Modbus, DNP3, OPC, PROFINET)",
+                "Histórico e evolução de ataques industriais (Stuxnet, Triton)",
+                "Diferenças entre TI e OT"
+            ]},
+            {"nome": "Riscos e Vulnerabilidades em OT (20%)", "topicos": [
+                "Análise de risco em ambientes industriais",
+                "Vulnerabilidades comuns em ICS",
+                "Threat modeling para OT",
+                "MITRE ATT&CK for ICS"
+            ]},
+            {"nome": "Segurança de Rede Industrial (20%)", "topicos": [
+                "Segmentação de redes (DMZ industrial)",
+                "Firewalls industriais e unidirecionais",
+                "Network monitoring para OT",
+                "Zona e conduits (IEC 62443)"
+            ]},
+            {"nome": "Controles de Segurança para OT (20%)", "topicos": [
+                "Hardening de PLCs e RTUs",
+                "Controle de acesso em sistemas industriais",
+                "Patch management em OT",
+                "Backup e recuperação industrial"
+            ]},
+            {"nome": "Resposta a Incidentes em OT (15%)", "topicos": [
+                "Planos de resposta específicos para OT",
+                "Forensics industrial",
+                "Recuperação de sistemas críticos",
+                "Exercícios de simulação"
+            ]}
+        ],
+        "recursos": [
+            "GIAC GICSP Official Course",
+            "SANS ICS Security",
+            "CISA ICS Training (gratuito)",
+            "Dragos ICS Cyber Security"
+        ],
+        "simulados": [
+            "GIAC Practice Tests",
+            "CyberSecurity Training (OT específico)"
+        ],
+        "semanas": 12,
+        "horas": 120
     }
 }
 
 # =========================
-# FUNÇÕES DE PERSISTÊNCIA
+# EMENTA COMPLETA DA PUC MINAS
 # =========================
-def carregar_dados():
-    try:
-        response = supabase.table("progresso").select("dados").eq("usuario", "Juan").execute()
-        if response.data and len(response.data) > 0:
-            return response.data[0]["dados"]
-    except Exception as e:
-        st.error(f"Erro ao carregar: {e}")
-    return {}
-
-def salvar_dados(dados):
-    try:
-        supabase.table("progresso").upsert({
-            "usuario": "Juan",
-            "dados": dados,
-            "updated_at": datetime.now().isoformat()
-        }).execute()
-        return True
-    except Exception as e:
-        st.error(f"Erro ao salvar: {e}")
-        return False
-
-# =========================
-# FUNÇÕES PRINCIPAIS
-# =========================
-def calc_xp(atividade):
-    tabela = {
-        "📚 Estudo": 10, "🔬 Laboratório": 20, "🏗️ Projeto": 30,
-        "🔄 Revisão": 15, "📝 Simulado": 15, "🎓 Aula Pós": 25,
-        "🌎 Inglês": 15, "🏅 Certificação": 50
-    }
-    return tabela.get(atividade, 10)
-
-# =========================
-# INICIALIZAÇÃO
-# =========================
-if "autenticado" not in st.session_state:
-    st.session_state.autenticado = False
-if "db" not in st.session_state:
-    st.session_state.db = []
-if "xp" not in st.session_state:
-    st.session_state.xp = 0
-if "cert_xp" not in st.session_state:
-    st.session_state.cert_xp = {cert: 0 for cert in CERTIFICACOES.keys()}
-if "topicos_feitos" not in st.session_state:
-    st.session_state.topicos_feitos = {}
-
-dados_salvos = carregar_dados()
-if dados_salvos:
-    st.session_state.db = dados_salvos.get("db", [])
-    st.session_state.xp = dados_salvos.get("xp", 0)
-    st.session_state.cert_xp = dados_salvos.get("cert_xp", st.session_state.cert_xp)
-    st.session_state.topicos_feitos = dados_salvos.get("topicos_feitos", {})
-
-# =========================
-# LOGIN
-# =========================
-if not st.session_state.autenticado:
-    st.markdown("""
-    <div style="max-width: 400px; margin: 100px auto; padding: 40px; background: linear-gradient(135deg, rgba(77,159,255,0.1), rgba(123,47,247,0.05)); border-radius: 20px; text-align: center;">
-        <h1>🚀 MISSÃO CARREIRA</h1>
-        <h3>Acesso Autorizado</h3>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    usuario = st.text_input("👨‍🚀 Usuário")
-    senha = st.text_input("🔒 Senha", type="password")
-    
-    if st.button("🚀 Entrar", use_container_width=True):
-        if usuario == USUARIO_VALIDO and senha == SENHA_VALIDA:
-            st.session_state.autenticado = True
-            st.rerun()
-        else:
-            st.error("❌ Usuário ou senha incorretos!")
-    st.stop()
-
-# =========================
-# CABEÇALHO
-# =========================
-st.title("🚀 MISSÃO CARREIRA")
-st.caption("Juan Felipe da Silva - Especialista em Cibersegurança | Pós-graduação PUC Minas")
-st.markdown("---")
-
-# =========================
-# SIDEBAR
-# =========================
-with st.sidebar:
-    st.markdown(f"### 👨‍🚀 Juan Felipe")
-    st.markdown(f"⭐ **XP Total:** {st.session_state.xp}")
-    st.markdown(f"🎖️ **Nível:** {st.session_state.xp // 100 + 1}")
-    st.markdown(f"📅 **Missões:** {len(st.session_state.db)}")
-    st.markdown("---")
-    
-    total_certs = len(CERTIFICACOES)
-    concluidas = sum(1 for cert, xp in st.session_state.cert_xp.items() if xp >= CERTIFICACOES[cert]["xp_max"])
-    st.markdown(f"📊 **Progresso Geral:** {concluidas}/{total_certs} certs")
-    st.progress(concluidas / total_certs if total_certs > 0 else 0)
-    
-    st.markdown("---")
-    if st.button("🚪 Sair", use_container_width=True):
-        st.session_state.autenticado = False
-        st.rerun()
-
-# =========================
-# ABAS PRINCIPAIS
-# =========================
-tab1, tab2, tab3 = st.tabs(["🎮 Dashboard", "📚 Certificações", "📜 Histórico"])
-
-# =========================
-# TAB 1 - DASHBOARD
-# =========================
-with tab1:
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("⭐ XP Total", st.session_state.xp)
-    col2.metric("🎮 Missões", len(st.session_state.db))
-    col3.metric("🏆 Nível", st.session_state.xp // 100 + 1)
-    col4.metric("✅ Certificações", f"{concluidas}/{total_certs}")
-    
-    st.markdown("---")
-    st.markdown("## ⚡ Adicionar Atividade")
-    
-    with st.form("nova_atividade", clear_on_submit=True):
-        col_a, col_b = st.columns(2)
-        with col_a:
-            certificado = st.selectbox("Certificação", list(CERTIFICACOES.keys()))
-            atividade = st.selectbox("Tipo", ["📚 Estudo", "🔬 Laboratório", "🏗️ Projeto", "🔄 Revisão", "📝 Simulado", "🎓 Aula Pós", "🌎 Inglês", "🏅 Certificação"])
-        with col_b:
-            obs = st.text_input("Observação")
-        
-        if st.form_submit_button("🚀 Adicionar", use_container_width=True):
-            xp_ganho = calc_xp(atividade)
-            
-            st.session_state.db.append({
-                "data": datetime.now().isoformat(),
-                "certificacao": certificado,
-                "atividade": atividade,
-                "xp": xp_ganho,
-                "obs": obs
-            })
-            st.session_state.xp += xp_ganho
-            st.session_state.cert_xp[certificado] += xp_ganho
-            
-            salvar_dados({
-                "db": st.session_state.db,
-                "xp": st.session_state.xp,
-                "cert_xp": st.session_state.cert_xp,
-                "topicos_feitos": st.session_state.topicos_feitos
-            })
-            
-            st.success(f"+{xp_ganho} XP em {certificado}!", icon="🎉")
-            st.rerun()
-
-# =========================
-# TAB 2 - CERTIFICAÇÕES
-# =========================
-with tab2:
-    st.markdown("## 📚 MINHAS CERTIFICAÇÕES")
-    
-    for cert, info in CERTIFICACOES.items():
-        xp_atual = st.session_state.cert_xp.get(cert, 0)
-        xp_max = info["xp_max"]
-        percentual = min(xp_atual / xp_max, 1.0)
-        
-        with st.expander(f"{info['emblema']} {cert} - {xp_atual}/{xp_max} XP", expanded=False):
-            st.markdown(f"**📝 Descrição:** {info['descricao']}")
-            st.markdown(f"**📅 Ano alvo:** {info['ano']}")
-            st.progress(percentual)
-            
-            if cert in CONTEUDO_CERT:
-                st.markdown("### 📖 Tópicos de Estudo")
-                for topico in CONTEUDO_CERT[cert]["topicos"]:
-                    key = f"{cert}_{topico}"
-                    concluido = st.session_state.topicos_feitos.get(key, False)
-                    
-                    if st.checkbox(f"✅ {topico}", value=concluido, key=key):
-                        if not concluido:
-                            st.session_state.topicos_feitos[key] = True
-                            st.session_state.xp += 5
-                            salvar_dados({
-                                "db": st.session_state.db,
-                                "xp": st.session_state.xp,
-                                "cert_xp": st.session_state.cert_xp,
-                                "topicos_feitos": st.session_state.topicos_feitos
-                            })
-                            st.rerun()
-                    else:
-                        if concluido:
-                            st.session_state.topicos_feitos[key] = False
-                            st.session_state.xp -= 5
-                            salvar_dados({
-                                "db": st.session_state.db,
-                                "xp": st.session_state.xp,
-                                "cert_xp": st.session_state.cert_xp,
-                                "topicos_feitos": st.session_state.topicos_feitos
-                            })
-                            st.rerun()
-                
-                st.markdown("### 🎓 Recursos Recomendados")
-                for recurso in CONTEUDO_CERT[cert]["recursos"]:
-                    st.markdown(f"- 📹 {recurso}")
-
-# =========================
-# TAB 3 - HISTÓRICO
-# =========================
-with tab3:
-    st.markdown("## 📜 HISTÓRICO DE ATIVIDADES")
-    
-    if st.session_state.db:
-        df = pd.DataFrame(st.session_state.db)
-        df["data"] = pd.to_datetime(df["data"])
-        df = df.sort_values("data", ascending=False)
-        
-        st.dataframe(df[["data", "certificacao", "atividade", "xp", "obs"]], use_container_width=True)
-        
-        st.markdown("---")
-        st.markdown("### 📊 Resumo por Certificação")
-        
-        resumo = df.groupby("certificacao").agg({"xp": "sum"}).reset_index()
-        resumo = resumo.sort_values("xp", ascending=False)
-        
-        for _, row in resumo.iterrows():
-            st.markdown(f"- **{row['certificacao']}:** {row['xp']} XP")
-    else:
-        st.info("Nenhuma atividade registrada ainda. Comece agora!")
-
-st.markdown("---")
-st.caption("🚀 Continue sua jornada, o universo te espera!")
+EMENTA_PUC = {
+    "Arquitetura de Cibersegurança e Zero Trust": {
+        "ementa": "Fundamentos de arquitetura de segurança. Paradigma e arquitetura Zero Trust. Segurança em camadas. Defesa em profundidade. Arquitetura de segurança em nuvem: CAF e WAF. Next-Generation Firewall. NIDPS. WAF. CSPM, CNAPP e CWPP. CASB. SASE. Segurança de endpoint. Aplicação de IA para análise de vulnerabilidades.",
+        "certificacoes": ["Security+", "AZ-500", "CCNA"],
+        "topicos": [
+            "Fundamentos de arquitetura de segurança",
+            "Zero Trust - conceitos e implementação",
+            "Defesa em profundidade",
+            "Arquitetura de segurança em nuvem (CAF/WAF)",
+            "Next-Generation Firewall (NGFW)",
+            "NIDPS (Network Intrusion Detection/Prevention)",
+            "WAF (Web Application Firewall)",
+            "CSPM, CNAPP e CWPP",
+            "CASB (Cloud Access Security Broker)",
+            "SASE (Secure Access Service Edge)",
+            "Segurança de endpoint",
+            "IA para análise de vulnerabilidades"
+        ],
+        "horas": 60,
+        "semanas": 4
+    },
+    "Aspectos Jurídicos de Conformidade Digital": {
+        "ementa": "Direito fundamental à proteção de dados pessoais. Panorama internacional das legislações de privacidade. Fundamentos da LGPD. Marco Civil da Internet. Código de Defesa do Consumidor digital. Direito penal cibernético. Convenção de Budapeste. Responsabilidade civil e criminal. Contratos e acordos de processamento de dados.",
+        "certificacoes": ["ISO 27001", "CISSP"],
+        "topicos": [
+            "Direito à proteção de dados pessoais",
+            "Legislações internacionais (GDPR, CCPA)",
+            "LGPD - Lei Geral de Proteção de Dados",
+            "Marco Civil da Internet",
+            "Código de Defesa do Consumidor digital",
+            "Crimes cibernéticos e legislação penal",
+            "Convenção de Budapeste",
+            "Contratos de processamento de dados",
+            "Responsabilidade civil no ciberespaço"
+        ],
+        "horas": 40,
+        "semanas": 3
+    },
+    "Computação Forense e Pericia Digital": {
+        "ementa": "Fundamentos de computação forense. Evidências digitais. Metodologias forenses. Ferramentas e tecnologias. Perícia por ambiente. Aspectos jurídicos. Padrões e normas. IA aplicada na perícia digital. Técnicas anti-forense.",
+        "certificacoes": ["CySA+", "Security+"],
+        "topicos": [
+            "Fundamentos de computação forense",
+            "Evidências digitais e cadeia de custódia",
+            "Metodologias forenses",
+            "Ferramentas forenses (FTK, EnCase, Autopsy)",
+            "Perícia em diferentes ambientes",
+            "Documentação e laudos periciais",
+            "IA aplicada à perícia digital",
+            "Técnicas anti-forense
