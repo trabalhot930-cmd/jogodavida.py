@@ -1,0 +1,1 @@
+echo "supabase-python" >> requirements.txt
