@@ -1,9 +1,34 @@
 import streamlit as st
 import pandas as pd
-import altair as alt
 from datetime import datetime, timedelta
 import json
 import os
+from pathlib import Path
+
+# =========================
+# CONFIGURAÇÃO DE PERSISTÊNCIA (RENDER)
+# =========================
+def get_data_path():
+    """Retorna o caminho correto para salvar dados no Render ou localmente"""
+    render_disk = Path("/opt/render/project/src/dados")
+    if render_disk.exists() or os.getenv("RENDER"):
+        render_disk.mkdir(exist_ok=True)
+        return render_disk
+    return Path(".")
+
+DATA_FILE = get_data_path() / "progresso_juan.json"
+
+def carregar_dados():
+    """Carrega os dados do arquivo JSON"""
+    if DATA_FILE.exists():
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+
+def salvar_dados(dados):
+    """Salva os dados no arquivo JSON"""
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(dados, f, indent=2, ensure_ascii=False)
 
 # =========================
 # CONFIG
@@ -13,12 +38,16 @@ st.set_page_config(
     layout="wide"
 )
 
-
 # =========================
 # CREDENCIAIS DE ACESSO
 # =========================
 USUARIO_VALIDO = "Juan"
 SENHA_VALIDA = "Ju@n1990"
+
+# =========================
+# SEU CÓDIGO CONTINUA AQUI
+# =========================
+# (cole o resto do seu código abaixo)
 
 # =========================
 # SOFT SKILLS - ATIVIDADES PRÁTICAS (NOVO)
