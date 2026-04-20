@@ -13,12 +13,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# =========================
-# CREDENCIAIS DE ACESSO
-# =========================
-USUARIO_VALIDO = "Juan"
-SENHA_VALIDA = "Ju@n1990"
-
 
 # =========================
 # CREDENCIAIS DE ACESSO
