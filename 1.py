@@ -1,12 +1,14 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
+import json
+import os
+from pathlib import Path
 
 # =========================
 # CONFIGURAÇÃO DE PERSISTÊNCIA (RENDER)
 # =========================
 def get_data_path():
-    """Retorna o caminho correto para salvar dados no Render ou localmente"""
     render_disk = Path("/opt/render/project/src/dados")
     if render_disk.exists() or os.getenv("RENDER"):
         render_disk.mkdir(exist_ok=True)
@@ -16,14 +18,12 @@ def get_data_path():
 DATA_FILE = get_data_path() / "progresso_juan.json"
 
 def carregar_dados():
-    """Carrega os dados do arquivo JSON"""
     if DATA_FILE.exists():
         with open(DATA_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     return {}
 
 def salvar_dados(dados):
-    """Salva os dados no arquivo JSON"""
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(dados, f, indent=2, ensure_ascii=False)
 
@@ -42,12 +42,7 @@ USUARIO_VALIDO = "Juan"
 SENHA_VALIDA = "Ju@n1990"
 
 # =========================
-# SEU CÓDIGO CONTINUA AQUI
-# =========================
-# (cole o resto do seu código abaixo)
-
-# =========================
-# SOFT SKILLS - ATIVIDADES PRÁTICAS (NOVO)
+# SOFT SKILLS - ATIVIDADES PRÁTICAS
 # =========================
 SOFT_SKILLS_ATIVIDADES = {
     "Comunicação e Apresentação": {
@@ -93,7 +88,7 @@ SOFT_SKILLS_ATIVIDADES = {
 }
 
 # =========================
-# CONTEÚDO DAS CERTIFICAÇÕES (ADICIONADO AWS e Scrum)
+# CONTEÚDO DAS CERTIFICAÇÕES
 # =========================
 CONTEUDO_CERTIFICACOES = {
     "AZ-900": {
@@ -986,7 +981,7 @@ EMENTA_PUC = {
 }
 
 # =========================
-# EMBLEMAS DAS CERTIFICAÇÕES (ADICIONADO AWS e Scrum)
+# EMBLEMAS DAS CERTIFICAÇÕES
 # =========================
 EMBLEMAS = {
     "AZ-900": {"emblema": "☁️🌩️", "cor": "#00A4EF", "titulo": "Azure Fundamentals", "xp": 120, "ano": 2026},
@@ -1105,7 +1100,6 @@ h1, h2, h3 {
 # =========================
 if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
-
 if "db" not in st.session_state:
     st.session_state.db = []
 if "xp" not in st.session_state:
@@ -1133,10 +1127,8 @@ def fazer_login():
         <h3>Acesso Autorizado</h3>
     </div>
     """, unsafe_allow_html=True)
-    
     usuario = st.text_input("👨‍🚀 Usuário")
     senha = st.text_input("🔒 Senha", type="password")
-    
     if st.button("🚀 Entrar", use_container_width=True):
         if usuario == USUARIO_VALIDO and senha == SENHA_VALIDA:
             st.session_state.autenticado = True
@@ -1217,12 +1209,10 @@ def adicionar_atividade(area, atividade, xp, obs):
     })
     st.session_state.xp += xp
     st.session_state.cert_xp[area] += xp
-    
     if st.session_state.cert_xp[area] >= EMBLEMAS[area]["xp"]:
         st.session_state.cert_status[area] = "Concluída"
     elif st.session_state.cert_xp[area] >= EMBLEMAS[area]["xp"] * 0.3:
         st.session_state.cert_status[area] = "Em andamento"
-    
     salvar_backup()
 
 def adicionar_xp_disciplina(disciplina, xp):
@@ -1242,7 +1232,6 @@ def adicionar_soft_skill(categoria, atividade, xp):
 def marcar_topico_puc(disciplina, topico, concluido):
     if disciplina not in st.session_state.topicos_concluidos:
         st.session_state.topicos_concluidos[disciplina] = []
-    
     if concluido and topico not in st.session_state.topicos_concluidos[disciplina]:
         st.session_state.topicos_concluidos[disciplina].append(topico)
         st.session_state.xp += 5
@@ -1349,40 +1338,29 @@ with st.sidebar:
     st.markdown(f"⭐ **XP:** {st.session_state.xp}")
     st.markdown(f"🎖️ **Nível:** {st.session_state.xp // 100 + 1}")
     st.markdown(f"📅 **Missões:** {len(st.session_state.db)}")
-    
     st.markdown("---")
-    
-    # Progresso da Pós
     st.markdown("### 🎓 Pós PUC Minas")
     total_disciplinas = len(EMENTA_PUC)
     disciplinas_concluidas = sum(1 for p in st.session_state.disciplinas_progresso.values() if p >= 100)
     st.progress(disciplinas_concluidas / total_disciplinas if total_disciplinas > 0 else 0)
     st.caption(f"{disciplinas_concluidas}/{total_disciplinas} disciplinas")
-    
     st.markdown("---")
-    
     atrasadas = [c for c, d in EMBLEMAS.items() if verificar_atraso(c, d.get("ano", 2030))]
     if atrasadas:
         st.markdown('<p class="red-text">⚠️ Atrasadas:</p>', unsafe_allow_html=True)
         for c in atrasadas[:3]:
             st.markdown(f'<p class="red-text">• {EMBLEMAS[c]["emblema"]} {c[:15]}</p>', unsafe_allow_html=True)
-    
     st.markdown("---")
-    
     atividades_hoje = get_atividades_hoje()
     xp_hoje = sum(a['xp'] for a in atividades_hoje)
     st.markdown(f"**📅 Hoje:** {len(atividades_hoje)} atv | +{xp_hoje} XP")
     st.markdown(f"**📆 Semana:** +{get_xp_semana()} XP")
     st.markdown(f"**📅 Mês:** +{get_xp_mes()} XP")
-    
     st.markdown("---")
-    
     if st.button("📥 Backup Manual", use_container_width=True):
         salvar_backup()
         st.success("Backup salvo!")
-    
     st.markdown("---")
-    
     if st.button("🚪 Sair", use_container_width=True):
         st.session_state.autenticado = False
         st.rerun()
@@ -1397,9 +1375,7 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["🎮 Dashboard", "📚 Cert
 # =========================
 with tab1:
     st.markdown("## ⚡ ATIVIDADES DE HOJE")
-    
     col1, col2, col3 = st.columns([2, 1, 1])
-    
     with col1:
         st.markdown("#### ➕ Nova Atividade")
         with st.form("nova_atividade", clear_on_submit=True):
@@ -1411,7 +1387,6 @@ with tab1:
                 adicionar_atividade(area, atividade, xp_ganho, obs)
                 st.success(f"+{xp_ganho} XP!", icon="🎉")
                 st.rerun()
-    
     with col2:
         st.markdown(f"""
         <div class="kpi-card">
@@ -1420,7 +1395,6 @@ with tab1:
             <div>XP hoje</div>
         </div>
         """, unsafe_allow_html=True)
-    
     with col3:
         meta = 50
         progresso = min(xp_hoje / meta, 1.0)
@@ -1432,7 +1406,6 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
         st.progress(progresso)
-    
     atividades_hoje = get_atividades_hoje()
     if atividades_hoje:
         for atv in atividades_hoje:
@@ -1445,10 +1418,7 @@ with tab1:
             """, unsafe_allow_html=True)
     else:
         st.info("✨ Nenhuma atividade hoje. Comece agora!")
-    
     st.markdown("---")
-    
-    # KPIs
     c1, c2, c3, c4, c5 = st.columns(5)
     concluidas = sum(1 for cert, xp in st.session_state.cert_xp.items() if xp >= EMBLEMAS[cert]["xp"])
     c1.metric("🎮 Missões", len(st.session_state.db))
@@ -1464,12 +1434,9 @@ with tab2:
     st.markdown("## 📚 PLANO DE ESTUDOS POR CERTIFICAÇÃO")
     st.markdown("Selecione uma certificação para ver o conteúdo detalhado")
     st.markdown("---")
-    
     cert_selecionada = st.selectbox("🎯 Selecione a certificação", list(CONTEUDO_CERTIFICACOES.keys()))
-    
     if cert_selecionada in CONTEUDO_CERTIFICACOES:
         info = CONTEUDO_CERTIFICACOES[cert_selecionada]
-        
         st.markdown(f"""
         <div class="cert-conteudo-card">
             <h2>{EMBLEMAS[cert_selecionada]['emblema']} {cert_selecionada}</h2>
@@ -1478,10 +1445,7 @@ with tab2:
             <p><strong>⏱️ Duração estimada:</strong> {info['semanas']} semanas ({info['horas']} horas)</p>
         </div>
         """, unsafe_allow_html=True)
-        
-        # Tabs internas
         sub_tab1, sub_tab2, sub_tab3, sub_tab4 = st.tabs(["📖 Domínios e Tópicos", "✅ Checklist de Estudos", "🎓 Recursos Gratuitos", "📝 Simulados"])
-        
         with sub_tab1:
             st.markdown("### 📋 Domínios da Prova")
             for dominio in info['dominios']:
@@ -1497,44 +1461,36 @@ with tab2:
                         if concluido:
                             marcar_topico_certificacao(cert_selecionada, dominio['nome'], topico, False)
                             st.rerun()
-        
         with sub_tab2:
             st.markdown("### ✅ Seu Progresso")
             total_topicos = sum(len(d['topicos']) for d in info['dominios'])
             topicos_feitos = len([k for k in st.session_state.cert_topicos_concluidos if k.startswith(cert_selecionada)])
             percentual = (topicos_feitos / total_topicos * 100) if total_topicos > 0 else 0
-            
             st.progress(percentual / 100)
             st.caption(f"Progresso: {topicos_feitos}/{total_topicos} tópicos concluídos ({percentual:.0f}%)")
-            
             st.markdown("---")
             st.markdown("### 📅 Cronograma Sugerido")
             st.markdown(f"**Duração recomendada:** {info['semanas']} semanas")
             st.markdown(f"**Carga horária semanal:** ~{info['horas'] // info['semanas']} horas/semana")
-            
             st.markdown("#### Plano Semanal:")
             for semana in range(1, min(info['semanas'] + 1, 5)):
                 st.markdown(f"- **Semana {semana}:** {info['dominios'][semana-1]['nome'][:50]}...")
             if info['semanas'] > 4:
                 st.markdown(f"- **Semana {info['semanas']}:** Revisão geral e simulados")
-        
         with sub_tab3:
             st.markdown("### 🎓 Recursos Gratuitos")
             for recurso in info['recursos']:
                 st.markdown(f"- 📹 {recurso}")
-            
             st.markdown("---")
             st.markdown("### 💻 Cursos Recomendados")
             st.markdown("- **Hashtag Treinamentos** (Python, SQL, Power BI)")
             st.markdown("- **Microsoft Learn** (AZ-900, SC-900)")
             st.markdown("- **Professor Messer** (Security+, CySA+)")
             st.markdown("- **Jeremy's IT Lab** (CCNA)")
-        
         with sub_tab4:
             st.markdown("### 📝 Simulados Recomendados")
             for simulado in info['simulados']:
                 st.markdown(f"- ✅ {simulado}")
-            
             st.markdown("---")
             st.markdown("### 🎯 Dicas para a Prova")
             st.markdown("1. Faça simulados até atingir 85%+ de acertos")
@@ -1543,18 +1499,16 @@ with tab2:
             st.markdown("4. Descanse bem na véspera")
 
 # =========================
-# TAB 3 - SOFT SKILLS (NOVA)
+# TAB 3 - SOFT SKILLS
 # =========================
 with tab3:
     st.markdown("## 💪 DESENVOLVIMENTO DE SOFT SKILLS")
     st.markdown("Atividades práticas para desenvolver habilidades comportamentais essenciais.")
     st.markdown("---")
-    
     for categoria, info in SOFT_SKILLS_ATIVIDADES.items():
         with st.expander(f"📌 {categoria}", expanded=False):
             st.markdown(f"*{info['descricao']}*")
             st.markdown("---")
-            
             cols = st.columns(2)
             for i, atividade in enumerate(info['atividades']):
                 with cols[i % 2]:
@@ -1568,23 +1522,19 @@ with tab3:
                     st.caption(f"📝 {atividade['descricao']}")
 
 # =========================
-# TAB 4 - PÓS PUC (EMENTA COMPLETA)
+# TAB 4 - PÓS PUC
 # =========================
 with tab4:
     st.markdown("## 🎓 PÓS-GRADUAÇÃO PUC MINAS")
     st.markdown("### Cibersegurança e Governança de Dados")
     st.markdown("---")
-    
-    filtro_cert = st.selectbox("🔍 Filtrar por certificação relacionada", 
+    filtro_cert = st.selectbox("🔍 Filtrar por certificação relacionada",
                                ["Todas", "Security+", "AZ-500", "CCNA", "ISO 27001", "CISSP", "CySA+", "SC-900", "DevSecOps"])
-    
     for disciplina, info in EMENTA_PUC.items():
         if filtro_cert != "Todas" and filtro_cert not in info["certificacoes"]:
             continue
-        
         progresso_disciplina = st.session_state.disciplinas_progresso.get(disciplina, 0)
         percentual = min(progresso_disciplina, 100)
-        
         with st.expander(f"📖 {disciplina}", expanded=False):
             st.markdown(f"""
             <div class="disciplina-card">
@@ -1593,16 +1543,12 @@ with tab4:
                 <p><strong>⏱️ Carga horária estimada:</strong> {info['horas']} horas | <strong>📅 Duração:</strong> {info['semanas']} semanas</p>
             </div>
             """, unsafe_allow_html=True)
-            
             st.progress(percentual / 100)
             st.caption(f"Progresso: {percentual}%")
-            
             st.markdown("#### ✅ Tópicos de Estudo (+5 XP cada)")
-            
             for topico in info["topicos"]:
                 topico_key = f"puc_{disciplina}_{topico}"
                 concluido = topico in st.session_state.topicos_concluidos.get(disciplina, [])
-                
                 if st.checkbox(topico, value=concluido, key=topico_key):
                     if not concluido:
                         marcar_topico_puc(disciplina, topico, True)
@@ -1611,7 +1557,6 @@ with tab4:
                     if concluido:
                         marcar_topico_puc(disciplina, topico, False)
                         st.rerun()
-            
             st.markdown("#### 🎯 Adicionar Progresso")
             col_a, col_b = st.columns([2, 1])
             with col_a:
@@ -1628,11 +1573,8 @@ with tab4:
 # =========================
 with tab5:
     st.markdown("## 🎖️ PROGRESSO DAS CERTIFICAÇÕES")
-    
     filtro = st.selectbox("🔍 Filtrar por status", ["Todas", "Em andamento", "Concluída", "Não iniciada"])
-    
     certs_list = list(st.session_state.cert_xp.items())
-    
     for i in range(0, len(certs_list), 4):
         cols = st.columns(4)
         for j in range(4):
@@ -1641,14 +1583,11 @@ with tab5:
                 cert, xp = certs_list[idx]
                 info = EMBLEMAS[cert]
                 status = st.session_state.cert_status[cert]
-                
                 if filtro != "Todas" and status != filtro:
                     continue
-                
                 atrasado = verificar_atraso(cert, info.get("ano", 2030))
                 progresso = min(xp / info["xp"], 1.0)
                 classe = "cert-card atrasado" if atrasado else "cert-card"
-                
                 with cols[j]:
                     st.markdown(f"""
                     <div class="{classe}">
@@ -1659,7 +1598,6 @@ with tab5:
                     </div>
                     """, unsafe_allow_html=True)
                     st.progress(progresso)
-                    
                     opcoes = ["Não iniciada", "Em andamento", "Concluída"]
                     idx_status = opcoes.index(status) if status in opcoes else 0
                     novo_status = st.selectbox("", opcoes, index=idx_status, key=f"status_{cert}", label_visibility="collapsed")
@@ -1673,7 +1611,6 @@ with tab5:
 # =========================
 with tab6:
     st.markdown("## 🗺️ ROADMAP DAS CERTIFICAÇÕES")
-    
     for ano in [2026, 2027, 2028, 2029]:
         titulo = {2026: "🌱 2026 - Fundação", 2027: "⚡ 2027 - Especialização", 2028: "🎯 2028 - Maestria", 2029: "👑 2029 - Liderança"}[ano]
         with st.expander(titulo):
@@ -1703,7 +1640,6 @@ with tab6:
 # =========================
 with tab7:
     st.markdown("## 📊 RELATÓRIOS")
-    
     if len(st.session_state.db) > 0:
         dados_df = []
         for a in st.session_state.db:
@@ -1720,44 +1656,31 @@ with tab7:
                 })
             except:
                 pass
-        
         if dados_df:
             df = pd.DataFrame(dados_df)
             df = df.sort_values('data')
-            
+
             st.markdown("### 📈 Evolução do XP")
             evolucao = df.groupby('data').agg({'xp': 'sum'}).reset_index()
             evolucao['xp_acumulado'] = evolucao['xp'].cumsum()
-            
             if len(evolucao) > 0:
-    st.line_chart(
-        evolucao.set_index('data')['xp_acumulado'],
-        height=300
-    )
+                st.line_chart(
+                    evolucao.set_index('data')[['xp_acumulado']],
+                    height=300
+                )
 
-st.markdown("### 🎯 XP por Certificação")
-xp_por_cert = df.groupby('area').agg({'xp': 'sum'}).reset_index()
-xp_por_cert = xp_por_cert.sort_values('xp', ascending=False).head(10)
-
-st.bar_chart(
-    xp_por_cert.set_index('area')['xp'],
-    height=300
-)
             st.markdown("### 🎯 XP por Certificação")
             xp_por_cert = df.groupby('area').agg({'xp': 'sum'}).reset_index()
             xp_por_cert = xp_por_cert.sort_values('xp', ascending=False).head(10)
-            
-            chart2 = alt.Chart(xp_por_cert).mark_bar(cornerRadiusTopLeft=5, cornerRadiusTopRight=5).encode(
-                x=alt.X('area:N', title='Certificação', sort='-y', axis=alt.Axis(labelAngle=-45)),
-                y=alt.Y('xp:Q', title='XP'),
-                color=alt.Color('area:N', legend=None),
-                tooltip=['area', 'xp']
-            ).properties(height=300)
-            st.altair_chart(chart2, use_container_width=True)
-    
+            st.bar_chart(
+                xp_por_cert.set_index('area')[['xp']],
+                height=300
+            )
+    else:
+        st.info("📭 Nenhuma atividade registrada ainda. Comece lançando atividades no Dashboard!")
+
     st.markdown("---")
     st.markdown("### 📄 Exportar Dados")
-    
     if st.button("📥 Exportar Progresso Completo", use_container_width=True):
         export_data = {
             "xp_total": st.session_state.xp,
