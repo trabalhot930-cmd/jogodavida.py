@@ -2,30 +2,44 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
 import json
-import os
-from pathlib import Path
+import requests
 
 # =========================
-# CONFIGURAÇÃO DE PERSISTÊNCIA (RENDER)
+# CONFIGURAÇÃO SUPABASE
 # =========================
-def get_data_path():
-    render_disk = Path("/opt/render/project/src/dados")
-    if render_disk.exists() or os.getenv("RENDER"):
-        render_disk.mkdir(exist_ok=True)
-        return render_disk
-    return Path(".")
+SUPABASE_URL = "https://bhwqrfolkusuzvwavanc.supabase.co"
+SUPABASE_KEY = "sb_publishable_J_z2LmOOVT0cmJuYhqW0qg_9iAEHt4u"
+SUPABASE_HEADERS = {
+    "apikey": SUPABASE_KEY,
+    "Authorization": f"Bearer {SUPABASE_KEY}",
+    "Content-Type": "application/json"
+}
+REGISTRO_ID = "juan_felipe"
 
-DATA_FILE = get_data_path() / "progresso_juan.json"
+def carregar_do_supabase():
+    try:
+        url = f"{SUPABASE_URL}/rest/v1/progresso_juan?id=eq.{REGISTRO_ID}&select=dados"
+        r = requests.get(url, headers=SUPABASE_HEADERS, timeout=10)
+        if r.status_code == 200 and r.json():
+            return r.json()[0]["dados"]
+    except Exception as e:
+        st.warning(f"⚠️ Não foi possível carregar do Supabase: {e}")
+    return None
 
-def carregar_dados():
-    if DATA_FILE.exists():
-        with open(DATA_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return {}
-
-def salvar_dados(dados):
-    with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(dados, f, indent=2, ensure_ascii=False)
+def salvar_no_supabase(dados):
+    try:
+        url = f"{SUPABASE_URL}/rest/v1/progresso_juan"
+        payload = {
+            "id": REGISTRO_ID,
+            "dados": dados,
+            "atualizado_em": datetime.now().isoformat()
+        }
+        headers = {**SUPABASE_HEADERS, "Prefer": "resolution=merge-duplicates"}
+        r = requests.post(url, headers=headers, json=payload, timeout=10)
+        return r.status_code in [200, 201]
+    except Exception as e:
+        st.warning(f"⚠️ Erro ao salvar no Supabase: {e}")
+        return False
 
 # =========================
 # CONFIG
@@ -1138,10 +1152,8 @@ def fazer_login():
             st.error("❌ Usuário ou senha incorretos!")
 
 # =========================
-# FUNÇÕES DE BACKUP
+# FUNÇÕES DE BACKUP (SUPABASE)
 # =========================
-ARQUIVO_BACKUP = "backup_diario.json"
-
 def salvar_backup():
     dados = {
         "db": st.session_state.db,
@@ -1154,23 +1166,20 @@ def salvar_backup():
         "soft_skills_concluidas": st.session_state.soft_skills_concluidas,
         "data_backup": datetime.now().isoformat()
     }
-    with open(ARQUIVO_BACKUP, "w") as f:
-        json.dump(dados, f, default=str)
-    return True
+    return salvar_no_supabase(dados)
 
 def carregar_backup():
-    if os.path.exists(ARQUIVO_BACKUP):
-        with open(ARQUIVO_BACKUP, "r") as f:
-            dados = json.load(f)
-            st.session_state.db = dados.get("db", [])
-            st.session_state.xp = dados.get("xp", 0)
-            st.session_state.cert_xp = dados.get("cert_xp", st.session_state.cert_xp)
-            st.session_state.cert_status = dados.get("cert_status", st.session_state.cert_status)
-            st.session_state.disciplinas_progresso = dados.get("disciplinas_progresso", st.session_state.disciplinas_progresso)
-            st.session_state.topicos_concluidos = dados.get("topicos_concluidos", {})
-            st.session_state.cert_topicos_concluidos = dados.get("cert_topicos_concluidos", {})
-            st.session_state.soft_skills_concluidas = dados.get("soft_skills_concluidas", {})
-            return True
+    dados = carregar_do_supabase()
+    if dados:
+        st.session_state.db = dados.get("db", [])
+        st.session_state.xp = dados.get("xp", 0)
+        st.session_state.cert_xp = dados.get("cert_xp", st.session_state.cert_xp)
+        st.session_state.cert_status = dados.get("cert_status", st.session_state.cert_status)
+        st.session_state.disciplinas_progresso = dados.get("disciplinas_progresso", st.session_state.disciplinas_progresso)
+        st.session_state.topicos_concluidos = dados.get("topicos_concluidos", {})
+        st.session_state.cert_topicos_concluidos = dados.get("cert_topicos_concluidos", {})
+        st.session_state.soft_skills_concluidas = dados.get("soft_skills_concluidas", {})
+        return True
     return False
 
 # =========================
@@ -1299,9 +1308,11 @@ def get_xp_mes():
     return total
 
 # =========================
-# CARREGAR DADOS SALVOS
+# CARREGAR DADOS SALVOS (apenas uma vez por sessão)
 # =========================
-carregar_backup()
+if "dados_carregados" not in st.session_state:
+    carregar_backup()
+    st.session_state.dados_carregados = True
 
 # =========================
 # VERIFICAR LOGIN
