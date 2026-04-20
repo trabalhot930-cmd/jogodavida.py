@@ -4,6 +4,23 @@ import altair as alt
 from datetime import datetime, timedelta
 import json
 import os
+from pathlib import Path
+
+# =========================
+# CONFIGURAÇÃO DE PERSISTÊNCIA (RENDER)
+# =========================
+def get_data_path():
+    """Retorna o caminho correto para salvar dados no Render ou localmente"""
+    # Se estiver no Render, usa o disco persistente
+    render_disk = Path("/opt/render/project/src/dados")
+    if render_disk.exists() or os.getenv("RENDER"):
+        render_disk.mkdir(exist_ok=True)
+        return render_disk
+    # Se estiver localmente, usa a pasta atual
+    return Path(".")
+
+# Arquivo onde os dados serão salvos
+DATA_FILE = get_data_path() / "progresso_juan.json"
 
 # =========================
 # CONFIG
