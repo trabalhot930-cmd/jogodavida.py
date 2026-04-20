@@ -1,9 +1,7 @@
 import streamlit as st
 import pandas as pd
+import altair as alt
 from datetime import datetime, timedelta
-import json
-import os
-from pathlib import Path
 
 # =========================
 # CONFIGURAÇÃO DE PERSISTÊNCIA (RENDER)
