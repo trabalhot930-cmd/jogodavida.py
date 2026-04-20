@@ -4,14 +4,6 @@ import altair as alt
 from datetime import datetime, timedelta
 import json
 import os
-from pathlib import Path
-
-# =========================
-# CONFIGURAÇÃO DE PERSISTÊNCIA (RENDER)
-# =========================
-
-# Arquivo onde os dados serão salvos
-DATA_FILE = get_data_path() / "progresso_juan.json"
 
 # =========================
 # CONFIG
@@ -20,6 +12,13 @@ st.set_page_config(
     page_title="🚀 Missão Carreira - Juan Felipe da Silva",
     layout="wide"
 )
+
+# =========================
+# CREDENCIAIS DE ACESSO
+# =========================
+USUARIO_VALIDO = "Juan"
+SENHA_VALIDA = "Ju@n1990"
+
 
 # =========================
 # CREDENCIAIS DE ACESSO
