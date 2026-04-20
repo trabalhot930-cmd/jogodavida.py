@@ -785,3 +785,1019 @@ EMENTA_PUC = {
     },
     "Criptografia e Segurança de Dados": {
         "ementa": "Fundamentos de criptografia. Sistemas simét
+            "Criptografia e Segurança de Dados": {
+        "ementa": "Fundamentos de criptografia. Sistemas simétricos e assimétricos. Algoritmos. Hashing. Assinatura digital. IPSec, TLS. Certificados digitais. PKI. Blockchain. Criptografia pós-quântica. IA aplicada.",
+        "certificacoes": ["Security+", "CISSP", "AZ-500"],
+        "topicos": [
+            "Criptografia simétrica (AES, DES, 3DES)",
+            "Criptografia assimétrica (RSA, ECC)",
+            "Hashing criptográfico (MD5, SHA)",
+            "Assinatura digital",
+            "IPSec (camada de rede)",
+            "TLS/SSL (camada de transporte)",
+            "Certificados digitais e PKI",
+            "Blockchain e criptomoedas",
+            "Criptografia pós-quântica",
+            "Criptografia homomórfica",
+            "IA em segurança criptográfica"
+        ],
+        "horas": 55,
+        "semanas": 4
+    },
+    "DevSecOps: Segurança Integrada e Scanning": {
+        "ementa": "Fundamentos de DevSecOps. SDLC seguro. Segurança em pipelines CI/CD. Ferramentas IAST, SAST, DAST, RASP. Security Observability. IA para vulnerabilidades. Práticas cloud-native.",
+        "certificacoes": ["DevSecOps", "AZ-500"],
+        "topicos": [
+            "Fundamentos de DevSecOps",
+            "SDLC (Secure Development Lifecycle)",
+            "Segurança em pipelines CI/CD",
+            "SAST (Static Application Security Testing)",
+            "DAST (Dynamic Application Security Testing)",
+            "IAST (Interactive Application Security Testing)",
+            "RASP (Runtime Application Self-Protection)",
+            "Security Observability",
+            "IA para análise de vulnerabilidades",
+            "Cloud-native security"
+        ],
+        "horas": 45,
+        "semanas": 3
+    },
+    "Ethical Hacking e Gestão de Vulnerabilidades": {
+        "ementa": "Cenário da cibercriminalidade. Técnicas ofensivas. Ethical hacking. Pentest e Red Team. Threat Intelligence. Mitre Att&ck. IA para detecção de vulnerabilidades. Gestão de vulnerabilidades.",
+        "certificacoes": ["Security+", "CySA+", "CEH"],
+        "topicos": [
+            "Cibercriminalidade e ameaças digitais",
+            "Técnicas de ataque (recon, scan, exploit)",
+            "Ethical hacking e pentest",
+            "Red Team vs Blue Team",
+            "Threat Intelligence",
+            "MITRE ATT&CK Framework",
+            "Ferramentas de pentest (Nmap, Metasploit, Burp)",
+            "IA para detecção de vulnerabilidades",
+            "Gestão do ciclo de vida de vulnerabilidades"
+        ],
+        "horas": 60,
+        "semanas": 5
+    },
+    "Gestão de Riscos Cibernéticos": {
+        "ementa": "Fundamentos de riscos. ISO/IEC 27005. NIST Cybersecurity Framework. Programa de gestão de riscos. Identificação, análise, avaliação. Gestão de riscos de terceiros. IA aplicada.",
+        "certificacoes": ["ISO 27001", "CISSP", "Security+"],
+        "topicos": [
+            "Fundamentos de gestão de riscos",
+            "ISO/IEC 27005",
+            "NIST Cybersecurity Framework",
+            "Identificação de riscos",
+            "Análise de riscos (qualitativa/quantitativa)",
+            "Avaliação e tratamento de riscos",
+            "TPRM (Third Party Risk Management)",
+            "IA para gestão de riscos",
+            "Apettite e tolerância a risco"
+        ],
+        "horas": 45,
+        "semanas": 3
+    },
+    "Governança de Dados e Compliance": {
+        "ementa": "Governança de Dados e framework DMBoK. Políticas e padrões. Data Stewardship. Metadados. Compliance em IA. LGPD e GDPR. Governança 2.0. IA para governança.",
+        "certificacoes": ["ISO 27001", "CISA"],
+        "topicos": [
+            "Fundamentos da Governança de Dados",
+            "Framework DMBoK",
+            "Data Stewardship e Data Owners",
+            "Metadados e Catálogo de Dados",
+            "Políticas e padrões de dados",
+            "Compliance em ambientes IA",
+            "LGPD e GDPR para dados",
+            "Governança 2.0 (ágil)",
+            "IA para automação de governança"
+        ],
+        "horas": 40,
+        "semanas": 3
+    },
+    "Governança de Privacidade e Proteção de Dados": {
+        "ementa": "Classificação de dados. Princípios LGPD. Direitos dos titulares. RIPDP. Consentimento. Resposta a incidentes. DPO. Anonimização. IA para privacidade.",
+        "certificacoes": ["ISO 27001", "CIPM", "CIPP"],
+        "topicos": [
+            "Taxonomia e classificação de dados",
+            "Princípios da LGPD",
+            "Direitos dos titulares",
+            "RIPDP (Relatório de Impacto)",
+            "Gestão de consentimentos",
+            "Resposta a incidentes de dados",
+            "DPO (Data Protection Officer)",
+            "Anonimização e pseudonimização",
+            "IA para avaliação de riscos de privacidade"
+        ],
+        "horas": 45,
+        "semanas": 3
+    },
+    "Governança e Compliance em Cibersegurança": {
+        "ementa": "Governança de cibersegurança. ISO/IEC 27001/27003. Políticas de segurança. SGSI. Plano Diretor. GRC. IA para compliance.",
+        "certificacoes": ["ISO 27001", "CISSP", "CISM"],
+        "topicos": [
+            "Fundamentos da governança de cibersegurança",
+            "ISO/IEC 27001 e 27003",
+            "Políticas de segurança da informação",
+            "SGSI (Sistema de Gestão)",
+            "Programa de conscientização",
+            "Plano Diretor de Segurança (PDSI)",
+            "GRC em cibersegurança",
+            "IA para automação de compliance"
+        ],
+        "horas": 40,
+        "semanas": 3
+    },
+    "Monitoramento e Observabilidade": {
+        "ementa": "Monitoramento vs Observabilidade. OpenTelemetry. SLO e Error Budgeting. AIOps. SRE. Dashboards. Logs, métricas e tracing. IA para predição.",
+        "certificacoes": ["Security+", "CySA+"],
+        "topicos": [
+            "Diferença entre monitoramento e observabilidade",
+            "Pilares da observabilidade",
+            "OpenTelemetry",
+            "SLO, SLI e Error Budget",
+            "AIOps e Machine Learning",
+            "SRE (Site Reliability Engineering)",
+            "Dashboards e alertas",
+            "Logs, métricas e tracing",
+            "IA para predição de falhas"
+        ],
+        "horas": 35,
+        "semanas": 3
+    },
+    "Projeto em Cibersegurança e Governança de Dados com IA": {
+        "ementa": "IA para segurança. Detecção de ameaças. IA Generativa. IA Adversarial. Segurança em LLMs. Automação de SOC. Detecção de anomalias.",
+        "certificacoes": ["CISSP", "Cloud Security"],
+        "topicos": [
+            "IA para detecção de ameaças",
+            "IA Generativa em cibersegurança",
+            "IA Adversarial (ataques a modelos)",
+            "Segurança em LLMs e prompts",
+            "Automação de SOC com IA",
+            "Detecção de anomalias",
+            "Governança de IA corporativa",
+            "Projeto prático integrado"
+        ],
+        "horas": 80,
+        "semanas": 6
+    },
+    "Resiliência Cibernética e Continuidade de Negócios": {
+        "ementa": "Ciber-resiliência. NIST 800-34. ISO 22301. BIA. DRaaS. IA para resiliência. Plano de recuperação.",
+        "certificacoes": ["CISSP", "GICSP", "Security+"],
+        "topicos": [
+            "Fundamentos de ciber-resiliência",
+            "NIST SP 800-34",
+            "ISO 22301 (Continuidade)",
+            "BIA (Business Impact Analysis)",
+            "Plano de recuperação de desastres (DRP)",
+            "BCP (Business Continuity Plan)",
+            "DRaaS (Disaster Recovery as a Service)",
+            "IA para resiliência"
+        ],
+        "horas": 40,
+        "semanas": 3
+    },
+    "Resposta a Incidentes e Gestão de Crises Cibernéticas": {
+        "ementa": "Gestão de incidentes. NIST SP 800-61. ISO 27035. SIEM, SOAR, EDR. SOC. Playbooks. IA para resposta.",
+        "certificacoes": ["CySA+", "CISSP", "Security+"],
+        "topicos": [
+            "Ciclo de vida de resposta a incidentes",
+            "NIST SP 800-61",
+            "ISO/IEC 27035",
+            "SIEM (Security Information and Event Management)",
+            "SOAR (Orchestration, Automation and Response)",
+            "EDR (Endpoint Detection and Response)",
+            "Playbooks e runbooks",
+            "SOC (Security Operations Center)",
+            "Table top exercises",
+            "IA para resposta a incidentes"
+        ],
+        "horas": 50,
+        "semanas": 4
+    },
+    "Segurança e Gestão da Identidade Digital": {
+        "ementa": "IAM. Ciclo de vida de identidades. RBAC, ABAC. Autenticação. Biometria. Zero Trust. IA para IAM.",
+        "certificacoes": ["SC-900", "AZ-500", "Security+"],
+        "topicos": [
+            "Fundamentos de IAM",
+            "Ciclo de vida de identidades",
+            "RBAC, ABAC, PBAC",
+            "Autenticação (MFA, SSO)",
+            "Autorização e privilégios",
+            "Biometria e verificação de identidade",
+            "Zero Trust e identidade",
+            "IAM em nuvem (Azure AD)",
+            "IA para IAM"
+        ],
+        "horas": 45,
+        "semanas": 3
+    }
+}
+
+# =========================
+# EMBLEMAS DAS CERTIFICAÇÕES
+# =========================
+EMBLEMAS = {
+    "AZ-900": {"emblema": "☁️🌩️", "cor": "#00A4EF", "titulo": "Azure Fundamentals", "xp": 120, "ano": 2026},
+    "AZ-104": {"emblema": "☁️⚙️", "cor": "#0078D4", "titulo": "Azure Administrator", "xp": 150, "ano": 2026},
+    "AZ-500": {"emblema": "☁️🔐", "cor": "#005BA1", "titulo": "Azure Security", "xp": 150, "ano": 2026},
+    "ISO 27001 Fundamentals": {"emblema": "🔒📘", "cor": "#FFD700", "titulo": "ISO Foundation", "xp": 100, "ano": 2026},
+    "ISO 27001 Auditor": {"emblema": "🔒🔍", "cor": "#FFC000", "titulo": "ISO Auditor", "xp": 150, "ano": 2027},
+    "ISO 27001 Implementer": {"emblema": "🔒🛠️", "cor": "#FFA000", "titulo": "ISO Implementer", "xp": 150, "ano": 2027},
+    "Security+": {"emblema": "🛡️⚔️", "cor": "#FF0000", "titulo": "Security Plus", "xp": 120, "ano": 2027},
+    "AWS Cloud Practitioner": {"emblema": "☁️📘", "cor": "#FF9900", "titulo": "AWS Cloud", "xp": 100, "ano": 2027},
+    "Scrum Fundamentals": {"emblema": "🔄📋", "cor": "#0A5C4A", "titulo": "Scrum", "xp": 60, "ano": 2026},
+    "CySA+": {"emblema": "🔍🕵️", "cor": "#FF4500", "titulo": "CySA Plus", "xp": 150, "ano": 2027},
+    "CISSP": {"emblema": "👑🏆", "cor": "#C0C0C0", "titulo": "CISSP", "xp": 200, "ano": 2029},
+    "IEC 62443": {"emblema": "🏭📏", "cor": "#808080", "titulo": "IEC 62443", "xp": 120, "ano": 2027},
+    "MITRE ATT&CK ICS": {"emblema": "🎯🏭", "cor": "#A0A0A0", "titulo": "MITRE ICS", "xp": 120, "ano": 2028},
+    "GICSP": {"emblema": "🏭⚙️", "cor": "#606060", "titulo": "GICSP", "xp": 180, "ano": 2028},
+    "Python": {"emblema": "🐍⚡", "cor": "#3776AB", "titulo": "Python", "xp": 150, "ano": 2026},
+    "SQL": {"emblema": "🗄️📊", "cor": "#F29111", "titulo": "SQL", "xp": 120, "ano": 2026},
+    "Power BI": {"emblema": "📈🎨", "cor": "#F2C811", "titulo": "Power BI", "xp": 120, "ano": 2026},
+    "CCNA": {"emblema": "🌐🕸️", "cor": "#1BA0D7", "titulo": "CCNA", "xp": 150, "ano": 2026},
+    "SC-900": {"emblema": "🔐🎯", "cor": "#0078D4", "titulo": "SC-900", "xp": 100, "ano": 2026},
+    "Pos-graduacao": {"emblema": "🎓📜", "cor": "#800080", "titulo": "Pós-graduação", "xp": 300, "ano": 2026},
+    "Ingles": {"emblema": "🇬🇧💬", "cor": "#1E90FF", "titulo": "Inglês", "xp": 250, "ano": "Contínuo"},
+    "Cloud Security": {"emblema": "☁️🔒", "cor": "#00A4EF", "titulo": "Cloud Security", "xp": 150, "ano": 2028},
+    "DevSecOps": {"emblema": "🔄🚀", "cor": "#6C3483", "titulo": "DevSecOps", "xp": 150, "ano": 2029}
+}
+
+# =========================
+# STYLE
+# =========================
+st.markdown("""
+<style>
+html, body {
+    background: linear-gradient(135deg, #0a0e27, #1a1f3a);
+    color: #4d9fff;
+}
+h1, h2, h3 {
+    background: linear-gradient(135deg, #4d9fff, #7b2ff7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+}
+.red-text {
+    color: #ff4444 !important;
+    font-weight: bold;
+}
+.green-text {
+    color: #00ff88 !important;
+}
+.stButton button {
+    background: linear-gradient(135deg, #4d9fff, #7b2ff7) !important;
+    color: white !important;
+    border-radius: 10px;
+}
+.cert-card {
+    background: linear-gradient(135deg, rgba(77,159,255,0.1), rgba(123,47,247,0.05));
+    border-radius: 12px;
+    padding: 10px;
+    margin: 5px;
+    border: 1px solid rgba(77,159,255,0.3);
+}
+.cert-card.atrasado {
+    border-left: 3px solid #ff4444;
+}
+.atividade-card {
+    background: linear-gradient(135deg, rgba(77,159,255,0.08), rgba(123,47,247,0.03));
+    border-radius: 10px;
+    padding: 10px;
+    margin: 5px 0;
+    border-left: 3px solid #4d9fff;
+}
+.kpi-card {
+    background: linear-gradient(135deg, rgba(77,159,255,0.15), rgba(123,47,247,0.08));
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+}
+.disciplina-card, .cert-conteudo-card {
+    background: linear-gradient(135deg, rgba(77,159,255,0.1), rgba(123,47,247,0.05));
+    border-radius: 12px;
+    padding: 15px;
+    margin: 10px 0;
+    border: 1px solid rgba(77,159,255,0.2);
+    transition: all 0.3s;
+}
+.disciplina-card:hover, .cert-conteudo-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(77,159,255,0.2);
+}
+.topico-item {
+    background: rgba(77,159,255,0.05);
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 5px 0;
+    font-size: 13px;
+}
+.dominio-header {
+    background: rgba(77,159,255,0.15);
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px 0 5px 0;
+    font-weight: bold;
+}
+.soft-card {
+    background: linear-gradient(135deg, rgba(255,68,68,0.1), rgba(123,47,247,0.05));
+    border-radius: 12px;
+    padding: 15px;
+    margin: 10px 0;
+    border-left: 3px solid #ff8800;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# =========================
+# INICIALIZAÇÃO DO SESSION STATE
+# =========================
+if "autenticado" not in st.session_state:
+    st.session_state.autenticado = False
+
+if "db" not in st.session_state:
+    st.session_state.db = []
+if "xp" not in st.session_state:
+    st.session_state.xp = 0
+if "cert_xp" not in st.session_state:
+    st.session_state.cert_xp = {cert: 0 for cert in EMBLEMAS.keys()}
+if "cert_status" not in st.session_state:
+    st.session_state.cert_status = {cert: "Não iniciada" for cert in EMBLEMAS.keys()}
+if "disciplinas_progresso" not in st.session_state:
+    st.session_state.disciplinas_progresso = {disciplina: 0 for disciplina in EMENTA_PUC.keys()}
+if "topicos_concluidos" not in st.session_state:
+    st.session_state.topicos_concluidos = {}
+if "cert_topicos_concluidos" not in st.session_state:
+    st.session_state.cert_topicos_concluidos = {}
+if "soft_skills_concluidas" not in st.session_state:
+    st.session_state.soft_skills_concluidas = {}
+
+# =========================
+# FUNÇÃO DE LOGIN
+# =========================
+def fazer_login():
+    st.markdown("""
+    <div style="max-width: 400px; margin: 100px auto; padding: 40px; background: linear-gradient(135deg, rgba(77,159,255,0.1), rgba(123,47,247,0.05)); border-radius: 20px; text-align: center;">
+        <h1>🚀 MISSÃO CARREIRA</h1>
+        <h3>Acesso Autorizado</h3>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    usuario = st.text_input("👨‍🚀 Usuário")
+    senha = st.text_input("🔒 Senha", type="password")
+    
+    if st.button("🚀 Entrar", use_container_width=True):
+        if usuario == USUARIO_VALIDO and senha == SENHA_VALIDA:
+            st.session_state.autenticado = True
+            st.success("✅ Acesso concedido!")
+            st.rerun()
+        else:
+            st.error("❌ Usuário ou senha incorretos!")
+
+# =========================
+# FUNÇÕES PRINCIPAIS
+# =========================
+def calc_xp(atividade):
+    tabela = {
+        "📚 Estudo": 10, "🔬 Laboratório": 20, "🏗️ Projeto": 30,
+        "🔄 Revisão": 15, "📝 Simulado": 15, "🎓 Aula Pós": 25,
+        "🌎 Inglês": 15, "🏅 Certificação": 50
+    }
+    return tabela.get(atividade, 10)
+
+def get_badge(status):
+    if status == "Concluída":
+        return "🏆"
+    elif status == "Em andamento":
+        return "⚡"
+    return "💤"
+
+def verificar_atraso(cert, ano):
+    if ano == "Contínuo":
+        return False
+    if isinstance(ano, int) and datetime.now().year > ano:
+        if st.session_state.cert_xp.get(cert, 0) < EMBLEMAS[cert]["xp"]:
+            return True
+    return False
+
+def adicionar_atividade(area, atividade, xp, obs):
+    st.session_state.db.append({
+        "data": datetime.now().isoformat(),
+        "area": area,
+        "atividade": atividade,
+        "xp": xp,
+        "obs": obs
+    })
+    st.session_state.xp += xp
+    st.session_state.cert_xp[area] += xp
+    
+    if st.session_state.cert_xp[area] >= EMBLEMAS[area]["xp"]:
+        st.session_state.cert_status[area] = "Concluída"
+    elif st.session_state.cert_xp[area] >= EMBLEMAS[area]["xp"] * 0.3:
+        st.session_state.cert_status[area] = "Em andamento"
+    
+    # Salvar no Supabase
+    salvar_dados({
+        "db": st.session_state.db,
+        "xp": st.session_state.xp,
+        "cert_xp": st.session_state.cert_xp,
+        "cert_status": st.session_state.cert_status,
+        "disciplinas_progresso": st.session_state.disciplinas_progresso,
+        "topicos_concluidos": st.session_state.topicos_concluidos,
+        "cert_topicos_concluidos": st.session_state.cert_topicos_concluidos,
+        "soft_skills_concluidas": st.session_state.soft_skills_concluidas
+    })
+
+def adicionar_xp_disciplina(disciplina, xp):
+    st.session_state.disciplinas_progresso[disciplina] += xp
+    st.session_state.xp += xp
+    salvar_dados({
+        "db": st.session_state.db,
+        "xp": st.session_state.xp,
+        "cert_xp": st.session_state.cert_xp,
+        "cert_status": st.session_state.cert_status,
+        "disciplinas_progresso": st.session_state.disciplinas_progresso,
+        "topicos_concluidos": st.session_state.topicos_concluidos,
+        "cert_topicos_concluidos": st.session_state.cert_topicos_concluidos,
+        "soft_skills_concluidas": st.session_state.soft_skills_concluidas
+    })
+
+def adicionar_soft_skill(categoria, atividade, xp):
+    key = f"{categoria}_{atividade}"
+    if key not in st.session_state.soft_skills_concluidas:
+        st.session_state.soft_skills_concluidas[key] = True
+        st.session_state.xp += xp
+        salvar_dados({
+            "db": st.session_state.db,
+            "xp": st.session_state.xp,
+            "cert_xp": st.session_state.cert_xp,
+            "cert_status": st.session_state.cert_status,
+            "disciplinas_progresso": st.session_state.disciplinas_progresso,
+            "topicos_concluidos": st.session_state.topicos_concluidos,
+            "cert_topicos_concluidos": st.session_state.cert_topicos_concluidos,
+            "soft_skills_concluidas": st.session_state.soft_skills_concluidas
+        })
+        return True
+    return False
+
+def marcar_topico_puc(disciplina, topico, concluido):
+    if disciplina not in st.session_state.topicos_concluidos:
+        st.session_state.topicos_concluidos[disciplina] = []
+    
+    if concluido and topico not in st.session_state.topicos_concluidos[disciplina]:
+        st.session_state.topicos_concluidos[disciplina].append(topico)
+        st.session_state.xp += 5
+        salvar_dados({
+            "db": st.session_state.db,
+            "xp": st.session_state.xp,
+            "cert_xp": st.session_state.cert_xp,
+            "cert_status": st.session_state.cert_status,
+            "disciplinas_progresso": st.session_state.disciplinas_progresso,
+            "topicos_concluidos": st.session_state.topicos_concluidos,
+            "cert_topicos_concluidos": st.session_state.cert_topicos_concluidos,
+            "soft_skills_concluidas": st.session_state.soft_skills_concluidas
+        })
+    elif not concluido and topico in st.session_state.topicos_concluidos[disciplina]:
+        st.session_state.topicos_concluidos[disciplina].remove(topico)
+        st.session_state.xp -= 5
+        salvar_dados({
+            "db": st.session_state.db,
+            "xp": st.session_state.xp,
+            "cert_xp": st.session_state.cert_xp,
+            "cert_status": st.session_state.cert_status,
+            "disciplinas_progresso": st.session_state.disciplinas_progresso,
+            "topicos_concluidos": st.session_state.topicos_concluidos,
+            "cert_topicos_concluidos": st.session_state.cert_topicos_concluidos,
+            "soft_skills_concluidas": st.session_state.soft_skills_concluidas
+        })
+
+def marcar_topico_certificacao(cert, dominio, topico, concluido):
+    key = f"{cert}_{dominio}_{topico}"
+    if concluido and key not in st.session_state.cert_topicos_concluidos:
+        st.session_state.cert_topicos_concluidos[key] = True
+        st.session_state.xp += 3
+        salvar_dados({
+            "db": st.session_state.db,
+            "xp": st.session_state.xp,
+            "cert_xp": st.session_state.cert_xp,
+            "cert_status": st.session_state.cert_status,
+            "disciplinas_progresso": st.session_state.disciplinas_progresso,
+            "topicos_concluidos": st.session_state.topicos_concluidos,
+            "cert_topicos_concluidos": st.session_state.cert_topicos_concluidos,
+            "soft_skills_concluidas": st.session_state.soft_skills_concluidas
+        })
+    elif not concluido and key in st.session_state.cert_topicos_concluidos:
+        del st.session_state.cert_topicos_concluidos[key]
+        st.session_state.xp -= 3
+        salvar_dados({
+            "db": st.session_state.db,
+            "xp": st.session_state.xp,
+            "cert_xp": st.session_state.cert_xp,
+            "cert_status": st.session_state.cert_status,
+            "disciplinas_progresso": st.session_state.disciplinas_progresso,
+            "topicos_concluidos": st.session_state.topicos_concluidos,
+            "cert_topicos_concluidos": st.session_state.cert_topicos_concluidos,
+            "soft_skills_concluidas": st.session_state.soft_skills_concluidas
+        })
+
+def get_atividades_hoje():
+    hoje = datetime.now().date()
+    resultado = []
+    for a in st.session_state.db:
+        try:
+            if isinstance(a['data'], str):
+                data_atv = datetime.fromisoformat(a['data']).date()
+            else:
+                data_atv = a['data'].date()
+            if data_atv == hoje:
+                resultado.append(a)
+        except:
+            pass
+    return resultado
+
+def get_xp_semana():
+    hoje = datetime.now()
+    inicio_semana = hoje - timedelta(days=hoje.weekday())
+    total = 0
+    for a in st.session_state.db:
+        try:
+            if isinstance(a['data'], str):
+                data_atv = datetime.fromisoformat(a['data'])
+            else:
+                data_atv = a['data']
+            if data_atv.date() >= inicio_semana.date():
+                total += a['xp']
+        except:
+            pass
+    return total
+
+def get_xp_mes():
+    hoje = datetime.now()
+    total = 0
+    for a in st.session_state.db:
+        try:
+            if isinstance(a['data'], str):
+                data_atv = datetime.fromisoformat(a['data'])
+            else:
+                data_atv = a['data']
+            if data_atv.month == hoje.month and data_atv.year == hoje.year:
+                total += a['xp']
+        except:
+            pass
+    return total
+
+# =========================
+# CARREGAR DADOS SALVOS DO SUPABASE
+# =========================
+dados_salvos = carregar_dados()
+if dados_salvos:
+    st.session_state.db = dados_salvos.get("db", [])
+    st.session_state.xp = dados_salvos.get("xp", 0)
+    st.session_state.cert_xp = dados_salvos.get("cert_xp", st.session_state.cert_xp)
+    st.session_state.cert_status = dados_salvos.get("cert_status", st.session_state.cert_status)
+    st.session_state.disciplinas_progresso = dados_salvos.get("disciplinas_progresso", st.session_state.disciplinas_progresso)
+    st.session_state.topicos_concluidos = dados_salvos.get("topicos_concluidos", {})
+    st.session_state.cert_topicos_concluidos = dados_salvos.get("cert_topicos_concluidos", {})
+    st.session_state.soft_skills_concluidas = dados_salvos.get("soft_skills_concluidas", {})
+
+# =========================
+# VERIFICAR LOGIN
+# =========================
+if not st.session_state.autenticado:
+    fazer_login()
+    st.stop()
+
+# =========================
+# DATA ATUAL
+# =========================
+hoje = datetime.now()
+st.markdown(f"""
+<div style="background: linear-gradient(135deg, rgba(77,159,255,0.15), rgba(123,47,247,0.08)); border-radius: 15px; padding: 15px; text-align: center; margin-bottom: 20px;">
+    <div style="font-size: 28px; font-weight: bold;">{hoje.strftime('%d/%m/%Y')}</div>
+    <div>{hoje.strftime('%A')}</div>
+</div>
+""", unsafe_allow_html=True)
+
+# =========================
+# HEADER
+# =========================
+st.title("🚀 MISSÃO CARREIRA")
+st.caption("Juan Felipe da Silva - Especialista em Cibersegurança | Pós-graduação PUC Minas")
+st.markdown('<p class="green-text">💾 Seu progresso é salvo automaticamente no Supabase!</p>', unsafe_allow_html=True)
+st.markdown("---")
+
+# =========================
+# SIDEBAR
+# =========================
+with st.sidebar:
+    st.markdown("## 🚀 NAVE")
+    st.markdown(f"👨‍🚀 **Juan Felipe**")
+    st.markdown(f"⭐ **XP:** {st.session_state.xp}")
+    st.markdown(f"🎖️ **Nível:** {st.session_state.xp // 100 + 1}")
+    st.markdown(f"📅 **Missões:** {len(st.session_state.db)}")
+    
+    st.markdown("---")
+    
+    # Progresso da Pós
+    st.markdown("### 🎓 Pós PUC Minas")
+    total_disciplinas = len(EMENTA_PUC)
+    disciplinas_concluidas = sum(1 for p in st.session_state.disciplinas_progresso.values() if p >= 100)
+    st.progress(disciplinas_concluidas / total_disciplinas if total_disciplinas > 0 else 0)
+    st.caption(f"{disciplinas_concluidas}/{total_disciplinas} disciplinas")
+    
+    st.markdown("---")
+    
+    atrasadas = [c for c, d in EMBLEMAS.items() if verificar_atraso(c, d.get("ano", 2030))]
+    if atrasadas:
+        st.markdown('<p class="red-text">⚠️ Atrasadas:</p>', unsafe_allow_html=True)
+        for c in atrasadas[:3]:
+            st.markdown(f'<p class="red-text">• {EMBLEMAS[c]["emblema"]} {c[:15]}</p>', unsafe_allow_html=True)
+    
+    st.markdown("---")
+    
+    atividades_hoje = get_atividades_hoje()
+    xp_hoje = sum(a['xp'] for a in atividades_hoje)
+    st.markdown(f"**📅 Hoje:** {len(atividades_hoje)} atv | +{xp_hoje} XP")
+    st.markdown(f"**📆 Semana:** +{get_xp_semana()} XP")
+    st.markdown(f"**📅 Mês:** +{get_xp_mes()} XP")
+    
+    st.markdown("---")
+    
+    if st.button("🚪 Sair", use_container_width=True):
+        st.session_state.autenticado = False
+        st.rerun()
+
+# =========================
+# ABAS PRINCIPAIS
+# =========================
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["🎮 Dashboard", "📚 Certificações", "💪 Soft Skills", "🎓 Pós PUC", "🎖️ Progresso", "🗺️ Roadmap", "📊 Relatórios"])
+
+# =========================
+# TAB 1 - DASHBOARD
+# =========================
+with tab1:
+    st.markdown("## ⚡ ATIVIDADES DE HOJE")
+    
+    col1, col2, col3 = st.columns([2, 1, 1])
+    
+    with col1:
+        st.markdown("#### ➕ Nova Atividade")
+        with st.form("nova_atividade", clear_on_submit=True):
+            area = st.selectbox("Certificação", list(EMBLEMAS.keys()))
+            atividade = st.selectbox("Tipo", ["📚 Estudo", "🔬 Laboratório", "🏗️ Projeto", "🔄 Revisão", "📝 Simulado", "🎓 Aula Pós", "🌎 Inglês", "🏅 Certificação"])
+            obs = st.text_area("Observação")
+            if st.form_submit_button("🚀 Lançar", use_container_width=True):
+                xp_ganho = calc_xp(atividade)
+                adicionar_atividade(area, atividade, xp_ganho, obs)
+                st.success(f"+{xp_ganho} XP!", icon="🎉")
+                st.rerun()
+    
+    with col2:
+        st.markdown(f"""
+        <div class="kpi-card">
+            <div style="font-size: 36px;">⭐</div>
+            <div style="font-size: 28px;">+{xp_hoje}</div>
+            <div>XP hoje</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with col3:
+        meta = 50
+        progresso = min(xp_hoje / meta, 1.0)
+        st.markdown(f"""
+        <div class="kpi-card">
+            <div style="font-size: 36px;">🎯</div>
+            <div style="font-size: 28px;">{xp_hoje}/{meta}</div>
+            <div>Meta</div>
+        </div>
+        """, unsafe_allow_html=True)
+        st.progress(progresso)
+    
+    atividades_hoje = get_atividades_hoje()
+    if atividades_hoje:
+        for atv in atividades_hoje:
+            emblema = EMBLEMAS.get(atv['area'], {}).get('emblema', '📌')
+            st.markdown(f"""
+            <div class="atividade-card">
+                {emblema} **{atv['area'][:30]}** | {atv['atividade']} | ⭐ +{atv['xp']}<br>
+                <small>📝 {atv['obs'][:50] if atv['obs'] else '-'}</small>
+            </div>
+            """, unsafe_allow_html=True)
+    else:
+        st.info("✨ Nenhuma atividade hoje. Comece agora!")
+    
+    st.markdown("---")
+    
+    # KPIs
+    c1, c2, c3, c4, c5 = st.columns(5)
+    concluidas = sum(1 for cert, xp in st.session_state.cert_xp.items() if xp >= EMBLEMAS[cert]["xp"])
+    c1.metric("🎮 Missões", len(st.session_state.db))
+    c2.metric("⭐ XP", st.session_state.xp)
+    c3.metric("🏆 Nível", st.session_state.xp // 100 + 1)
+    c4.metric("✅ Certificações", f"{concluidas}/{len(EMBLEMAS)}")
+    c5.metric("📊 Progresso", f"{(concluidas/len(EMBLEMAS)*100):.0f}%")
+
+# =========================
+# TAB 2 - CONTEÚDO DAS CERTIFICAÇÕES
+# =========================
+with tab2:
+    st.markdown("## 📚 PLANO DE ESTUDOS POR CERTIFICAÇÃO")
+    st.markdown("Selecione uma certificação para ver o conteúdo detalhado")
+    st.markdown("---")
+    
+    cert_selecionada = st.selectbox("🎯 Selecione a certificação", list(CONTEUDO_CERTIFICACOES.keys()))
+    
+    if cert_selecionada in CONTEUDO_CERTIFICACOES:
+        info = CONTEUDO_CERTIFICACOES[cert_selecionada]
+        
+        st.markdown(f"""
+        <div class="cert-conteudo-card">
+            <h2>{EMBLEMAS[cert_selecionada]['emblema']} {cert_selecionada}</h2>
+            <h3>{info['titulo']}</h3>
+            <p>{info['descricao']}</p>
+            <p><strong>⏱️ Duração estimada:</strong> {info['semanas']} semanas ({info['horas']} horas)</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Tabs internas
+        sub_tab1, sub_tab2, sub_tab3, sub_tab4 = st.tabs(["📖 Domínios e Tópicos", "✅ Checklist de Estudos", "🎓 Recursos Gratuitos", "📝 Simulados"])
+        
+        with sub_tab1:
+            st.markdown("### 📋 Domínios da Prova")
+            for dominio in info['dominios']:
+                st.markdown(f'<div class="dominio-header">📌 {dominio["nome"]}</div>', unsafe_allow_html=True)
+                for topico in dominio['topicos']:
+                    key = f"{cert_selecionada}_{dominio['nome']}_{topico}"
+                    concluido = key in st.session_state.cert_topicos_concluidos
+                    if st.checkbox(f"📖 {topico}", value=concluido, key=key):
+                        if not concluido:
+                            marcar_topico_certificacao(cert_selecionada, dominio['nome'], topico, True)
+                            st.rerun()
+                    else:
+                        if concluido:
+                            marcar_topico_certificacao(cert_selecionada, dominio['nome'], topico, False)
+                            st.rerun()
+        
+        with sub_tab2:
+            st.markdown("### ✅ Seu Progresso")
+            total_topicos = sum(len(d['topicos']) for d in info['dominios'])
+            topicos_feitos = len([k for k in st.session_state.cert_topicos_concluidos if k.startswith(cert_selecionada)])
+            percentual = (topicos_feitos / total_topicos * 100) if total_topicos > 0 else 0
+            
+            st.progress(percentual / 100)
+            st.caption(f"Progresso: {topicos_feitos}/{total_topicos} tópicos concluídos ({percentual:.0f}%)")
+            
+            st.markdown("---")
+            st.markdown("### 📅 Cronograma Sugerido")
+            st.markdown(f"**Duração recomendada:** {info['semanas']} semanas")
+            st.markdown(f"**Carga horária semanal:** ~{info['horas'] // info['semanas']} horas/semana")
+            
+            st.markdown("#### Plano Semanal:")
+            for semana in range(1, min(info['semanas'] + 1, 5)):
+                st.markdown(f"- **Semana {semana}:** {info['dominios'][semana-1]['nome'][:50]}...")
+            if info['semanas'] > 4:
+                st.markdown(f"- **Semana {info['semanas']}:** Revisão geral e simulados")
+        
+        with sub_tab3:
+            st.markdown("### 🎓 Recursos Gratuitos")
+            for recurso in info['recursos']:
+                st.markdown(f"- 📹 {recurso}")
+            
+            st.markdown("---")
+            st.markdown("### 💻 Cursos Recomendados")
+            st.markdown("- **Hashtag Treinamentos** (Python, SQL, Power BI)")
+            st.markdown("- **Microsoft Learn** (AZ-900, SC-900)")
+            st.markdown("- **Professor Messer** (Security+, CySA+)")
+            st.markdown("- **Jeremy's IT Lab** (CCNA)")
+        
+        with sub_tab4:
+            st.markdown("### 📝 Simulados Recomendados")
+            for simulado in info['simulados']:
+                st.markdown(f"- ✅ {simulado}")
+            
+            st.markdown("---")
+            st.markdown("### 🎯 Dicas para a Prova")
+            st.markdown("1. Faça simulados até atingir 85%+ de acertos")
+            st.markdown("2. Revise os tópicos que você errou")
+            st.markdown("3. Marque a prova com 2-3 semanas de antecedência")
+            st.markdown("4. Descanse bem na véspera")
+
+# =========================
+# TAB 3 - SOFT SKILLS
+# =========================
+with tab3:
+    st.markdown("## 💪 DESENVOLVIMENTO DE SOFT SKILLS")
+    st.markdown("Atividades práticas para desenvolver habilidades comportamentais essenciais.")
+    st.markdown("---")
+    
+    for categoria, info in SOFT_SKILLS_ATIVIDADES.items():
+        with st.expander(f"📌 {categoria}", expanded=False):
+            st.markdown(f"*{info['descricao']}*")
+            st.markdown("---")
+            
+            cols = st.columns(2)
+            for i, atividade in enumerate(info['atividades']):
+                with cols[i % 2]:
+                    key = f"soft_{categoria}_{atividade['nome']}"
+                    if st.button(f"✅ {atividade['nome']} (+{atividade['xp']} XP)", key=key, use_container_width=True):
+                        if adicionar_soft_skill(categoria, atividade['nome'], atividade['xp']):
+                            st.success(f"+{atividade['xp']} XP - {atividade['nome']} concluída!")
+                            st.rerun()
+                        else:
+                            st.info("Você já concluiu esta atividade hoje!")
+                    st.caption(f"📝 {atividade['descricao']}")
+
+# =========================
+# TAB 4 - PÓS PUC
+# =========================
+with tab4:
+    st.markdown("## 🎓 PÓS-GRADUAÇÃO PUC MINAS")
+    st.markdown("### Cibersegurança e Governança de Dados")
+    st.markdown("---")
+    
+    filtro_cert = st.selectbox("🔍 Filtrar por certificação relacionada", 
+                               ["Todas", "Security+", "AZ-500", "CCNA", "ISO 27001", "CISSP", "CySA+", "SC-900", "DevSecOps"])
+    
+    for disciplina, info in EMENTA_PUC.items():
+        if filtro_cert != "Todas" and filtro_cert not in info["certificacoes"]:
+            continue
+        
+        progresso_disciplina = st.session_state.disciplinas_progresso.get(disciplina, 0)
+        percentual = min(progresso_disciplina, 100)
+        
+        with st.expander(f"📖 {disciplina}", expanded=False):
+            st.markdown(f"""
+            <div class="disciplina-card">
+                <p><strong>📝 Ementa:</strong> {info['ementa'][:200]}...</p>
+                <p><strong>🏷️ Certificações relacionadas:</strong> {', '.join(info['certificacoes'])}</p>
+                <p><strong>⏱️ Carga horária estimada:</strong> {info['horas']} horas | <strong>📅 Duração:</strong> {info['semanas']} semanas</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.progress(percentual / 100)
+            st.caption(f"Progresso: {percentual}%")
+            
+            st.markdown("#### ✅ Tópicos de Estudo (+5 XP cada)")
+            
+            for topico in info["topicos"]:
+                topico_key = f"puc_{disciplina}_{topico}"
+                concluido = topico in st.session_state.topicos_concluidos.get(disciplina, [])
+                
+                if st.checkbox(topico, value=concluido, key=topico_key):
+                    if not concluido:
+                        marcar_topico_puc(disciplina, topico, True)
+                        st.rerun()
+                else:
+                    if concluido:
+                        marcar_topico_puc(disciplina, topico, False)
+                        st.rerun()
+            
+            st.markdown("#### 🎯 Adicionar Progresso")
+            col_a, col_b = st.columns([2, 1])
+            with col_a:
+                xp_adicional = st.number_input("Horas estudadas", min_value=0, max_value=10, key=f"horas_{disciplina}")
+            with col_b:
+                if st.button(f"Adicionar +{xp_adicional * 5} XP", key=f"add_xp_{disciplina}"):
+                    ganho = xp_adicional * 5
+                    adicionar_xp_disciplina(disciplina, ganho)
+                    st.success(f"+{ganho} XP em {disciplina}!")
+                    st.rerun()
+
+# =========================
+# TAB 5 - PROGRESSO DAS CERTIFICAÇÕES
+# =========================
+with tab5:
+    st.markdown("## 🎖️ PROGRESSO DAS CERTIFICAÇÕES")
+    
+    filtro = st.selectbox("🔍 Filtrar por status", ["Todas", "Em andamento", "Concluída", "Não iniciada"])
+    
+    certs_list = list(st.session_state.cert_xp.items())
+    
+    for i in range(0, len(certs_list), 4):
+        cols = st.columns(4)
+        for j in range(4):
+            idx = i + j
+            if idx < len(certs_list):
+                cert, xp = certs_list[idx]
+                info = EMBLEMAS[cert]
+                status = st.session_state.cert_status[cert]
+                
+                if filtro != "Todas" and status != filtro:
+                    continue
+                
+                atrasado = verificar_atraso(cert, info.get("ano", 2030))
+                progresso = min(xp / info["xp"], 1.0)
+                classe = "cert-card atrasado" if atrasado else "cert-card"
+                
+                with cols[j]:
+                    st.markdown(f"""
+                    <div class="{classe}">
+                        <div style="text-align: center; font-size: 32px;">{info['emblema']}</div>
+                        <div style="font-weight: bold; text-align: center; font-size: 11px;">{cert[:20]}</div>
+                        <div style="text-align: center; font-size: 24px;">{get_badge(status)}</div>
+                        <div style="text-align: center; font-size: 10px;">{xp}/{info['xp']} XP</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    st.progress(progresso)
+                    
+                    opcoes = ["Não iniciada", "Em andamento", "Concluída"]
+                    idx_status = opcoes.index(status) if status in opcoes else 0
+                    novo_status = st.selectbox("", opcoes, index=idx_status, key=f"status_{cert}", label_visibility="collapsed")
+                    if novo_status != status:
+                        st.session_state.cert_status[cert] = novo_status
+                        salvar_dados({
+                            "db": st.session_state.db,
+                            "xp": st.session_state.xp,
+                            "cert_xp": st.session_state.cert_xp,
+                            "cert_status": st.session_state.cert_status,
+                            "disciplinas_progresso": st.session_state.disciplinas_progresso,
+                            "topicos_concluidos": st.session_state.topicos_concluidos,
+                            "cert_topicos_concluidos": st.session_state.cert_topicos_concluidos,
+                            "soft_skills_concluidas": st.session_state.soft_skills_concluidas
+                        })
+                        st.rerun()
+
+# =========================
+# TAB 6 - ROADMAP
+# =========================
+with tab6:
+    st.markdown("## 🗺️ ROADMAP DAS CERTIFICAÇÕES")
+    
+    for ano in [2026, 2027, 2028, 2029]:
+        titulo = {2026: "🌱 2026 - Fundação", 2027: "⚡ 2027 - Especialização", 2028: "🎯 2028 - Maestria", 2029: "👑 2029 - Liderança"}[ano]
+        with st.expander(titulo):
+            certs_ano = [c for c, d in EMBLEMAS.items() if d.get("ano") == ano]
+            if certs_ano:
+                cols = st.columns(min(4, len(certs_ano)))
+                for i, cert in enumerate(certs_ano):
+                    info = EMBLEMAS[cert]
+                    status = st.session_state.cert_status[cert]
+                    xp_atual = st.session_state.cert_xp[cert]
+                    percent = (xp_atual / info["xp"]) * 100
+                    with cols[i % 4]:
+                        st.markdown(f"""
+                        <div style="text-align:center; padding:10px; background:rgba(77,159,255,0.1); border-radius:10px;">
+                            <div style="font-size:32px;">{info['emblema']}</div>
+                            <div style="font-size:11px;">{cert[:15]}</div>
+                            <div>{get_badge(status)}</div>
+                            <div style="font-size:10px;">{xp_atual}/{info['xp']} XP</div>
+                            <div style="background:#333; border-radius:5px; height:4px;">
+                                <div style="background:{info['cor']}; width:{percent}%; height:4px; border-radius:5px;"></div>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+
+# =========================
+# TAB 7 - RELATÓRIOS
+# =========================
+with tab7:
+    st.markdown("## 📊 RELATÓRIOS")
+    
+    if len(st.session_state.db) > 0:
+        dados_df = []
+        for a in st.session_state.db:
+            try:
+                if isinstance(a['data'], str):
+                    data_atv = datetime.fromisoformat(a['data'])
+                else:
+                    data_atv = a['data']
+                dados_df.append({
+                    "data": data_atv,
+                    "area": a['area'],
+                    "atividade": a['atividade'],
+                    "xp": a['xp']
+                })
+            except:
+                pass
+        
+        if dados_df:
+            df = pd.DataFrame(dados_df)
+            df = df.sort_values('data')
+            
+            st.markdown("### 📈 Evolução do XP")
+            evolucao = df.groupby('data').agg({'xp': 'sum'}).reset_index()
+            evolucao['xp_acumulado'] = evolucao['xp'].cumsum()
+            
+            if len(evolucao) > 0:
+                st.line_chart(evolucao.set_index('data')['xp_acumulado'])
+            
+            st.markdown("### 🎯 XP por Certificação")
+            xp_por_cert = df.groupby('area').agg({'xp': 'sum'}).reset_index()
+            xp_por_cert = xp_por_cert.sort_values('xp', ascending=False).head(10)
+            st.bar_chart(xp_por_cert.set_index('area'))
+    
+    st.markdown("---")
+    st.markdown("### 📄 Exportar Dados")
+    
+    if st.button("📥 Exportar Progresso Completo", use_container_width=True):
+        export_data = {
+            "xp_total": st.session_state.xp,
+            "certificacoes": st.session_state.cert_xp,
+            "disciplinas_puc": st.session_state.disciplinas_progresso,
+            "topicos_concluidos": st.session_state.topicos_concluidos,
+            "cert_topicos_concluidos": st.session_state.cert_topicos_concluidos,
+            "soft_skills_concluidas": st.session_state.soft_skills_concluidas,
+            "historico": st.session_state.db
+        }
+        export_json = json.dumps(export_data, default=str, indent=2)
+        st.download_button("📥 Baixar JSON", export_json, "progresso_completo.json", "application/json")
+
+st.caption("🚀 Continue sua jornada, o universo te espera!")
