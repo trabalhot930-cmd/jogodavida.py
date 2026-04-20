@@ -1660,22 +1660,21 @@ with tab7:
             df = pd.DataFrame(dados_df)
             df = df.sort_values('data')
 
-            st.markdown("### 📈 Evolução do XP")
+            st.markdown("### 📈 Evolução do XP Acumulado")
             evolucao = df.groupby('data').agg({'xp': 'sum'}).reset_index()
             evolucao['xp_acumulado'] = evolucao['xp'].cumsum()
-            if len(evolucao) > 0:
-                st.line_chart(
-                    evolucao.set_index('data')[['xp_acumulado']],
-                    height=300
-                )
+            evolucao['data'] = evolucao['data'].dt.strftime('%d/%m/%Y %H:%M')
+            evolucao = evolucao.rename(columns={'data': 'Data', 'xp': 'XP na sessão', 'xp_acumulado': 'XP Total'})
+            st.dataframe(evolucao[['Data', 'XP na sessão', 'XP Total']].tail(20), use_container_width=True)
 
             st.markdown("### 🎯 XP por Certificação")
             xp_por_cert = df.groupby('area').agg({'xp': 'sum'}).reset_index()
             xp_por_cert = xp_por_cert.sort_values('xp', ascending=False).head(10)
-            st.bar_chart(
-                xp_por_cert.set_index('area')[['xp']],
-                height=300
-            )
+            xp_por_cert = xp_por_cert.rename(columns={'area': 'Certificação', 'xp': 'XP Total'})
+            for _, row in xp_por_cert.iterrows():
+                pct = min(int(row['XP Total']) / max(int(xp_por_cert['XP Total'].max()), 1), 1.0)
+                st.markdown(f"**{row['Certificação']}** — {int(row['XP Total'])} XP")
+                st.progress(pct)
     else:
         st.info("📭 Nenhuma atividade registrada ainda. Comece lançando atividades no Dashboard!")
 
