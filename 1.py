@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import altair as alt
 from datetime import datetime, timedelta
 
 # =========================
@@ -1731,17 +1730,19 @@ with tab7:
             evolucao['xp_acumulado'] = evolucao['xp'].cumsum()
             
             if len(evolucao) > 0:
-                chart = alt.Chart(evolucao).mark_line(
-                    point=alt.OverlayMarkDef(filled=True, fill='white'),
-                    strokeWidth=2,
-                    color='#4d9fff'
-                ).encode(
-                    x=alt.X('data:T', title='Data', axis=alt.Axis(labelAngle=-45, format='%d/%m')),
-                    y=alt.Y('xp_acumulado:Q', title='XP Total'),
-                    tooltip=['data:T', 'xp_acumulado:Q']
-                ).properties(height=300)
-                st.altair_chart(chart, use_container_width=True)
-            
+    st.line_chart(
+        evolucao.set_index('data')['xp_acumulado'],
+        height=300
+    )
+
+st.markdown("### 🎯 XP por Certificação")
+xp_por_cert = df.groupby('area').agg({'xp': 'sum'}).reset_index()
+xp_por_cert = xp_por_cert.sort_values('xp', ascending=False).head(10)
+
+st.bar_chart(
+    xp_por_cert.set_index('area')['xp'],
+    height=300
+)
             st.markdown("### 🎯 XP por Certificação")
             xp_por_cert = df.groupby('area').agg({'xp': 'sum'}).reset_index()
             xp_por_cert = xp_por_cert.sort_values('xp', ascending=False).head(10)
