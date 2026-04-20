@@ -783,8 +783,6 @@ EMENTA_PUC = {
         "horas": 50,
         "semanas": 4
     },
-    "Criptografia e Segurança de Dados": {
-        "ementa": "Fundamentos de criptografia. Sistemas simét
             "Criptografia e Segurança de Dados": {
         "ementa": "Fundamentos de criptografia. Sistemas simétricos e assimétricos. Algoritmos. Hashing. Assinatura digital. IPSec, TLS. Certificados digitais. PKI. Blockchain. Criptografia pós-quântica. IA aplicada.",
         "certificacoes": ["Security+", "CISSP", "AZ-500"],
