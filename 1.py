@@ -1748,20 +1748,25 @@ with tab7:
                 </div>"""
 
             grafico_html = f"""
-            <div style="background:#0e1117; font-family:sans-serif; padding:20px; border-radius:12px; border:1px solid rgba(77,159,255,0.2);">
-                <div style="display:flex; align-items:flex-end; gap:8px; overflow-x:auto; padding-bottom:10px; min-height:{altura_barra + 60}px;">
+            <!DOCTYPE html>
+            <html>
+            <body style="margin:0; padding:0; background:#0e1117; font-family:sans-serif;">
+            <div style="padding:16px; border-radius:12px; border:1px solid rgba(77,159,255,0.2);">
+                <div style="display:flex; align-items:flex-end; gap:8px; overflow-x:auto; padding-bottom:10px; min-height:{altura_barra + 40}px;">
                     {barras_html}
                 </div>
-                <div style="margin-top:16px; border-top:1px solid rgba(77,159,255,0.2); padding-top:12px;">
-                    <div style="font-size:11px; color:#888; margin-bottom:8px;">📌 Legenda — passe o mouse sobre as barras para ver detalhes:</div>
+                <div style="margin-top:12px; border-top:1px solid rgba(77,159,255,0.2); padding-top:10px;">
+                    <div style="font-size:11px; color:#888; margin-bottom:6px;">📌 Legenda:</div>
                     <div style="display:flex; flex-wrap:wrap;">
                         {legenda_html}
                     </div>
                 </div>
-            </div>"""
+            </div>
+            </body>
+            </html>"""
 
             import streamlit.components.v1 as components
-            components.html(grafico_html, height=altura_barra + 180, scrolling=False)
+            components.html(grafico_html, height=altura_barra + 200, scrolling=False)
 
             st.markdown("---")
 
