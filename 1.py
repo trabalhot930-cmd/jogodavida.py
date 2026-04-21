@@ -1651,6 +1651,7 @@ with tab6:
 # =========================
 with tab7:
     st.markdown("## 📊 RELATÓRIOS")
+
     if len(st.session_state.db) > 0:
         dados_df = []
         for a in st.session_state.db:
@@ -1661,31 +1662,129 @@ with tab7:
                     data_atv = a['data']
                 dados_df.append({
                     "data": data_atv,
+                    "data_label": data_atv.strftime('%d/%m/%Y'),
+                    "hora": data_atv.strftime('%H:%M'),
                     "area": a['area'],
                     "atividade": a['atividade'],
+                    "obs": a.get('obs', ''),
                     "xp": a['xp']
                 })
             except:
                 pass
+
         if dados_df:
             df = pd.DataFrame(dados_df)
-            df = df.sort_values('data')
+            df = df.sort_values('data', ascending=False)
 
-            st.markdown("### 📈 Evolução do XP Acumulado")
-            evolucao = df.groupby('data').agg({'xp': 'sum'}).reset_index()
-            evolucao['xp_acumulado'] = evolucao['xp'].cumsum()
-            evolucao['data'] = evolucao['data'].dt.strftime('%d/%m/%Y %H:%M')
-            evolucao = evolucao.rename(columns={'data': 'Data', 'xp': 'XP na sessão', 'xp_acumulado': 'XP Total'})
-            st.dataframe(evolucao[['Data', 'XP na sessão', 'XP Total']].tail(20), use_container_width=True)
+            # -------------------------
+            # TABELA DETALHADA
+            # -------------------------
+            st.markdown("### 📋 Histórico Detalhado de Atividades")
+            df_exibir = df[['data_label', 'hora', 'area', 'atividade', 'obs', 'xp']].copy()
+            df_exibir.columns = ['📅 Data', '🕐 Hora', '🎯 Certificação', '📚 Tipo', '📝 O que foi feito', '⭐ XP']
+            df_exibir['📝 O que foi feito'] = df_exibir['📝 O que foi feito'].apply(lambda x: x[:60] + '...' if len(str(x)) > 60 else x)
+            st.dataframe(df_exibir, use_container_width=True, height=300)
 
-            st.markdown("### 🎯 XP por Certificação")
-            xp_por_cert = df.groupby('area').agg({'xp': 'sum'}).reset_index()
-            xp_por_cert = xp_por_cert.sort_values('xp', ascending=False).head(10)
-            xp_por_cert = xp_por_cert.rename(columns={'area': 'Certificação', 'xp': 'XP Total'})
+            st.markdown("---")
+
+            # -------------------------
+            # GRÁFICO DE BARRAS EMPILHADAS POR DATA (HTML puro, sem altair)
+            # -------------------------
+            st.markdown("### 📊 XP por Certificação — Gráfico por Data")
+
+            # Agrupar XP por data e certificação
+            df_grafico = df.groupby(['data_label', 'area'])['xp'].sum().reset_index()
+            datas = sorted(df['data_label'].unique(), key=lambda d: datetime.strptime(d, '%d/%m/%Y'))
+            certs_usadas = df['area'].unique().tolist()
+
+            # Cores para cada certificação
+            cores = [
+                "#4d9fff","#7b2ff7","#ff6b6b","#00ff88","#ffd700",
+                "#ff8800","#00cfff","#ff4ecb","#a8ff3e","#ff3e3e",
+                "#3effd8","#ff9f43","#54a0ff","#5f27cd","#01aac1"
+            ]
+            cor_map = {cert: cores[i % len(cores)] for i, cert in enumerate(certs_usadas)}
+
+            # Calcular max para escala
+            xp_por_data = df.groupby('data_label')['xp'].sum()
+            max_xp = int(xp_por_data.max()) if len(xp_por_data) > 0 else 100
+            altura_barra = 220
+
+            # Montar HTML do gráfico
+            barras_html = ""
+            for data in datas:
+                df_data = df_grafico[df_grafico['data_label'] == data]
+                total = int(df_data['xp'].sum())
+                segmentos = ""
+                for _, row in df_data.iterrows():
+                    pct = (row['xp'] / max_xp) * 100
+                    cor = cor_map.get(row['area'], '#4d9fff')
+                    segmentos += f"""
+                    <div title="{row['area']}: {int(row['xp'])} XP"
+                         style="width:100%; height:{pct * altura_barra / 100:.1f}px;
+                                background:{cor}; margin:0; padding:0;
+                                display:flex; align-items:center; justify-content:center;
+                                font-size:9px; color:white; overflow:hidden; font-weight:bold;">
+                        {int(row['xp'])}
+                    </div>"""
+                barras_html += f"""
+                <div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:60px; max-width:100px;">
+                    <div style="font-size:10px; color:#4d9fff; margin-bottom:4px; font-weight:bold;">{total} XP</div>
+                    <div style="width:80%; display:flex; flex-direction:column-reverse; height:{altura_barra}px;
+                                background:rgba(255,255,255,0.05); border-radius:6px; overflow:hidden;">
+                        {segmentos}
+                    </div>
+                    <div style="font-size:10px; color:#aaa; margin-top:6px; text-align:center;">{data}</div>
+                </div>"""
+
+            # Legenda
+            legenda_html = ""
+            for cert in certs_usadas:
+                cor = cor_map.get(cert, '#4d9fff')
+                legenda_html += f"""
+                <div style="display:flex; align-items:center; gap:6px; margin:4px 8px;">
+                    <div style="width:12px; height:12px; background:{cor}; border-radius:3px; flex-shrink:0;"></div>
+                    <span style="font-size:11px; color:#ccc;">{cert[:20]}</span>
+                </div>"""
+
+            grafico_html = f"""
+            <div style="background:rgba(77,159,255,0.05); border-radius:12px; padding:20px; border:1px solid rgba(77,159,255,0.2);">
+                <div style="display:flex; align-items:flex-end; gap:8px; overflow-x:auto; padding-bottom:10px; min-height:{altura_barra + 60}px;">
+                    {barras_html}
+                </div>
+                <div style="margin-top:16px; border-top:1px solid rgba(77,159,255,0.2); padding-top:12px;">
+                    <div style="font-size:11px; color:#888; margin-bottom:8px;">📌 Legenda (passe o mouse sobre as barras para ver detalhes):</div>
+                    <div style="display:flex; flex-wrap:wrap;">
+                        {legenda_html}
+                    </div>
+                </div>
+            </div>"""
+
+            st.markdown(grafico_html, unsafe_allow_html=True)
+
+            st.markdown("---")
+
+            # -------------------------
+            # XP POR CERTIFICAÇÃO
+            # -------------------------
+            st.markdown("### 🎯 XP Total por Certificação")
+            xp_por_cert = df.groupby('area')['xp'].sum().reset_index().sort_values('xp', ascending=False).head(10)
             for _, row in xp_por_cert.iterrows():
-                pct = min(int(row['XP Total']) / max(int(xp_por_cert['XP Total'].max()), 1), 1.0)
-                st.markdown(f"**{row['Certificação']}** — {int(row['XP Total'])} XP")
-                st.progress(pct)
+                pct = min(row['xp'] / max(xp_por_cert['xp'].max(), 1), 1.0)
+                cor = cor_map.get(row['area'], '#4d9fff')
+                emblema = EMBLEMAS.get(row['area'], {}).get('emblema', '📌')
+                st.markdown(f"""
+                <div style="margin:8px 0;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                        <span style="font-size:13px;">{emblema} <strong>{row['area']}</strong></span>
+                        <span style="font-size:13px; color:{cor}; font-weight:bold;">{int(row['xp'])} XP</span>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.1); border-radius:6px; height:8px;">
+                        <div style="background:{cor}; width:{pct*100:.1f}%; height:8px; border-radius:6px;"></div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
     else:
         st.info("📭 Nenhuma atividade registrada ainda. Comece lançando atividades no Dashboard!")
 
