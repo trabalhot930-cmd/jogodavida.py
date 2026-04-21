@@ -1647,7 +1647,7 @@ with tab6:
                         """, unsafe_allow_html=True)
 
 # =========================
-# TAB 7 - RELATÓRIOS
+# TAB 7 - RELATÓRIOS (SEM ALTAIR - HTML PURO)
 # =========================
 with tab7:
     st.markdown("## 📊 RELATÓRIOS")
@@ -1688,7 +1688,7 @@ with tab7:
             st.markdown("---")
 
             # -------------------------
-            # GRÁFICO DE BARRAS EMPILHADAS POR DATA (HTML puro, sem altair)
+            # GRÁFICO DE BARRAS EMPILHADAS POR DATA (HTML puro)
             # -------------------------
             st.markdown("### 📊 XP por Certificação — Gráfico por Data")
 
