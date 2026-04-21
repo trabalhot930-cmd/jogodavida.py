@@ -36,7 +36,7 @@ def salvar_no_supabase(dados):
         }
         headers = {**SUPABASE_HEADERS, "Prefer": "resolution=merge-duplicates"}
         r = requests.post(url, headers=headers, json=payload, timeout=10)
-        return r.status_code in [200, 201, 204]
+        return r.status_code in [200, 201]
     except Exception as e:
         st.warning(f"⚠️ Erro ao salvar no Supabase: {e}")
         return False
@@ -1647,7 +1647,7 @@ with tab6:
                         """, unsafe_allow_html=True)
 
 # =========================
-# TAB 7 - RELATÓRIOS (HTML PURO - SEM ALTAIR)
+# TAB 7 - RELATÓRIOS
 # =========================
 with tab7:
     st.markdown("## 📊 RELATÓRIOS")
@@ -1676,7 +1676,9 @@ with tab7:
             df = pd.DataFrame(dados_df)
             df = df.sort_values('data', ascending=False)
 
-            # Tabela detalhada
+            # -------------------------
+            # TABELA DETALHADA
+            # -------------------------
             st.markdown("### 📋 Histórico Detalhado de Atividades")
             df_exibir = df[['data_label', 'hora', 'area', 'atividade', 'obs', 'xp']].copy()
             df_exibir.columns = ['📅 Data', '🕐 Hora', '🎯 Certificação', '📚 Tipo', '📝 O que foi feito', '⭐ XP']
@@ -1685,20 +1687,30 @@ with tab7:
 
             st.markdown("---")
 
-            # Gráfico de barras empilhadas por data
+            # -------------------------
+            # GRÁFICO DE BARRAS EMPILHADAS POR DATA (HTML puro, sem altair)
+            # -------------------------
             st.markdown("### 📊 XP por Certificação — Gráfico por Data")
 
+            # Agrupar XP por data e certificação
             df_grafico = df.groupby(['data_label', 'area'])['xp'].sum().reset_index()
             datas = sorted(df['data_label'].unique(), key=lambda d: datetime.strptime(d, '%d/%m/%Y'))
             certs_usadas = df['area'].unique().tolist()
 
-            cores = ["#4d9fff","#7b2ff7","#ff6b6b","#00ff88","#ffd700","#ff8800","#00cfff","#ff4ecb","#a8ff3e","#ff3e3e","#3effd8","#ff9f43","#54a0ff","#5f27cd","#01aac1"]
+            # Cores para cada certificação
+            cores = [
+                "#4d9fff","#7b2ff7","#ff6b6b","#00ff88","#ffd700",
+                "#ff8800","#00cfff","#ff4ecb","#a8ff3e","#ff3e3e",
+                "#3effd8","#ff9f43","#54a0ff","#5f27cd","#01aac1"
+            ]
             cor_map = {cert: cores[i % len(cores)] for i, cert in enumerate(certs_usadas)}
 
+            # Calcular max para escala
             xp_por_data = df.groupby('data_label')['xp'].sum()
             max_xp = int(xp_por_data.max()) if len(xp_por_data) > 0 else 100
             altura_barra = 220
 
+            # Montar HTML do gráfico
             barras_html = ""
             for data in datas:
                 df_data = df_grafico[df_grafico['data_label'] == data]
@@ -1719,39 +1731,43 @@ with tab7:
                 <div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:60px; max-width:100px;">
                     <div style="font-size:10px; color:#4d9fff; margin-bottom:4px; font-weight:bold;">{total} XP</div>
                     <div style="width:80%; display:flex; flex-direction:column-reverse; height:{altura_barra}px;
-                                background:rgba(255,255,255,0.1); border-radius:6px; overflow:hidden;">
+                                background:rgba(255,255,255,0.05); border-radius:6px; overflow:hidden;">
                         {segmentos}
                     </div>
                     <div style="font-size:10px; color:#aaa; margin-top:6px; text-align:center;">{data}</div>
                 </div>"""
 
+            # Legenda
             legenda_html = ""
             for cert in certs_usadas:
                 cor = cor_map.get(cert, '#4d9fff')
                 legenda_html += f"""
                 <div style="display:flex; align-items:center; gap:6px; margin:4px 8px;">
-                    <div style="width:12px; height:12px; background:{cor}; border-radius:3px;"></div>
+                    <div style="width:12px; height:12px; background:{cor}; border-radius:3px; flex-shrink:0;"></div>
                     <span style="font-size:11px; color:#ccc;">{cert[:20]}</span>
                 </div>"""
 
             grafico_html = f"""
-            <div style="background:rgba(77,159,255,0.05); border-radius:12px; padding:20px; border:1px solid rgba(77,159,255,0.2);">
+            <div style="background:#0e1117; font-family:sans-serif; padding:20px; border-radius:12px; border:1px solid rgba(77,159,255,0.2);">
                 <div style="display:flex; align-items:flex-end; gap:8px; overflow-x:auto; padding-bottom:10px; min-height:{altura_barra + 60}px;">
                     {barras_html}
                 </div>
                 <div style="margin-top:16px; border-top:1px solid rgba(77,159,255,0.2); padding-top:12px;">
-                    <div style="font-size:11px; color:#888; margin-bottom:8px;">📌 Legenda (passe o mouse sobre as barras para ver detalhes):</div>
+                    <div style="font-size:11px; color:#888; margin-bottom:8px;">📌 Legenda — passe o mouse sobre as barras para ver detalhes:</div>
                     <div style="display:flex; flex-wrap:wrap;">
                         {legenda_html}
                     </div>
                 </div>
             </div>"""
 
-            st.markdown(grafico_html, unsafe_allow_html=True)
+            import streamlit.components.v1 as components
+            components.html(grafico_html, height=altura_barra + 180, scrolling=False)
 
             st.markdown("---")
 
-            # XP por certificação
+            # -------------------------
+            # XP POR CERTIFICAÇÃO
+            # -------------------------
             st.markdown("### 🎯 XP Total por Certificação")
             xp_por_cert = df.groupby('area')['xp'].sum().reset_index().sort_values('xp', ascending=False).head(10)
             for _, row in xp_por_cert.iterrows():
