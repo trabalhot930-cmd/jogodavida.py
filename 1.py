@@ -1185,13 +1185,72 @@ def carregar_backup():
 # =========================
 # FUNÇÕES PRINCIPAIS
 # =========================
-def calc_xp(atividade):
-    tabela = {
-        "📚 Estudo": 10, "🔬 Laboratório": 20, "🏗️ Projeto": 30,
-        "🔄 Revisão": 15, "📝 Simulado": 15, "🎓 Aula Pós": 25,
-        "🌎 Inglês": 15, "🏅 Certificação": 50
-    }
-    return tabela.get(atividade, 10)
+
+# Horas por certificação
+HORAS_CERT = {
+    "AZ-900": 30, "AZ-104": 60, "AZ-500": 60,
+    "ISO 27001 Fundamentals": 40, "ISO 27001 Auditor": 50, "ISO 27001 Implementer": 60,
+    "Security+": 80, "AWS Cloud Practitioner": 30, "Scrum Fundamentals": 16,
+    "CySA+": 60, "CISSP": 200, "IEC 62443": 80, "MITRE ATT&CK ICS": 40,
+    "GICSP": 120, "Python": 60, "SQL": 45, "Power BI": 50,
+    "CCNA": 120, "SC-900": 25, "Pos-graduacao": 600, "Ingles": 300,
+    "Cloud Security": 60, "DevSecOps": 60
+}
+
+# Peso de cada tipo de atividade
+PESO_ATIVIDADE = {
+    "📚 Estudo":      1.0,
+    "🔬 Laboratório": 1.5,
+    "🏗️ Projeto":    2.0,
+    "🔄 Revisão":     0.5,
+    "📝 Simulado":    1.2,
+    "🎓 Aula Pós":    1.0,
+    "🌎 Inglês":      1.0,
+    "🏅 Certificação": 5.0
+}
+
+def calc_xp(atividade, area):
+    """XP proporcional às horas da cert × peso da atividade"""
+    horas = HORAS_CERT.get(area, 40)
+    xp_por_hora = EMBLEMAS[area]["xp"] / horas
+    peso = PESO_ATIVIDADE.get(atividade, 1.0)
+    xp = int(xp_por_hora * peso)
+    return max(xp, 20)
+
+def calc_streak():
+    """Dias consecutivos de estudo"""
+    if not st.session_state.db:
+        return 0
+    datas = set()
+    for a in st.session_state.db:
+        try:
+            if isinstance(a['data'], str):
+                d = datetime.fromisoformat(a['data']).date()
+            else:
+                d = a['data'].date()
+            datas.add(d)
+        except:
+            pass
+    hoje = datetime.now().date()
+    streak = 0
+    dia = hoje
+    while dia in datas:
+        streak += 1
+        dia -= timedelta(days=1)
+    return streak
+
+def multiplicador_streak(streak):
+    """Bônus de streak: +10% a cada 3 dias consecutivos, máximo +50%"""
+    bonus = min((streak // 3) * 0.10, 0.50)
+    return 1.0 + bonus
+
+def calc_meta_diaria():
+    """Meta diária baseada nas certs ativas"""
+    certs_ativas = [c for c, s in st.session_state.cert_status.items() if s in ["Em andamento", "Não iniciada"]]
+    if not certs_ativas:
+        return 500
+    media_xp = sum(EMBLEMAS[c]["xp"] for c in certs_ativas) / len(certs_ativas)
+    return max(int(media_xp / 30), 200)
 
 def get_badge(status):
     if status == "Concluída":
@@ -1209,20 +1268,26 @@ def verificar_atraso(cert, ano):
     return False
 
 def adicionar_atividade(area, atividade, xp, obs):
+    streak = calc_streak()
+    mult = multiplicador_streak(streak)
+    xp_final = int(xp * mult)
     st.session_state.db.append({
         "data": datetime.now().isoformat(),
         "area": area,
         "atividade": atividade,
-        "xp": xp,
-        "obs": obs
+        "xp": xp_final,
+        "obs": obs,
+        "streak": streak,
+        "multiplicador": mult
     })
-    st.session_state.xp += xp
-    st.session_state.cert_xp[area] += xp
+    st.session_state.xp += xp_final
+    st.session_state.cert_xp[area] += xp_final
     if st.session_state.cert_xp[area] >= EMBLEMAS[area]["xp"]:
         st.session_state.cert_status[area] = "Concluída"
     elif st.session_state.cert_xp[area] >= EMBLEMAS[area]["xp"] * 0.3:
         st.session_state.cert_status[area] = "Em andamento"
     salvar_backup()
+    return xp_final, streak, mult
 
 def adicionar_xp_disciplina(disciplina, xp):
     st.session_state.disciplinas_progresso[disciplina] += xp
@@ -1347,8 +1412,14 @@ with st.sidebar:
     st.markdown("## 🚀 NAVE")
     st.markdown(f"👨‍🚀 **Juan Felipe**")
     st.markdown(f"⭐ **XP:** {st.session_state.xp}")
-    st.markdown(f"🎖️ **Nível:** {st.session_state.xp // 100 + 1}")
+    st.markdown(f"🎖️ **Nível:** {st.session_state.xp // 1000 + 1}")
     st.markdown(f"📅 **Missões:** {len(st.session_state.db)}")
+    streak_atual = calc_streak()
+    mult_atual = multiplicador_streak(streak_atual)
+    if streak_atual > 0:
+        st.markdown(f"🔥 **Streak:** {streak_atual} dias")
+        if mult_atual > 1.0:
+            st.markdown(f"⚡ **Bônus:** +{int((mult_atual-1)*100)}% XP")
     st.markdown("---")
     st.markdown("### 🎓 Pós PUC Minas")
     total_disciplinas = len(EMENTA_PUC)
@@ -1368,10 +1439,6 @@ with st.sidebar:
     st.markdown(f"**📆 Semana:** +{get_xp_semana()} XP")
     st.markdown(f"**📅 Mês:** +{get_xp_mes()} XP")
     st.markdown("---")
-    if st.button("📥 Backup Manual", use_container_width=True):
-        salvar_backup()
-        st.success("Backup salvo!")
-    st.markdown("---")
     if st.button("🚪 Sair", use_container_width=True):
         st.session_state.autenticado = False
         st.rerun()
@@ -1386,17 +1453,35 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["🎮 Dashboard", "📚 Cert
 # =========================
 with tab1:
     st.markdown("## ⚡ ATIVIDADES DE HOJE")
+    streak_atual = calc_streak()
+    mult_atual = multiplicador_streak(streak_atual)
+    meta = calc_meta_diaria()
+
+    # Banner de streak
+    if streak_atual >= 3:
+        st.markdown(f"""
+        <div style="background:linear-gradient(135deg,rgba(255,140,0,0.2),rgba(255,69,0,0.1));
+                    border-left:4px solid #ff8c00; border-radius:8px; padding:10px 16px; margin-bottom:10px;">
+            🔥 <strong>Streak de {streak_atual} dias!</strong> Bônus de <strong>+{int((mult_atual-1)*100)}% XP</strong> ativo em todas as atividades!
+        </div>
+        """, unsafe_allow_html=True)
+
     col1, col2, col3 = st.columns([2, 1, 1])
     with col1:
         st.markdown("#### ➕ Nova Atividade")
         with st.form("nova_atividade", clear_on_submit=True):
             area = st.selectbox("Certificação", list(EMBLEMAS.keys()))
             atividade = st.selectbox("Tipo", ["📚 Estudo", "🔬 Laboratório", "🏗️ Projeto", "🔄 Revisão", "📝 Simulado", "🎓 Aula Pós", "🌎 Inglês", "🏅 Certificação"])
-            obs = st.text_area("Observação")
+            obs = st.text_area("O que foi feito?")
+            xp_preview = int(calc_xp(atividade, area) * mult_atual)
+            st.caption(f"💡 Esta atividade vai render **{xp_preview} XP** (base: {calc_xp(atividade, area)} × {mult_atual:.1f}x streak)")
             if st.form_submit_button("🚀 Lançar", use_container_width=True):
-                xp_ganho = calc_xp(atividade)
-                adicionar_atividade(area, atividade, xp_ganho, obs)
-                st.success(f"+{xp_ganho} XP!", icon="🎉")
+                xp_base = calc_xp(atividade, area)
+                xp_final, streak, mult = adicionar_atividade(area, atividade, xp_base, obs)
+                if mult > 1.0:
+                    st.success(f"🔥 +{xp_final} XP com bônus de streak {streak} dias!", icon="🎉")
+                else:
+                    st.success(f"+{xp_final} XP!", icon="🎉")
                 st.rerun()
     with col2:
         st.markdown(f"""
@@ -1407,16 +1492,15 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
     with col3:
-        meta = 50
-        progresso = min(xp_hoje / meta, 1.0)
+        progresso_meta = min(xp_hoje / meta, 1.0)
         st.markdown(f"""
         <div class="kpi-card">
             <div style="font-size: 36px;">🎯</div>
-            <div style="font-size: 28px;">{xp_hoje}/{meta}</div>
-            <div>Meta</div>
+            <div style="font-size: 22px;">{xp_hoje}/{meta}</div>
+            <div>Meta do dia</div>
         </div>
         """, unsafe_allow_html=True)
-        st.progress(progresso)
+        st.progress(progresso_meta)
     atividades_hoje = get_atividades_hoje()
     if atividades_hoje:
         for atv in atividades_hoje:
@@ -1433,10 +1517,10 @@ with tab1:
     c1, c2, c3, c4, c5 = st.columns(5)
     concluidas = sum(1 for cert, xp in st.session_state.cert_xp.items() if xp >= EMBLEMAS[cert]["xp"])
     c1.metric("🎮 Missões", len(st.session_state.db))
-    c2.metric("⭐ XP", st.session_state.xp)
-    c3.metric("🏆 Nível", st.session_state.xp // 100 + 1)
+    c2.metric("⭐ XP Total", f"{st.session_state.xp:,}")
+    c3.metric("🏆 Nível", st.session_state.xp // 1000 + 1)
     c4.metric("✅ Certificações", f"{concluidas}/{len(EMBLEMAS)}")
-    c5.metric("📊 Progresso", f"{(concluidas/len(EMBLEMAS)*100):.0f}%")
+    c5.metric("🔥 Streak", f"{calc_streak()} dias")
 
 # =========================
 # TAB 2 - CONTEÚDO DAS CERTIFICAÇÕES
