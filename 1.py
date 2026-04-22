@@ -1130,6 +1130,8 @@ if "cert_topicos_concluidos" not in st.session_state:
     st.session_state.cert_topicos_concluidos = {}
 if "soft_skills_concluidas" not in st.session_state:
     st.session_state.soft_skills_concluidas = {}
+if "soft_skills_historico" not in st.session_state:
+    st.session_state.soft_skills_historico = []
 
 # =========================
 # FUNÇÃO DE LOGIN
@@ -1164,6 +1166,7 @@ def salvar_backup():
         "topicos_concluidos": st.session_state.topicos_concluidos,
         "cert_topicos_concluidos": st.session_state.cert_topicos_concluidos,
         "soft_skills_concluidas": st.session_state.soft_skills_concluidas,
+        "soft_skills_historico": st.session_state.soft_skills_historico,
         "data_backup": datetime.now().isoformat()
     }
     return salvar_no_supabase(dados)
@@ -1179,6 +1182,7 @@ def carregar_backup():
         st.session_state.topicos_concluidos = dados.get("topicos_concluidos", {})
         st.session_state.cert_topicos_concluidos = dados.get("cert_topicos_concluidos", {})
         st.session_state.soft_skills_concluidas = dados.get("soft_skills_concluidas", {})
+        st.session_state.soft_skills_historico = dados.get("soft_skills_historico", [])
         return True
     return False
 
@@ -1294,14 +1298,25 @@ def adicionar_xp_disciplina(disciplina, xp):
     st.session_state.xp += xp
     salvar_backup()
 
-def adicionar_soft_skill(categoria, atividade, xp):
-    key = f"{categoria}_{atividade}"
-    if key not in st.session_state.soft_skills_concluidas:
-        st.session_state.soft_skills_concluidas[key] = True
-        st.session_state.xp += xp
-        salvar_backup()
-        return True
-    return False
+def adicionar_soft_skill(categoria, atividade_nome, xp, descricao_livre=""):
+    """Registra soft skill com histórico completo — permite repetir em dias diferentes"""
+    if "soft_skills_historico" not in st.session_state:
+        st.session_state.soft_skills_historico = []
+    hoje = datetime.now().date().isoformat()
+    chave_hoje = f"{categoria}_{atividade_nome}_{hoje}"
+    if chave_hoje in st.session_state.soft_skills_concluidas:
+        return False, "já_feita"
+    st.session_state.soft_skills_concluidas[chave_hoje] = True
+    st.session_state.soft_skills_historico.append({
+        "data": datetime.now().isoformat(),
+        "categoria": categoria,
+        "atividade": atividade_nome,
+        "descricao": descricao_livre,
+        "xp": xp
+    })
+    st.session_state.xp += xp
+    salvar_backup()
+    return True, xp
 
 def marcar_topico_puc(disciplina, topico, concluido):
     if disciplina not in st.session_state.topicos_concluidos:
@@ -1598,23 +1613,202 @@ with tab2:
 # =========================
 with tab3:
     st.markdown("## 💪 DESENVOLVIMENTO DE SOFT SKILLS")
-    st.markdown("Atividades práticas para desenvolver habilidades comportamentais essenciais.")
+    st.markdown("Registre suas atividades comportamentais e acompanhe sua evolução.")
     st.markdown("---")
-    for categoria, info in SOFT_SKILLS_ATIVIDADES.items():
-        with st.expander(f"📌 {categoria}", expanded=False):
-            st.markdown(f"*{info['descricao']}*")
+
+    # Sub-abas internas
+    ss_tab1, ss_tab2, ss_tab3 = st.tabs(["➕ Registrar Atividade", "📊 Meu Progresso", "📋 Histórico"])
+
+    # -------------------------
+    # SUB-ABA 1 — REGISTRAR
+    # -------------------------
+    with ss_tab1:
+        st.markdown("### ➕ Nova Atividade de Soft Skill")
+
+        with st.form("form_soft_skill", clear_on_submit=True):
+            col_a, col_b = st.columns(2)
+            with col_a:
+                categoria_sel = st.selectbox("📌 Categoria", list(SOFT_SKILLS_ATIVIDADES.keys()))
+            with col_b:
+                atividades_cat = [a['nome'] for a in SOFT_SKILLS_ATIVIDADES[categoria_sel]['atividades']]
+                atividade_sel = st.selectbox("🎯 Atividade", atividades_cat)
+
+            descricao_livre = st.text_area("📝 O que você fez? (descreva com detalhes)", height=100,
+                                           placeholder="Ex: Apresentei o relatório mensal para a equipe de TI, recebi feedback positivo sobre a clareza da apresentação...")
+
+            # Mostrar XP da atividade selecionada
+            xp_ativ = next((a['xp'] for a in SOFT_SKILLS_ATIVIDADES[categoria_sel]['atividades'] if a['nome'] == atividade_sel), 20)
+            st.info(f"⭐ Esta atividade vale **{xp_ativ} XP**")
+
+            submitted = st.form_submit_button("✅ Registrar Atividade", use_container_width=True)
+            if submitted:
+                if not descricao_livre.strip():
+                    st.error("❌ Descreva o que você fez antes de registrar!")
+                else:
+                    ok, resultado = adicionar_soft_skill(categoria_sel, atividade_sel, xp_ativ, descricao_livre)
+                    if ok:
+                        st.success(f"🎉 +{xp_ativ} XP! Atividade registrada com sucesso!")
+                        st.balloons()
+                        st.rerun()
+                    else:
+                        st.warning("⚠️ Você já registrou esta atividade hoje! Tente amanhã ou escolha outra.")
+
+        # Cards das atividades disponíveis
+        st.markdown("---")
+        st.markdown("### 📚 Atividades Disponíveis")
+        for categoria, info in SOFT_SKILLS_ATIVIDADES.items():
+            with st.expander(f"📌 {categoria} — {info['descricao']}", expanded=False):
+                cols = st.columns(2)
+                for i, atv in enumerate(info['atividades']):
+                    with cols[i % 2]:
+                        st.markdown(f"""
+                        <div style="background:rgba(77,159,255,0.08); border-radius:10px; padding:10px; margin:5px 0; border-left:3px solid #ff8800;">
+                            <strong>{atv['nome']}</strong> — ⭐ {atv['xp']} XP<br>
+                            <small style="color:#aaa;">{atv['descricao']}</small>
+                        </div>
+                        """, unsafe_allow_html=True)
+
+    # -------------------------
+    # SUB-ABA 2 — PROGRESSO
+    # -------------------------
+    with ss_tab2:
+        st.markdown("### 📊 Meu Progresso em Soft Skills")
+
+        historico = st.session_state.get("soft_skills_historico", [])
+
+        if not historico:
+            st.info("📭 Nenhuma atividade registrada ainda. Vá para 'Registrar Atividade' e comece!")
+        else:
+            # KPIs
+            total_atividades = len(historico)
+            total_xp_soft = sum(a['xp'] for a in historico)
+            categorias_feitas = len(set(a['categoria'] for a in historico))
+            k1, k2, k3 = st.columns(3)
+            k1.metric("✅ Atividades", total_atividades)
+            k2.metric("⭐ XP de Soft Skills", total_xp_soft)
+            k3.metric("📌 Categorias", f"{categorias_feitas}/4")
+
             st.markdown("---")
-            cols = st.columns(2)
-            for i, atividade in enumerate(info['atividades']):
-                with cols[i % 2]:
-                    key = f"soft_{categoria}_{atividade['nome']}"
-                    if st.button(f"✅ {atividade['nome']} (+{atividade['xp']} XP)", key=key, use_container_width=True):
-                        if adicionar_soft_skill(categoria, atividade['nome'], atividade['xp']):
-                            st.success(f"+{atividade['xp']} XP - {atividade['nome']} concluída!")
-                            st.rerun()
-                        else:
-                            st.info("Você já concluiu esta atividade hoje!")
-                    st.caption(f"📝 {atividade['descricao']}")
+
+            # Gráfico de barras por categoria (HTML puro)
+            st.markdown("### 🏆 Atividades por Categoria")
+            contagem = {}
+            xp_por_cat = {}
+            for a in historico:
+                cat = a['categoria']
+                contagem[cat] = contagem.get(cat, 0) + 1
+                xp_por_cat[cat] = xp_por_cat.get(cat, 0) + a['xp']
+
+            cores_soft = {
+                "Comunicação e Apresentação": "#4d9fff",
+                "Liderança de Equipes":        "#7b2ff7",
+                "Gestão de Projetos":           "#00ff88",
+                "Inteligência Emocional":       "#ff8800"
+            }
+
+            max_count = max(contagem.values()) if contagem else 1
+            altura = 180
+            barras = ""
+            for cat, qtd in sorted(contagem.items(), key=lambda x: -x[1]):
+                pct = (qtd / max_count)
+                cor = cores_soft.get(cat, "#4d9fff")
+                h = int(pct * altura)
+                barras += f"""
+                <div style="display:flex; flex-direction:column; align-items:center; flex:1; min-width:80px;">
+                    <div style="font-size:12px; color:{cor}; font-weight:bold; margin-bottom:4px;">{qtd}x</div>
+                    <div style="width:60%; height:{h}px; background:{cor}; border-radius:8px 8px 0 0;
+                                display:flex; align-items:center; justify-content:center; color:white; font-size:11px; font-weight:bold;">
+                        {xp_por_cat.get(cat,0)} XP
+                    </div>
+                    <div style="font-size:10px; color:#aaa; margin-top:6px; text-align:center; max-width:100px;">{cat}</div>
+                </div>"""
+
+            grafico_soft = f"""
+            <!DOCTYPE html><html>
+            <body style="margin:0;padding:16px;background:#0e1117;font-family:sans-serif;">
+            <div style="display:flex; align-items:flex-end; gap:12px; height:{altura+60}px; padding:10px;">
+                {barras}
+            </div>
+            </body></html>"""
+
+            import streamlit.components.v1 as components
+            components.html(grafico_soft, height=altura + 100, scrolling=False)
+
+            st.markdown("---")
+
+            # Gráfico de atividades por data
+            st.markdown("### 📅 Atividades ao Longo do Tempo")
+            from collections import defaultdict
+            por_data = defaultdict(int)
+            for a in historico:
+                try:
+                    d = datetime.fromisoformat(a['data']).strftime('%d/%m')
+                    por_data[d] += a['xp']
+                except:
+                    pass
+
+            if por_data:
+                datas_ord = sorted(por_data.keys(), key=lambda x: datetime.strptime(x, '%d/%m'))
+                max_xp_d = max(por_data.values())
+                barras_data = ""
+                for d in datas_ord:
+                    xp_d = por_data[d]
+                    h = int((xp_d / max_xp_d) * 140)
+                    barras_data += f"""
+                    <div style="display:flex;flex-direction:column;align-items:center;flex:1;min-width:50px;">
+                        <div style="font-size:10px;color:#00ff88;font-weight:bold;margin-bottom:3px;">{xp_d}</div>
+                        <div style="width:70%;height:{h}px;background:linear-gradient(180deg,#00ff88,#4d9fff);
+                                    border-radius:6px 6px 0 0;"></div>
+                        <div style="font-size:10px;color:#aaa;margin-top:5px;">{d}</div>
+                    </div>"""
+
+                grafico_tempo = f"""
+                <!DOCTYPE html><html>
+                <body style="margin:0;padding:16px;background:#0e1117;font-family:sans-serif;">
+                <div style="display:flex;align-items:flex-end;gap:8px;height:200px;overflow-x:auto;">
+                    {barras_data}
+                </div>
+                </body></html>"""
+                components.html(grafico_tempo, height=220, scrolling=False)
+
+    # -------------------------
+    # SUB-ABA 3 — HISTÓRICO
+    # -------------------------
+    with ss_tab3:
+        st.markdown("### 📋 Histórico Completo de Soft Skills")
+
+        historico = st.session_state.get("soft_skills_historico", [])
+
+        if not historico:
+            st.info("📭 Nenhuma atividade registrada ainda.")
+        else:
+            # Filtro por categoria
+            cats_disponiveis = ["Todas"] + list(set(a['categoria'] for a in historico))
+            filtro_cat = st.selectbox("🔍 Filtrar por categoria", cats_disponiveis)
+
+            for atv in reversed(historico):
+                if filtro_cat != "Todas" and atv['categoria'] != filtro_cat:
+                    continue
+                try:
+                    data_fmt = datetime.fromisoformat(atv['data']).strftime('%d/%m/%Y %H:%M')
+                except:
+                    data_fmt = atv['data']
+                cor = cores_soft.get(atv['categoria'], '#4d9fff') if 'cores_soft' in dir() else '#4d9fff'
+                st.markdown(f"""
+                <div style="background:rgba(77,159,255,0.07); border-radius:10px; padding:12px 16px;
+                            margin:8px 0; border-left:4px solid {cor};">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:13px; font-weight:bold;">{atv['atividade']}</span>
+                        <span style="color:#ffd700; font-weight:bold;">⭐ +{atv['xp']} XP</span>
+                    </div>
+                    <div style="font-size:11px; color:#888; margin:2px 0;">
+                        📌 {atv['categoria']} &nbsp;|&nbsp; 📅 {data_fmt}
+                    </div>
+                    <div style="font-size:12px; color:#ccc; margin-top:6px;">
+                        📝 {atv.get('descricao', '-')}
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
 
 # =========================
 # TAB 4 - PÓS PUC
