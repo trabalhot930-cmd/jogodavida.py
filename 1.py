@@ -814,8 +814,16 @@ def carregar_backup():
     if dados:
         st.session_state.db = dados.get("db", [])
         st.session_state.xp = dados.get("xp", 0)
-        st.session_state.cert_xp = dados.get("cert_xp", st.session_state.cert_xp)
-        st.session_state.cert_status = dados.get("cert_status", st.session_state.cert_status)
+
+        # Filtrar apenas as certs do novo plano
+        certs_validas = set(EMBLEMAS.keys())
+
+        cert_xp_salvo = dados.get("cert_xp", {})
+        st.session_state.cert_xp = {c: cert_xp_salvo.get(c, 0) for c in certs_validas}
+
+        cert_status_salvo = dados.get("cert_status", {})
+        st.session_state.cert_status = {c: cert_status_salvo.get(c, "Não iniciada") for c in certs_validas}
+
         st.session_state.disciplinas_progresso = dados.get("disciplinas_progresso", st.session_state.disciplinas_progresso)
         st.session_state.topicos_concluidos = dados.get("topicos_concluidos", {})
         st.session_state.cert_topicos_concluidos = dados.get("cert_topicos_concluidos", {})
@@ -1029,6 +1037,10 @@ def get_xp_mes():
 # =========================
 if "dados_carregados" not in st.session_state:
     carregar_backup()
+    # Garantir que cert_xp e cert_status só tenham as certs do novo plano
+    certs_validas = set(EMBLEMAS.keys())
+    st.session_state.cert_xp = {c: st.session_state.cert_xp.get(c, 0) for c in certs_validas}
+    st.session_state.cert_status = {c: st.session_state.cert_status.get(c, "Não iniciada") for c in certs_validas}
     st.session_state.dados_carregados = True
 
 # =========================
@@ -1093,6 +1105,13 @@ with st.sidebar:
     st.markdown("---")
     if st.button("🚪 Sair", use_container_width=True):
         st.session_state.autenticado = False
+        st.rerun()
+    if st.button("🔄 Resetar Certificações", use_container_width=True):
+        certs_validas = set(EMBLEMAS.keys())
+        st.session_state.cert_xp = {c: 0 for c in certs_validas}
+        st.session_state.cert_status = {c: "Não iniciada" for c in certs_validas}
+        salvar_backup()
+        st.success("✅ Certificações resetadas!")
         st.rerun()
 
 # =========================
