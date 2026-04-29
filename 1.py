@@ -2040,6 +2040,13 @@ with tab8:
         "Ago 2027": [17],       # Disc. 17 — TCC (opcional)
     }
 
+    MESES_ORDEM = [
+        "Mai 2026","Jun 2026","Jul 2026","Ago 2026",
+        "Set 2026","Out 2026","Nov 2026","Dez 2026",
+        "Jan 2027","Fev 2027","Mar 2027","Abr 2027",
+        "Mai 2027","Jun 2027","Jul 2027","Ago 2027",
+    ]
+
     def disc_ativa_no_mes(mes_str):
         nums = DISC_POR_MES.get(mes_str, [])
         return [d for d in DISCIPLINAS_POS if d["num"] in nums]
