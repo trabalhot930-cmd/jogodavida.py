@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
@@ -1760,6 +1759,402 @@ with tab7:
 # TAB 8 - CALENDÁRIO
 # =========================
 with tab8:
+    import calendar as _cal
+
+    # ── Paleta de cores por frente ──
+    COR_POS    = "#7b2ff7"
+    COR_SEC    = "#185FA5"
+    COR_ISO    = "#0C447C"
+    COR_ING    = "#1E90FF"
+    COR_FUNDO  = "rgba(77,159,255,0.07)"
+
+    # ── Disciplinas da pós com datas exatas ──
+    DISCIPLINAS_POS = [
+        {"num": 1,  "nome": "Governança de Privacidade e Proteção de Dados",         "inicio": "Mai 2026", "horas": 24,
+         "semanas": [
+             ("Sem 1", "Fundamentos e bases legais", ["Taxonomia e classificação de dados pessoais", "Princípios norteadores e bases legais para tratamento", "Direitos dos titulares e procedimentos de atendimento"]),
+             ("Sem 2", "Gestão e riscos de privacidade", ["Agentes de tratamento e responsabilidades", "Análise de risco e elaboração do RIPDP", "Gestão de consentimentos · resposta a incidentes"]),
+             ("Sem 3", "Programa e projeto prático", ["DPO, anonimização e pseudonimização", "Programa PGPPD · IA aplicada à privacidade", "Projeto prático + revisão e entrega final"]),
+         ]},
+        {"num": 2,  "nome": "Aspectos Jurídicos de Conformidade Digital",            "inicio": "Jun 2026", "horas": 24,
+         "semanas": [
+             ("Sem 1", "Direito digital e LGPD", ["Proteção de dados como direito fundamental", "Panorama internacional de legislações", "LGPD e Marco Civil da Internet"]),
+             ("Sem 2", "Responsabilidades e crimes digitais", ["Código de Defesa do Consumidor digital", "Direito penal cibernético e crimes digitais", "Convenção de Budapeste e cooperação internacional"]),
+             ("Sem 3", "Contratos, auditorias e projeto", ["Responsabilidade civil e criminal no ciberespaço", "Contratos e acordos de processamento de dados", "Aspectos jurídicos da perícia forense + projeto"]),
+         ]},
+        {"num": 3,  "nome": "Ethical Hacking e Gestão de Vulnerabilidades",          "inicio": "Jul 2026", "horas": 24,
+         "semanas": [
+             ("Sem 1", "Fundamentos e ameaças", ["Cenário da cibercriminalidade e ameaças digitais", "Principais tipos de ataques e técnicas ofensivas", "Fundamentos de ethical hacking e offensive security"]),
+             ("Sem 2", "Pentest e Red Team", ["Abordagens Pentest e Red Team", "Threat Intelligence e simulação de adversários", "MITRE ATT&CK: táticas, técnicas e procedimentos"]),
+             ("Sem 3", "Ferramentas e metodologias", ["Frameworks de análise de vulnerabilidade", "IA para detecção automatizada de vulnerabilidades", "Processo de identificação e gestão de vulnerabilidades"]),
+             ("Sem 4", "Projeto prático", ["Execução de pentest guiado em laboratório", "Elaboração de relatório de vulnerabilidades", "Revisão, ajustes e entrega final"]),
+         ]},
+        {"num": 4,  "nome": "Criptografia e Segurança de Dados",                     "inicio": "Ago 2026", "horas": 24,
+         "semanas": [
+             ("Sem 1", "Fundamentos criptográficos", ["Sistemas simétricos e assimétricos · cifras de bloco e fluxo", "Principais algoritmos: AES, RSA, ECC, DH", "Criptoanálise · hashing · assinatura digital"]),
+             ("Sem 2", "Criptografia em camadas", ["IPSec (rede) · TLS (transporte) · ALE (aplicação)", "mTLS e autenticação mútua · certificados digitais e ICP", "Gerenciamento e ciclo de vida de chaves criptográficas"]),
+             ("Sem 3", "Criptografia avançada", ["Blockchain · criptografia pós-quântica", "Criptografia com preservação de formato (FPE)", "Criptografia homomórfica · segurança de dados em trânsito/repouso/uso"]),
+             ("Sem 4", "Aplicações e projeto prático", ["IA aplicada em segurança criptográfica", "Laboratório prático de criptografia", "Revisão e entrega final"]),
+         ]},
+        {"num": 5,  "nome": "DevSecOps: Segurança Integrada e Scanning",             "inicio": "Set 2026", "horas": 24,
+         "semanas": [
+             ("Sem 1", "Fundamentos DevSecOps", ["Security by Design · SDLC seguro · práticas ágeis", "Segurança end-to-end em pipelines CI/CD", "Visão geral das ferramentas de verificação"]),
+             ("Sem 2", "Ferramentas de scanning", ["SAST, DAST, IAST e RASP na prática", "Security Observability: métricas, logs, tracing", "Implementação em pipelines CI/CD"]),
+             ("Sem 3", "Cloud-native DevSecOps", ["Melhores práticas em ambientes cloud-native", "IA para análise de vulnerabilidades e threat intelligence", "Threat intelligence integrado ao pipeline"]),
+             ("Sem 4", "Projeto prático", ["Construção de pipeline DevSecOps completo", "Integração das ferramentas de segurança", "Revisão, testes e entrega"]),
+         ]},
+        {"num": 6,  "nome": "Segurança e Gestão da Identidade Digital",              "inicio": "Out 2026", "horas": 24,
+         "semanas": [
+             ("Sem 1", "Fundamentos IAM", ["Identidade digital e IAM · ciclo de vida de identidades", "Modelos de controle: RBAC, ABAC, PBAC, DAC, MAC", "Autenticação e autorização inteligente"]),
+             ("Sem 2", "Tecnologias de identidade", ["Biometria e verificação de identidade", "Segurança da identidade e Zero Trust", "Políticas de Gestão de Acesso (IAM)"]),
+             ("Sem 3", "IA em IAM + projeto prático", ["IA aplicada em IAM", "Processos de gerência de identidades e controle de acesso", "Projeto prático + revisão final"]),
+         ]},
+        {"num": 7,  "nome": "Resposta a Incidentes e Gestão de Crises Cibernéticas", "inicio": "Nov 2026", "horas": 24,
+         "semanas": [
+             ("Sem 1", "Fundamentos e ciclo de vida", ["Fundamentos de incidentes cibernéticos", "Processo e plano de resposta a incidentes", "Ciclo de vida: NIST SP 800-61 · ISO/IEC 27035"]),
+             ("Sem 2", "Tecnologias de apoio", ["SIEM, SOAR e EDR na prática", "Playbooks e runbooks · estrutura e exemplos", "SOC — Centros de Operação de Segurança"]),
+             ("Sem 3", "Gestão e simulação", ["Gestão de equipes e comunicação de crise", "Tabletop exercises e simulações de incidentes", "Atividades pós-incidente · lições aprendidas"]),
+             ("Sem 4", "IA, aspectos legais e projeto", ["IA aplicada em resposta a incidentes", "Aspectos legais e regulatórios · estudos de caso", "Projeto prático + revisão e entrega"]),
+         ]},
+        {"num": 8,  "nome": "Computação Forense e Perícia Digital",                  "inicio": "Dez 2026", "horas": 24,
+         "semanas": [
+             ("Sem 1", "Fundamentos forenses", ["Fundamentos de computação forense", "Evidências digitais e vestígios computacionais", "Metodologias e processos forenses"]),
+             ("Sem 2", "Ferramentas e técnicas", ["Ferramentas e tecnologias forenses", "Perícia especializada por ambiente", "Processo de perícia digital"]),
+             ("Sem 3", "Aspectos jurídicos e IA", ["Aspectos jurídicos e documentação pericial", "Padrões e normas periciais · IA na perícia digital", "Técnicas anti-forense e contramedidas"]),
+             ("Sem 4", "Projeto prático", ["Estudos de casos práticos de forense", "Laboratório forense guiado", "Revisão e entrega final"]),
+         ]},
+        {"num": 9,  "nome": "Governança de Dados e Compliance",                      "inicio": "Jan 2027", "horas": 24,
+         "semanas": [
+             ("Sem 1", "Fundamentos da Governança de Dados", ["Contexto organizacional e estratégico dos dados", "Framework DMBoK · Data Stewardship · Data Owners", "Dados Mestres, Referência, Metadados e Catálogo"]),
+             ("Sem 2", "Compliance e Governança 2.0", ["Compliance em IA e data-driven: LGPD e GDPR", "Risk Assessment e mitigação de riscos", "Governança 2.0: ética, agilidade, mudança organizacional"]),
+             ("Sem 3", "IA e projeto prático", ["IA para análise/geração de políticas e frameworks", "Automação de catalogação e documentação técnica", "Estudo de casos + projeto prático"]),
+         ]},
+        {"num": 10, "nome": "Arquitetura de Cibersegurança e Zero Trust",            "inicio": "Fev 2027", "horas": 24,
+         "semanas": [
+             ("Sem 1", "Fundamentos e Zero Trust", ["Fundamentos de arquitetura de segurança", "Paradigma e arquitetura Zero Trust", "Segurança em camadas e defesa em profundidade"]),
+             ("Sem 2", "Arquitetura em nuvem e ferramentas", ["CAF e WAF · NGFW · NIDPS · WAF", "CSPM, CNAPP, CWPP, CASB, SASE", "Compliance e Governança em Ambientes Cloud"]),
+             ("Sem 3", "IA e projeto prático", ["IA para análise de vulnerabilidades e threat intelligence", "Otimização de arquitetura com IA", "Projeto: implementação de arquitetura Zero Trust"]),
+         ]},
+        {"num": 11, "nome": "Resiliência Cibernética e Continuidade de Negócios",   "inicio": "Mar 2027", "horas": 24,
+         "semanas": [
+             ("Sem 1", "Fundamentos de resiliência", ["Fundamentos e estratégias de ciber-resiliência", "NIST 800-34 e ISO 22301", "BIA (Business Impact Analysis)"]),
+             ("Sem 2", "Continuidade e recuperação", ["Protocolos e tecnologias para resiliência cibernética", "Plano de recuperação de desastres (DRP) e BCP", "Continuidade em nuvem · DRaaS"]),
+             ("Sem 3", "IA e projeto prático", ["IA aplicada à resiliência · governança de equipes", "Projeto prático de resiliência", "Revisão e entrega final"]),
+         ]},
+        {"num": 12, "nome": "Monitoramento e Observabilidade",                       "inicio": "Abr 2027", "horas": 24,
+         "semanas": [
+             ("Sem 1", "Fundamentos de observabilidade", ["Monitoramento vs observabilidade · pilares e benefícios", "Design for observability · shift-left observability", "Observabilidade em cloud-native e microsserviços"]),
+             ("Sem 2", "Instrumentação e plataformas", ["OpenTelemetry · SLO e Error Budgeting", "Observability Stacks · AIOps e Machine Learning", "SRE e Engenharia de Confiabilidade"]),
+             ("Sem 3", "Dashboards e segurança", ["Dashboards, alertas e relatórios de performance", "Logs, métricas e tracing na prática", "Observabilidade de segurança e de escala"]),
+             ("Sem 4", "IA e projeto prático", ["IA para predição de falhas e análise de anomalias", "Resposta autônoma com IA", "Projeto: arquitetura observável com IA e SRE"]),
+         ]},
+        {"num": 13, "nome": "Gestão de Riscos Cibernéticos",                        "inicio": "Mai 2027", "horas": 24,
+         "semanas": [
+             ("Sem 1", "Fundamentos e frameworks", ["Fundamentos de riscos de segurança da informação", "ISO/IEC 27005 · NIST Cybersecurity Framework", "Programa de gestão de riscos cibernéticos"]),
+             ("Sem 2", "Processo de gestão de riscos", ["Escopo, contexto, critério, identificação", "Análise, avaliação e tratamento de riscos", "Comunicação e monitoramento contínuo"]),
+             ("Sem 3", "TPRM, IA e casos", ["Gestão de Riscos de Terceiros (TPRM)", "IA aplicada à gestão de riscos", "Cenários e estudos de caso práticos"]),
+             ("Sem 4", "Projeto prático", ["Elaboração de relatório de risco", "Projeto de programa de gestão", "Revisão e entrega final"]),
+         ]},
+        {"num": 14, "nome": "Governança e Compliance em Cibersegurança",             "inicio": "Jun 2027", "horas": 24,
+         "semanas": [
+             ("Sem 1", "Fundamentos de governança", ["Fundamentos da governança de cibersegurança", "Modelos e frameworks de governança", "Normas: ISO/IEC 27000 e 27003"]),
+             ("Sem 2", "Políticas e SGSI", ["Políticas e procedimentos de segurança", "SGSI — Sistema de Gestão da Segurança da Informação", "Programa de cultura e conscientização"]),
+             ("Sem 3", "Maturidade e financeiro", ["Avaliação de maturidade em segurança", "PDSI — Plano Diretor de Segurança", "Princípios financeiros e gestão de orçamentos"]),
+             ("Sem 4", "GRC, IA e projeto", ["GRC contextualizado em cibersegurança", "IA para compliance, monitoramento e relatórios", "Projeto prático integrado de GRC"]),
+             ("Sem 5", "Revisão e entrega final", ["Revisão geral de governança e compliance", "Ajustes finais do projeto", "Entrega e apresentação"]),
+         ]},
+        {"num": 15, "nome": "Projeto em Cibersegurança e Governança de Dados com IA","inicio": "Jul 2027", "horas": 24,
+         "semanas": [
+             ("Sem 1", "IA aplicada — fundamentos", ["IA para segurança em cenários reais", "Detecção e resposta a ameaças com IA", "IA Generativa em Cibersegurança: aplicações e riscos"]),
+             ("Sem 2", "IA adversarial e LLMs", ["IA Adversarial: ataques, defesas e robustez de modelos", "Engenharia de prompt e proteção contra abusos", "Riscos emergentes em LLMs · análise e mitigação"]),
+             ("Sem 3", "Automação e governança de IA", ["Automação de SOC: orquestração, triagem e resposta", "Detecção de anomalias e profiling inteligente", "Governança de IA em ambientes corporativos"]),
+             ("Sem 4", "Desenvolvimento e entrega do projeto", ["Desenvolvimento do projeto aplicado com IA", "Integração com cenários de cibersegurança e governança", "Entrega e apresentação final"]),
+         ]},
+        {"num": 16, "nome": "Humanidades",                                           "inicio": "Jul 2027", "horas": 24,
+         "semanas": [
+             ("Sem 1–4", "Conteúdo de Humanidades", ["Conteúdo conforme grade curricular da PUC Minas", "Paralelo à Disciplina 15 — Projeto com IA", "Entrega: ago/2027"]),
+         ]},
+        {"num": 17, "nome": "Trabalho de Conclusão de Curso (TCC)",                  "inicio": "Opcional", "horas": 0,
+         "semanas": [
+             ("Fase 1", "Escolha e planejamento", ["Definição do tema e orientador", "Revisão bibliográfica e metodologia"]),
+             ("Fase 2", "Desenvolvimento", ["Redação, pesquisa e análise", "Orientação e feedbacks"]),
+             ("Fase 3", "Entrega e defesa", ["Revisão final e formatação", "Defesa perante banca examinadora"]),
+         ]},
+    ]
+    # ── Cronograma das certificações por mês ──
+    CERT_POR_MES = {
+        "Mai 2026": {
+            "cert": "🛡️ CompTIA Security+", "fase": "FASE 1 — Módulos 1 e 2",
+            "semanas": [
+                ("Sem 1", "Módulo 1 — Conceitos de Segurança", ["CIA Triad · tipos de controles · regulamentações", "Terminologia: asset, threat, vulnerability, risk, control"]),
+                ("Sem 2", "Módulo 2 — Ameaças (Parte 1)", ["Malware: vírus, worm, ransomware, spyware, trojan, rootkit", "Engenharia social: phishing, spear phishing, vishing, smishing"]),
+                ("Sem 3", "Módulo 2 — Mitigações (Parte 2)", ["Hardening · patch management · threat hunting", "IoC/IoA · MITRE ATT&CK TTPs"]),
+                ("Sem 4", "Revisão + Simulado Parcial", ["Revisão módulos 1–2 · quiz em inglês (Anki)", "Simulado parcial TestOut (30–40 questões)"]),
+            ]
+        },
+        "Jun 2026": {
+            "cert": "🛡️ CompTIA Security+", "fase": "FASE 2 — Módulos 3 e 4",
+            "semanas": [
+                ("Sem 5", "Módulo 3 — Criptografia Parte 1", ["Simétrica: AES, DES · assimétrica: RSA, ECC, DH", "Hashing: SHA-256, HMAC · PKI · certificados X.509"]),
+                ("Sem 6", "Módulo 3 — Criptografia Parte 2", ["TLS 1.2/1.3 · handshake · PFS", "Protocolos seguros: HTTPS, SSH, SFTP · criptografia pós-quântica"]),
+                ("Sem 7", "Módulo 4 — IAM", ["MFA: TOTP, FIDO2, biometria · RBAC, ABAC, MAC, DAC", "SSO: SAML 2.0, OAuth 2.0, OIDC · PAM"]),
+                ("Sem 8", "Revisão + Labs Práticos", ["Lab: TLS e certificados · Lab: MFA e RBAC", "Simulado parcial módulos 3–4 (40 questões)"]),
+            ]
+        },
+        "Jul 2026": {
+            "cert": "🛡️ CompTIA Security+", "fase": "FASE 3 — Módulos 5, 6 e 7",
+            "semanas": [
+                ("Sem 9",  "Módulo 5 — Arquitetura de Rede Parte 1", ["VLANs · segmentação · firewalls · DMZ · IDS/IPS · VPN"]),
+                ("Sem 10", "Módulo 5 — Arquitetura de Rede Parte 2", ["ZTNA · SD-WAN · SASE · WPA3 · NAC · 802.1X · DNSSEC"]),
+                ("Sem 11", "Módulo 6 — Resiliência", ["HA · backup 3-2-1 · RTO/RPO · BCP/DRP · RAID"]),
+                ("Sem 12", "Módulo 7 — Gestão de Vulnerabilidades", ["Nessus/OpenVAS · CVSS v3.1 · CVE · NVD · patch management"]),
+                ("Sem 13", "Revisão + Simulado Acumulado", ["Simulado 90 questões módulos 1–7 · análise por domínio"]),
+            ]
+        },
+        "Ago 2026": {
+            "cert": "🛡️ CompTIA Security+", "fase": "FASE 4 — Módulos 8, 9 e 10",
+            "semanas": [
+                ("Sem 14", "Módulo 8 — Endpoint e Rede", ["EDR/XDR · hardening Windows/Linux/mobile · DLP · UEBA"]),
+                ("Sem 15", "Módulo 9 — Resposta a Incidentes", ["NIST SP 800-61 · forense básica · chain of custody · tabletop"]),
+                ("Sem 16", "Módulo 10 — Protocolos, Apps e Nuvem", ["APIs: OAuth, JWT, OWASP · Shared Responsibility · CASB, CSPM", "Container security: Docker, Kubernetes · serverless"]),
+                ("Sem 17", "Revisão Intensiva + Labs", ["Lab resposta a incidentes · lab cloud security", "Simulado completo 90 questões (módulos 1–10)"]),
+            ]
+        },
+        "Set 2026": {
+            "cert": "🛡️ CompTIA Security+", "fase": "FASE 5 — Módulos 11, 12 e 13",
+            "semanas": [
+                ("Sem 18", "Módulo 11 — Governança", ["NIST CSF 2.0 · ISO 27001 · CIS Controls v8", "Classificação de dados · gestão de ativos · papéis e responsabilidades"]),
+                ("Sem 19", "Módulo 12 — Gestão de Riscos", ["SLE, ARO, ALE, ROSI · BIA · estratégias de tratamento"]),
+                ("Sem 20", "Módulo 13 — Proteção de Dados e Compliance", ["GDPR, HIPAA, PCI-DSS v4, SOX · Privacy by Design · e-discovery"]),
+                ("Sem 21", "Revisão GRC + Simulado", ["Simulado GRC 60 questões · comparativo de frameworks"]),
+            ]
+        },
+        "Out 2026": {
+            "cert": "🛡️ CompTIA Security+", "fase": "FASE 6 — SIMULADOS INTENSIVOS ★",
+            "semanas": [
+                ("Sem 22", "Revisão Geral e Pontos Fracos", ["Revisão dos 13 módulos · foco nos domínios mais fracos", "Flashcards, mapas mentais e labs complementares"]),
+                ("Sem 23", "Simulado Oficial 1 — Apêndice A", ["90 questões CompTIA SY0-701 · 90 minutos cronometrados", "Análise item a item · estratégia PBQ"]),
+                ("Sem 24", "Simulado Oficial 2 — Apêndice B", ["TestOut Security Pro completo · registro de tempo por questão"]),
+                ("Sem 25", "Preparação Final", ["Revisão leve · logística Pearson VUE · descanso"]),
+                ("★ Sem 26", "PROVA CompTIA Security+ SY0-701", ["Pearson VUE · 90min · 90 questões · Score 750/900 🎉"]),
+            ]
+        },
+        "Nov 2026": {
+            "cert": "🔒 ISO 27001 Lead Implementer", "fase": "FASE 1 — Cláusulas 4, 5 e 6",
+            "semanas": [
+                ("Sem 1", "Visão Geral ISO 27001:2022", ["Histórico 2005/2013/2022 · 93 controles em 4 temas", "Processo de certificação PECB · relação com ISO 27002/27005"]),
+                ("Sem 2", "Cláusula 4 — Contexto Organizacional", ["4.1 contexto · 4.2 partes interessadas · 4.3 escopo do SGSI"]),
+                ("Sem 3", "Cláusulas 5 e 6 — Liderança e Planejamento", ["Política de SI · papéis · objetivos · ações para tratar riscos"]),
+                ("Sem 4", "Revisão + Estudo de Caso", ["Elaborar escopo e política de SI · quiz ISO 27001"]),
+            ]
+        },
+        "Dez 2026": {
+            "cert": "🔒 ISO 27001 Lead Implementer", "fase": "FASE 2 — Riscos, SoA e Suporte",
+            "semanas": [
+                ("Sem 5", "Avaliação e Tratamento de Riscos (ISO 27005)", ["Identificação de ativos, ameaças e vulnerabilidades", "Análise qualitativa (5×5) e quantitativa (ALE=SLE×ARO)", "Plano de Tratamento de Riscos (RTP)"]),
+                ("Sem 6", "Declaração de Aplicabilidade (SoA)", ["4 temas e 93 controles do Anexo A versão 2022", "Como selecionar, justificar e documentar controles"]),
+                ("Sem 7", "Cláusula 7 — Suporte", ["7.1 Recursos · 7.2 Competências · 7.3 Conscientização", "7.4 Comunicação · 7.5 Informação documentada"]),
+                ("Sem 8", "Revisão + Simulado PECB Parcial", ["SoA + matriz de riscos · simulado 50 questões PECB"]),
+            ]
+        },
+        "Jan 2027": {
+            "cert": "🔒 ISO 27001 Lead Implementer", "fase": "FASE 3 — Cláusula 8 + Anexo A",
+            "semanas": [
+                ("Sem 9",  "Cláusula 8 — Operação", ["Controle operacional · avaliação e tratamento de riscos em campo"]),
+                ("Sem 10", "Anexo A — Controles Organizacionais (37)", ["Políticas, organização, ativos, acesso, fornecedores (5.1–5.37)"]),
+                ("Sem 11", "Anexo A — Pessoas e Físico (22)", ["Triagem, NDA, trabalho remoto (6.1–6.8) · físico (7.1–7.14)"]),
+                ("Sem 12", "Anexo A — Tecnológico (34)", ["Endpoint, logging, criptografia, SDLC seguro, DLP (8.1–8.34)"]),
+                ("Sem 13", "Revisão Anexo A + Caso Prático", ["Mapa mental 93 controles · simulado 80 questões PECB"]),
+            ]
+        },
+        "Fev 2027": {
+            "cert": "🔒 ISO 27001 Lead Implementer", "fase": "FASE 4 — Cláusulas 9 e 10",
+            "semanas": [
+                ("Sem 14", "Cláusula 9 — Avaliação de Desempenho", ["Monitoramento, medição, auditoria interna, análise crítica pela direção"]),
+                ("Sem 15", "Cláusula 10 — Melhoria Contínua", ["NC e RCA · ciclo PDCA · lições aprendidas"]),
+                ("Sem 16", "Processo de Certificação", ["Estágio 1 documental · estágio 2 campo · tipos de achados"]),
+                ("Sem 17", "Simulado PECB + Revisão", ["120 questões formato real · questões dissertativas"]),
+            ]
+        },
+        "Mar 2027": {
+            "cert": "🔒 ISO 27001 Lead Implementer", "fase": "FASE 5 — Implementação Prática",
+            "semanas": [
+                ("Sem 18", "Projeto de Implementação do SGSI", ["Gap analysis AS-IS vs TO-BE · roadmap 12–18 meses"]),
+                ("Sem 19", "Documentação do SGSI", ["12 documentos + 12 registros obrigatórios · controle de versão"]),
+                ("Sem 20", "Gestão de Riscos Avançada + Terceiros", ["ISO 27005 aprofundado · due diligence · contratos de SI"]),
+                ("Sem 21", "Conscientização + Métricas", ["Programa de conscientização · KPIs · dashboard executivo"]),
+            ]
+        },
+        "Abr 2027": {
+            "cert": "🔒 ISO 27001 Lead Implementer", "fase": "FASE 6 — Simulados PECB ★",
+            "semanas": [
+                ("Sem 22", "Revisão Completa", ["Cláusulas 4–10 + 93 controles · spaced repetition"]),
+                ("Sem 23", "Simulado 1 — Formato Real", ["150 questões · 3 horas cronometradas · estudo de caso"]),
+                ("Sem 24", "Simulado 2 + Redação", ["Foco em cenários · redação dissertativa · vocabulário PECB"]),
+                ("Sem 25", "Preparação Final", ["Revisão leve · logística PECB · descanso"]),
+                ("★ Sem 26", "PROVA ISO 27001 Lead Implementer", ["Parte 1: múltipla escolha (2h) · Parte 2: estudo de caso (1h)", "Aprovação: 70% + caso · Atualizar LinkedIn e Credly 🎉"]),
+            ]
+        },
+        "Mai 2027": {"cert": None, "fase": "", "semanas": []},
+        "Jun 2027": {"cert": None, "fase": "", "semanas": []},
+        "Jul 2027": {"cert": None, "fase": "", "semanas": []},
+        "Ago 2027": {"cert": None, "fase": "", "semanas": []},
+    }
+
+    INGLES_POR_MES = {
+        "Mai 2026": ("B1",  "Deck Anki CompTIA SY0-701 em inglês\nProfessor Messer no YouTube (inglês)\nQuestões de simulado sem tradução\nFoco: ler perguntas sem dicionário"),
+        "Jun 2026": ("B1",  "Vocabulário IAM e criptografia\nRisky Business Podcast (inglês)\nFlashcards de algoritmos e protocolos\nNível B1 consolidado"),
+        "Jul 2026": ("B1+", "NIST SP 800-61 em inglês\nDarknet Diaries com transcrição\nLeitura de advisories CISA em inglês\nFluência sem parar para traduzir"),
+        "Ago 2026": ("B1+", "NIST SP 800-53 em inglês\nSmashing Security Podcast\nNível B1+ → B2 em evolução\nLeitura de CVEs e security advisories"),
+        "Set 2026": ("B2",  "CIS Controls v8 em inglês\nCISO Talks Podcast\nQuestões CompTIA sem dicionário\nPreparação final: prova em inglês"),
+        "Out 2026": ("B2",  "B2 consolidado · prova em inglês\nAnki de manutenção\nInício do vocabulário ISO/auditoria\nCISO Series Podcast"),
+        "Nov 2026": ("B2",  "ISO 27001:2022 texto normativo em inglês\nTerminologia PECB: implement, conform, clause\nSecurity Conversations Podcast\nAnki vocabulário de auditoria"),
+        "Dez 2026": ("B2",  "ISO 27002:2022 guidance em inglês\nSecurity Conversations Podcast\nB2 sólido · redação técnica simples\nGlossário ISO português + inglês"),
+        "Jan 2027": ("B2",  "Study guides PECB em inglês\nDark Reading · SANS NewsBites\nPrática de redação de respostas curtas\nTerminologia de implementação ISO"),
+        "Fev 2027": ("B2+", "ISO 27002 e 27005 em inglês\nCISO Series Podcast\nRedação de respostas PECB em inglês\nB2+ em vocabulário de auditoria"),
+        "Mar 2027": ("B2+", "Verizon DBIR em inglês\nIBM X-Force Threat Intelligence Index\nRFC 8446 (TLS 1.3) em inglês\nDark Reading e SANS NewsBites"),
+        "Abr 2027": ("B2+", "Manutenção B2+ · Anki de revisão\nLeitura técnica livre\nVocabulário avançado de governança\nPreparação redação PECB"),
+        "Mai 2027": ("B2+", "B2+ consolidado · leitura livre\nRFCs e vendor blogs em inglês\nManutenção com podcasts avançados"),
+        "Jun 2027": ("B2+", "Leitura técnica livre avançada\nCISO Series e Risky Business\nManutenção B2+ sem esforço extra"),
+        "Jul 2027": ("B2+", "B2+ celebração! 🎉\nLeitura livre em inglês\nVocabulário de negócios e liderança"),
+        "Ago 2027": ("B2+", "Manutenção B2+ contínua\nPodcasts avançados de segurança\nLeitura de threat reports e white papers"),
+    }
+
+    # Mapa fixo: cada mês → quais números de disciplina estão ativos
+    DISC_POR_MES = {
+        "Mai 2026": [1],        # Disc. 1 — Governança de Privacidade
+        "Jun 2026": [2],        # Disc. 2 — Aspectos Jurídicos
+        "Jul 2026": [3],        # Disc. 3 — Ethical Hacking
+        "Ago 2026": [4],        # Disc. 4 — Criptografia
+        "Set 2026": [5],        # Disc. 5 — DevSecOps
+        "Out 2026": [6],        # Disc. 6 — Segurança e Gestão da Identidade Digital
+        "Nov 2026": [7],        # Disc. 7 — Resposta a Incidentes
+        "Dez 2026": [8],        # Disc. 8 — Computação Forense
+        "Jan 2027": [9],        # Disc. 9 — Governança de Dados e Compliance
+        "Fev 2027": [10],       # Disc. 10 — Arquitetura e Zero Trust
+        "Mar 2027": [11],       # Disc. 11 — Resiliência Cibernética
+        "Abr 2027": [12],       # Disc. 12 — Monitoramento e Observabilidade
+        "Mai 2027": [13],       # Disc. 13 — Gestão de Riscos
+        "Jun 2027": [14],       # Disc. 14 — Governança e Compliance
+        "Jul 2027": [15, 16],   # Disc. 15 + 16 — Projeto IA + Humanidades
+        "Ago 2027": [17],       # Disc. 17 — TCC (opcional)
+    }
+
+    def disc_ativa_no_mes(mes_str):
+        nums = DISC_POR_MES.get(mes_str, [])
+        return [d for d in DISCIPLINAS_POS if d["num"] in nums]
+
+    # ────────────────────────────────────────────
+    # HEADER
+    # ────────────────────────────────────────────
+    st.markdown("""
+    <div style="background:linear-gradient(135deg,rgba(77,159,255,0.15),rgba(123,47,247,0.08));
+                border-radius:14px;padding:18px;text-align:center;margin-bottom:18px;">
+        <div style="font-size:24px;font-weight:bold;color:#4d9fff;">📅 CALENDÁRIO COMPLETO — MAI/2026 → AGO/2027</div>
+        <div style="font-size:13px;color:#aaa;margin-top:6px;">
+            🎓 Pós-Graduação PUC Minas — 17 disciplinas (Disc. 1 inicia em Mai/2026)  &nbsp;|&nbsp;
+            🛡️ CompTIA Security+ SY0-701 (Mai–Out/2026)  &nbsp;|&nbsp;
+            🔒 ISO 27001 Lead Implementer (Nov/2026–Abr/2027)  &nbsp;|&nbsp;
+            🇬🇧 Inglês 20min/dia
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Filtro
+    opcoes = ["Todos os meses"] + MESES_ORDEM
+    col_f1, col_f2 = st.columns([1,3])
+    with col_f1:
+        mes_filtro = st.selectbox("🗓️ Mês:", opcoes, key="cal_filtro")
+    meses_render = MESES_ORDEM if mes_filtro == "Todos os meses" else [mes_filtro]
+
+    # ────────────────────────────────────────────
+    # RENDER MÊS A MÊS
+    # ────────────────────────────────────────────
+    for mes in meses_render:
+        discs = disc_ativa_no_mes(mes)
+        cert_info = CERT_POR_MES.get(mes, {"cert": None, "fase": "", "semanas": []})
+        ing_nivel, ing_texto = INGLES_POR_MES.get(mes, ("B1",""))
+
+        # ── Cabeçalho do mês ──
+        st.markdown(f"""
+        <div style="background:linear-gradient(90deg,rgba(77,159,255,0.18),rgba(123,47,247,0.08));
+                    border-left:5px solid #4d9fff;border-radius:10px;
+                    padding:12px 18px;margin:22px 0 10px 0;">
+            <span style="font-size:20px;font-weight:bold;color:#4d9fff;">📆 {mes}</span>
+        </div>
+        """, unsafe_allow_html=True)
+
+        col_pos, col_cert, col_ing = st.columns([1.1, 1.1, 0.8])
+
+        # ── PÓS-GRADUAÇÃO ──
+        with col_pos:
+            st.markdown(f"<div style='font-size:13px;font-weight:bold;color:{COR_POS};margin-bottom:6px;'>🎓 PÓS-GRADUAÇÃO</div>", unsafe_allow_html=True)
+            if mes == "Mai 2027":
+                st.markdown("""
+                <div style="border-left:3px solid #ffd700;padding:8px 12px;border-radius:0 8px 8px 0;
+                            background:rgba(255,215,0,0.08);">
+                    <span style="font-size:14px;font-weight:bold;color:#ffd700;">🎓 CONCLUSÃO DA PÓS-GRADUAÇÃO!</span><br>
+                    <span style="font-size:12px;color:#aaa;">Todas as 16 disciplinas concluídas · TCC entregue (se optante)</span>
+                </div>
+                """, unsafe_allow_html=True)
+            elif discs:
+                for d in discs:
+                    cor_d = CORES_DISC[(d["num"]-1) % len(CORES_DISC)]
+                    st.markdown(f"""
+                    <div style="border-left:3px solid {cor_d};padding:6px 10px;
+                                margin-bottom:6px;border-radius:0 8px 8px 0;
+                                background:rgba(77,159,255,0.05);">
+                        <span style="font-size:12px;font-weight:bold;color:{cor_d};">
+                            Disc. {d['num']} — {d['nome']}
+                        </span><br>
+                        <span style="font-size:11px;color:#aaa;">📅 Início: {d['inicio']} · ⏱️ {d['horas']}h</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    for sem_label, sem_titulo, sem_subs in d["semanas"]:
+                        with st.expander(f"📌 {sem_label} — {sem_titulo}", expanded=False):
+                            for sub in sem_subs:
+                                st.markdown(f"<div style='font-size:12px;padding:3px 0 3px 10px;border-left:2px solid {cor_d};margin:3px 0;color:#ddd;'>• {sub}</div>", unsafe_allow_html=True)
+            else:
+                st.markdown("<div style='font-size:12px;color:#666;'>Sem disciplina ativa.</div>", unsafe_allow_html=True)
+
+        # ── CERTIFICAÇÃO ──
+        with col_cert:
+            if cert_info["cert"]:
+                cor_c = COR_SEC if "Security" in cert_info["cert"] else COR_ISO
+                emoji_c = "🛡️" if "Security" in cert_info["cert"] else "🔒"
+                label_c = cert_info["cert"].replace("🛡️ ","").replace("🔒 ","")
+                st.markdown(f"<div style='font-size:13px;font-weight:bold;color:{cor_c};margin-bottom:6px;'>{emoji_c} {label_c}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='font-size:11px;color:#aaa;margin-bottom:8px;'>{cert_info['fase']}</div>", unsafe_allow_html=True)
+                for sem_label, sem_titulo, sem_subs in cert_info["semanas"]:
+                    lbl = sem_titulo[:38] + "…" if len(sem_titulo) > 38 else sem_titulo
+                    with st.expander(f"📌 {sem_label} — {lbl}", expanded=False):
+                        for sub in sem_subs:
+                            st.markdown(f"<div style='font-size:12px;padding:3px 0 3px 10px;border-left:2px solid {cor_c};margin:3px 0;color:#ddd;'>• {sub}</div>", unsafe_allow_html=True)
+            else:
+                st.markdown(f"<div style='font-size:13px;font-weight:bold;color:#555;margin-bottom:6px;'>⏳ Certificação</div>", unsafe_allow_html=True)
+                st.markdown("<div style='font-size:12px;color:#555;'>CompTIA Security+ inicia em Mai/2026</div>", unsafe_allow_html=True)
+
+        # ── INGLÊS ──
+        with col_ing:
+            st.markdown(f"<div style='font-size:13px;font-weight:bold;color:{COR_ING};margin-bottom:4px;'>🇬🇧 Inglês · Meta: <span style='color:#ffd700;'>{ing_nivel}</span></div>", unsafe_allow_html=True)
+            for linha in ing_texto.strip().split("\n"):
+                st.markdown(f"<div style='font-size:11px;padding:3px 0 3px 8px;border-left:2px solid {COR_ING};margin:3px 0;color:#ccc;'>• {linha.strip()}</div>", unsafe_allow_html=True)
+            st.markdown("<div style='font-size:11px;color:#555;margin-top:6px;'>📌 20min/dia · todos os dias</div>", unsafe_allow_html=True)
+
+        st.markdown("<hr style='border-color:rgba(77,159,255,0.15);margin:12px 0;'>", unsafe_allow_html=True)
+
+    # ── Legenda ──
+    st.markdown("""
+    <div style="background:rgba(77,159,255,0.07);border-radius:10px;padding:12px 16px;margin-top:8px;font-size:12px;color:#aaa;">
+    <b style="color:#4d9fff;">📌 Legenda:</b>&nbsp;
+    🎓 Pós PUC Minas — 17 disciplinas na sequência exata &nbsp;|&nbsp;
+    🛡️ CompTIA Security+ (Mai–Out/2026) &nbsp;|&nbsp;
+    🔒 ISO 27001 Lead Implementer (Nov/2026–Mai/2027) &nbsp;|&nbsp;
+    🇬🇧 Inglês 20min/dia &nbsp;|&nbsp;
+    ★ = Prova &nbsp;|&nbsp;
+    Ritmo: 1h30 seg–sex · 2h sáb–dom · ~15h/semana
+    </div>
+    """, unsafe_allow_html=True)
     st.markdown("## 📅 CALENDÁRIO — MAI/2026 ATÉ MAI/2027")
     st.markdown("Cronograma completo das 3 frentes integradas: Pós-Graduação, CompTIA Security+ e ISO 27001 Lead Implementer.")
 
